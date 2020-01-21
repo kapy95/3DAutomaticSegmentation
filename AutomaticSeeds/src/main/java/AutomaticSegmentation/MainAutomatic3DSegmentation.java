@@ -3,9 +3,11 @@
  */
 package AutomaticSegmentation;
 
-import javax.swing.SwingUtilities;
+//import javax.swing.SwingUtilities;
 
 import AutomaticSegmentation.gui.MainWindow;
+import AutomaticSegmentation.limeSeg.SphereSegAdapted;
+import eu.kiaru.limeseg.LimeSeg;
 import ij.IJ;
 import ij.ImageJ;
 import ij.plugin.PlugIn;
@@ -58,15 +60,25 @@ public class MainAutomatic3DSegmentation implements PlugIn {
 	 */
 	public void run(String arg) {
 		// Build GUI
-		SwingUtilities.invokeLater(new Runnable() {
+		/*SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				// Create the main window
 				mainWindow = new MainWindow();
 				mainWindow.pack();
 				mainWindow.setVisible(true);
 			}
+			
 		});
+		*/
+		
+		SphereSegAdapted seg=new SphereSegAdapted();
+		
+		seg.setD_0(5);
+		//..etc cargar más paramétros
+		LimeSeg.saveStateToXmlPly(path);
+		
 	}
+	
 
 	/**
 	 * Static method to enable oval selection It is mainly used to create ROIs
