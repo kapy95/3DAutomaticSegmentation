@@ -3,6 +3,10 @@
  */
 package AutomaticSegmentation;
 
+//import java.io.File; SOLUCIONARLO PARA IMPORTAR EL TIPO
+import java.io.File;
+//import org.reflections.vfs.Vfs.File;
+
 //import javax.swing.SwingUtilities;
 
 import AutomaticSegmentation.gui.MainWindow;
@@ -10,6 +14,7 @@ import AutomaticSegmentation.limeSeg.SphereSegAdapted;
 import eu.kiaru.limeseg.LimeSeg;
 import ij.IJ;
 import ij.ImageJ;
+import ij.ImagePlus;
 import ij.plugin.PlugIn;
 
 /**
@@ -70,12 +75,29 @@ public class MainAutomatic3DSegmentation implements PlugIn {
 			
 		});
 		*/
+		//establezco el directorio de trabajo con las imágenes y roi
+		File dir = new File("C:\\Users\\Carlo\\Desktop\\Máster\\TFM\\prueba\\Datos");
+		//dir.mkdir();
 		
+		//llamo a la clase que va a llamar limeseg:
 		SphereSegAdapted seg=new SphereSegAdapted();
-		
+		seg.set_path(dir.toString());
 		seg.setD_0(5);
+		System.out.println(seg.getD_0());
+		seg.setF_pressure(4);
+		seg.setZ_scale(2);
+		seg.setRange_in_d0_units(5);
+		
+		ImagePlus x=IJ.openImage("C:\\Users\\Carlo\\Desktop\\Máster\\TFM\\prueba\\Datos\\ImageSequence");
+		//ImagePlus x=seg.getImp();
+		x.getInfoProperty();
+		
+		//seg.getImp();
+		
+		//seg.run();
+		
 		//..etc cargar más paramétros
-		LimeSeg.saveStateToXmlPly(path);
+		//LimeSeg.saveStateToXmlPly(path);
 		
 	}
 	

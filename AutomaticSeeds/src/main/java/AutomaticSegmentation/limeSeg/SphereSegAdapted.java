@@ -28,6 +28,8 @@ import ij.plugin.frame.RoiManager;
  */
 @Plugin(type = Command.class, menuPath = "Plugins>LimeSeg>Sphere Seg (Advanced)")
 public class SphereSegAdapted implements Command {
+	@Parameter
+	protected String path;
 
 	@Parameter(persist=true, stepSize="0.1", min="0")
 	protected float d_0=2.0f;
@@ -39,7 +41,8 @@ public class SphereSegAdapted implements Command {
 	protected double z_scale = 1f;
 
     @Parameter(persist=true)
-    private ImagePlus imp;
+    //private ImagePlus imp;
+    protected ImagePlus imp;
     
     @Parameter(persist=true)
     protected float range_in_d0_units = 2;
@@ -82,6 +85,8 @@ public class SphereSegAdapted implements Command {
 	@Override
 	public void run() {
 		RoiManager roiManager = RoiManager.getRoiManager();
+		this.setImp(IJ.openImage(this.path+"\\ImageSequence"));
+		
         if (roiManager==null) {
         	System.err.println("No roi manager found - command aborted.");
         	return;
@@ -111,9 +116,10 @@ public class SphereSegAdapted implements Command {
         float avgZ=0;
         int NCells=0;
         ArrayList<CellT> currentlyOptimizedCellTs = new ArrayList<>();
-		
+		/*
         if (imp == null)
         	imp = IJ.openImage();
+        */	
 		
 		
         LimeSeg.currentChannel = imp.getChannel();
@@ -212,6 +218,7 @@ public class SphereSegAdapted implements Command {
 //       												this.realXYPixelSize, 
 //       												this.constructMesh);
 //       	}
+       	LimeSeg.saveStateToXmlPly(path+"\\resultados");//path);
 	}
 
 	/**
@@ -238,7 +245,11 @@ public class SphereSegAdapted implements Command {
 	/**
 	 * @return the imp
 	 */
+	
+
+
 	public ImagePlus getImp() {
+	
 		return imp;
 	}
 
@@ -254,6 +265,10 @@ public class SphereSegAdapted implements Command {
 	 */
 	public ColorRGB getColor() {
 		return color;
+	}
+	
+	public String getPath() {
+		return this.path;
 	}
 
 	/**
@@ -311,6 +326,8 @@ public class SphereSegAdapted implements Command {
 	public float getRealXYPixelSize() {
 		return realXYPixelSize;
 	}
+	
+
 
 	/**
 	 * @return the clearOptimizer
@@ -325,10 +342,25 @@ public class SphereSegAdapted implements Command {
 	public boolean isStallDotsPreviouslyInOptimizer() {
 		return stallDotsPreviouslyInOptimizer;
 	}
+	
+	public void set_path(String pathfile){
+
+		this.path = pathfile;
+	}
 
 	/**
 	 * @param d_0 the d_0 to set
 	 */
+	/*
+	public void set_Imp(){
+		//openImage(java.lang.String path)
+		//Opens, but does not display, the specified image file and returns an ImagePlus object object if successful,
+		//or returns null if the file is not in a supported format or is not found.
+		this.imp = IJ.openImage(this.path+"\\ImageSequence");
+	}
+	*/
+	
+	
 	public void setD_0(float d_0) {
 		this.d_0 = d_0;
 	}
@@ -349,6 +381,7 @@ public class SphereSegAdapted implements Command {
 
 	/**
 	 * @param imp the imp to set
+	
 	 */
 	public void setImp(ImagePlus imp) {
 		this.imp = imp;
