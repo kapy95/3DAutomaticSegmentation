@@ -5,6 +5,11 @@ package AutomaticSegmentation;
 
 //import java.io.File; SOLUCIONARLO PARA IMPORTAR EL TIPO
 import java.io.File;
+
+
+import ij.io.Opener;
+import ij.io.RoiDecoder;
+
 //import org.reflections.vfs.Vfs.File;
 
 //import javax.swing.SwingUtilities;
@@ -15,6 +20,7 @@ import eu.kiaru.limeseg.LimeSeg;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
+import ij.gui.Roi;
 import ij.plugin.PlugIn;
 
 /**
@@ -50,12 +56,13 @@ public class MainAutomatic3DSegmentation implements PlugIn {
 		String pluginsDir = url.substring("file:".length(),
 				url.length() - clazz.getName().length() - ".class".length() - "classes".length());
 		System.setProperty("plugins.dir", pluginsDir);
-
+		
 		// start ImageJ
 		new ImageJ();
 
 		// run the plugin
 		IJ.runPlugIn(clazz.getName(), "");
+		
 	}
 
 	/*
@@ -76,10 +83,34 @@ public class MainAutomatic3DSegmentation implements PlugIn {
 		});
 		*/
 		//establezco el directorio de trabajo con las imágenes y roi
-		File dir = new File("C:\\Users\\Carlo\\Desktop\\Máster\\TFM\\prueba\\Datos");
-		//dir.mkdir();
+		//File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\ImageSequence\\OR R w 05 phal ecadh dapi 20.12.18 20x 3a001.tif");
+		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\RoiSet");
+		File[] listOfFiles = dir.listFiles();
+		
+		System.out.println("MIERDA");
+		
+		for (File file : listOfFiles) {
+		    if (file.isFile()) {
+		        System.out.println(file.getName());
+		    }
+		}
+		//ImagePlus x=IJ.openImage(dir.toString()); abre una sola imagen xd
+	
+		Roi roi=RoiDecoder.open("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\RoiSet\\0024-0289-0500.roi");
+		//otra opcion para las rois Roi
+		Opener op=new Opener();
+		Roi y=op.openRoi("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\RoiSet\\0024-0289-0500.roi");
+		System.out.println(y.getLength());
+		System.out.println(roi.getProperties());
+		
+		
+		//op.openTiffStack(info) supuestamente abre un stack
+		
+	
+
 		
 		//llamo a la clase que va a llamar limeseg:
+		/*
 		SphereSegAdapted seg=new SphereSegAdapted();
 		seg.set_path(dir.toString());
 		seg.setD_0(5);
@@ -88,9 +119,6 @@ public class MainAutomatic3DSegmentation implements PlugIn {
 		seg.setZ_scale(2);
 		seg.setRange_in_d0_units(5);
 		
-		ImagePlus x=IJ.openImage("C:\\Users\\Carlo\\Desktop\\Máster\\TFM\\prueba\\Datos\\ImageSequence");
-		//ImagePlus x=seg.getImp();
-		x.getInfoProperty();
 		
 		//seg.getImp();
 		
@@ -98,7 +126,7 @@ public class MainAutomatic3DSegmentation implements PlugIn {
 		
 		//..etc cargar más paramétros
 		//LimeSeg.saveStateToXmlPly(path);
-		
+		*/
 	}
 	
 

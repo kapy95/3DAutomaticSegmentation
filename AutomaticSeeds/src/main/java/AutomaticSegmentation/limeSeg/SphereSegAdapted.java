@@ -1,5 +1,7 @@
 package AutomaticSegmentation.limeSeg;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import org.scijava.command.Command;
@@ -28,8 +30,8 @@ import ij.plugin.frame.RoiManager;
  */
 @Plugin(type = Command.class, menuPath = "Plugins>LimeSeg>Sphere Seg (Advanced)")
 public class SphereSegAdapted implements Command {
-	@Parameter
-	protected  path;
+	
+	protected Path path;
 
 	@Parameter(persist=true, stepSize="0.1", min="0")
 	protected float d_0=2.0f;
@@ -84,7 +86,9 @@ public class SphereSegAdapted implements Command {
 	
 	@Override
 	public void run() {
+	
 		RoiManager roiManager = RoiManager.getRoiManager();
+		
 		//roiManager
 		//this.setImp(IJ.openImage(this.path+"\\ImageSequence"));
 		
@@ -219,7 +223,7 @@ public class SphereSegAdapted implements Command {
 //       												this.realXYPixelSize, 
 //       												this.constructMesh);
 //       	}
-       	LimeSeg.saveStateToXmlPly(path+"\\resultados");//path);
+       	LimeSeg.saveStateToXmlPly((path.toString()+"\\resultados"));//path);
 	}
 
 	/**
@@ -268,7 +272,8 @@ public class SphereSegAdapted implements Command {
 		return color;
 	}
 	
-	public String getPath() {
+	public Path getPath() {
+		
 		return this.path;
 	}
 
@@ -346,7 +351,7 @@ public class SphereSegAdapted implements Command {
 	
 	public void set_path(String pathfile){
 
-		this.path = pathfile;
+		this.path = Paths.get(pathfile);
 	}
 
 	/**
@@ -385,7 +390,9 @@ public class SphereSegAdapted implements Command {
 	
 	 */
 	public void setImp(ImagePlus imp) {
+		
 		this.imp = imp;
+				//IJ.openImage(path.toString());
 	}
 
 	/**
