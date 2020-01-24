@@ -29,7 +29,7 @@ import ij.plugin.frame.RoiManager;
 @Plugin(type = Command.class, menuPath = "Plugins>LimeSeg>Sphere Seg (Advanced)")
 public class SphereSegAdapted implements Command {
 	@Parameter
-	protected String path;
+	protected  path;
 
 	@Parameter(persist=true, stepSize="0.1", min="0")
 	protected float d_0=2.0f;
@@ -85,7 +85,8 @@ public class SphereSegAdapted implements Command {
 	@Override
 	public void run() {
 		RoiManager roiManager = RoiManager.getRoiManager();
-		this.setImp(IJ.openImage(this.path+"\\ImageSequence"));
+		//roiManager
+		//this.setImp(IJ.openImage(this.path+"\\ImageSequence"));
 		
         if (roiManager==null) {
         	System.err.println("No roi manager found - command aborted.");
