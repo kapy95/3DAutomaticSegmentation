@@ -84,27 +84,8 @@ public class MainAutomatic3DSegmentation implements PlugIn {
 		*/
 		//establezco el directorio de trabajo con las imágenes y roi
 		//File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\ImageSequence\\OR R w 05 phal ecadh dapi 20.12.18 20x 3a001.tif");
-		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\RoiSet");
-		File[] listOfFiles = dir.listFiles();
-		
-		System.out.println("MIERDA");
-		
-		for (File file : listOfFiles) {
-		    if (file.isFile()) {
-		        System.out.println(file.getName());
-		        //Roi y=op.openRoi("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\RoiSet\\0024-0289-0500.roi");
-		    }
-		}
+
 		//ImagePlus x=IJ.openImage(dir.toString()); abre una sola imagen xd
-		
-		//no funciona:
-		Roi roi=RoiDecoder.open("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\RoiSet\\0024-0289-0500.roi");
-		System.out.println(roi.getLength());
-		
-		//otra opcion para las rois que si funciona
-		Opener op=new Opener();
-		Roi y=op.openRoi("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\RoiSet\\0024-0289-0500.roi");
-		System.out.println(y.getLength());
 		
 		
 		

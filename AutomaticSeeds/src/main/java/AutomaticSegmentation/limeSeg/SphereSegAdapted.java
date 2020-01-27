@@ -1,5 +1,6 @@
 package AutomaticSegmentation.limeSeg;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.OvalRoi;
 import ij.gui.Roi;
+import ij.io.RoiDecoder;
 import ij.plugin.frame.RoiManager;
 
 /**
@@ -131,9 +133,17 @@ public class SphereSegAdapted implements Command {
         if (sameCell) {
         	LimeSeg.newCell();
         }
+     
         
-        int nRois=roiManager.getRoisAsArray().length;
-		for (Roi roi:roiManager.getRoisAsArray()) {
+		File dir = new File(path.toString()+"\\Roiset");
+		File[] listOfFiles = dir.listFiles();
+        
+		int nRois=listOfFiles.length;
+		
+		for(File file:listOfFiles) {
+			
+			Roi roi=RoiDecoder.open(dir.toString()+file.getName());
+		
 			if (roi.getClass().equals(OvalRoi.class)) {
 				OvalRoi circle = (OvalRoi) roi;
 				float r0 = (float) ((circle.getFloatWidth()/2 + circle.getFloatHeight()/2)/2);
@@ -172,9 +182,10 @@ public class SphereSegAdapted implements Command {
 		        }
 		    	currentlyOptimizedCellTs.add(LimeSeg.currentCell.getCellTAt(LimeSeg.currentFrame));
 			}			
-		}
+		
 		LimeSeg.setWorkingImage(imp, LimeSeg.currentChannel, LimeSeg.currentFrame);
-    	
+		}
+		
 		if (sameCell) {
 			LimeSeg.putCurrentCellTToOptimizer();
 		}
@@ -223,7 +234,8 @@ public class SphereSegAdapted implements Command {
 //       												this.realXYPixelSize, 
 //       												this.constructMesh);
 //       	}
-       	LimeSeg.saveStateToXmlPly((path.toString()+"\\resultados"));//path);
+       	
+       	LimeSeg.saveStateToXmlPly((path.toString()+"\\resultados"));
 	}
 
 	/**
@@ -393,6 +405,22 @@ public class SphereSegAdapted implements Command {
 		
 		this.imp = imp;
 				//IJ.openImage(path.toString());
+	}
+	
+	
+	public void setImp2(String path) {
+		
+		ImagePlus[] images = null;
+		File dir = new File(path.toString()+"\\ImageSequece");
+		File[] listOfImages=dir.listFiles();
+		int i=0;
+		
+		for(File image: listOfImages) {
+		images[i]=IJ.openImage(dir.toString()+'\\'+image.getName());
+		i++;
+		}
+		
+		this.imp=images;
 	}
 
 	/**
