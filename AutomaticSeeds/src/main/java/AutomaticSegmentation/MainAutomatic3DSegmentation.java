@@ -92,16 +92,20 @@ public class MainAutomatic3DSegmentation implements PlugIn {
 		for (File file : listOfFiles) {
 		    if (file.isFile()) {
 		        System.out.println(file.getName());
+		        //Roi y=op.openRoi("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\RoiSet\\0024-0289-0500.roi");
 		    }
 		}
 		//ImagePlus x=IJ.openImage(dir.toString()); abre una sola imagen xd
-	
+		
+		//no funciona:
 		Roi roi=RoiDecoder.open("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\RoiSet\\0024-0289-0500.roi");
-		//otra opcion para las rois Roi
+		System.out.println(roi.getLength());
+		
+		//otra opcion para las rois que si funciona
 		Opener op=new Opener();
 		Roi y=op.openRoi("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\RoiSet\\0024-0289-0500.roi");
 		System.out.println(y.getLength());
-		System.out.println(roi.getProperties());
+		
 		
 		
 		//op.openTiffStack(info) supuestamente abre un stack
