@@ -20,6 +20,7 @@ import eu.kiaru.limeseg.LimeSeg;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
+import ij.gui.OvalRoi;
 import ij.gui.Roi;
 import ij.plugin.PlugIn;
 
@@ -82,35 +83,31 @@ public class MainAutomatic3DSegmentation implements PlugIn {
 			
 		});
 		*/
+		
 		//establezco el directorio de trabajo con las imágenes y roi
-		//File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\ImageSequence\\OR R w 05 phal ecadh dapi 20.12.18 20x 3a001.tif");
-
-		//ImagePlus x=IJ.openImage(dir.toString()); abre una sola imagen xd
-		
-		
-		
-		//op.openTiffStack(info) supuestamente abre un stack
-		
-	
-
+		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos");
 		
 		//llamo a la clase que va a llamar limeseg:
-		/*
 		SphereSegAdapted seg=new SphereSegAdapted();
 		seg.set_path(dir.toString());
 		seg.setD_0(5);
-		System.out.println(seg.getD_0());
 		seg.setF_pressure(4);
 		seg.setZ_scale(2);
 		seg.setRange_in_d0_units(5);
+		seg.run();
 		
+		/*
+		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\RoiSet");
+		File[] listOfFiles = dir.listFiles();
+        
+		int nRois=listOfFiles.length;
 		
-		//seg.getImp();
-		
-		//seg.run();
-		
-		//..etc cargar más paramétros
-		//LimeSeg.saveStateToXmlPly(path);
+		String roiname=dir.toString()+"\\"+listOfFiles[1].getName();
+		System.out.println(roiname);
+			
+		//Roi roi=RoiDecoder.open("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\RoiSet\\0024-0377-0550.roi");
+		Roi roi=RoiDecoder.open(roiname);
+		System.out.println(roi.getFloatHeight());
 		*/
 	}
 	

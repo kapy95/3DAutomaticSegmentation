@@ -20,6 +20,7 @@ import ij.gui.OvalRoi;
 import ij.gui.Roi;
 import ij.io.RoiDecoder;
 import ij.plugin.frame.RoiManager;
+import ij.plugin.FolderOpener;
 
 /**
  * 
@@ -88,16 +89,18 @@ public class SphereSegAdapted implements Command {
 	
 	@Override
 	public void run() {
-	
-		RoiManager roiManager = RoiManager.getRoiManager();
+		
+		this.setImp2();
+		//RoiManager roiManager = RoiManager.getRoiManager();
 		
 		//roiManager
 		//this.setImp(IJ.openImage(this.path+"\\ImageSequence"));
-		
+		/*
         if (roiManager==null) {
         	System.err.println("No roi manager found - command aborted.");
         	return;
         }
+        */
 		LimeSeg lms = new LimeSeg();
         lms.initialize();
 		LimeSeg.saveOptState();
@@ -113,6 +116,7 @@ public class SphereSegAdapted implements Command {
             	});
         	}
         }
+        
     	LimeSeg.opt.setOptParam("ZScale", (float)z_scale);
         LimeSeg.opt.setOptParam("d_0",d_0);
         LimeSeg.opt.setOptParam("radiusSearch",d_0*range_in_d0_units);
@@ -135,14 +139,14 @@ public class SphereSegAdapted implements Command {
         }
      
         
-		File dir = new File(path.toString()+"\\Roiset");
+		File dir = new File(path.toString()+"\\RoiSet");
 		File[] listOfFiles = dir.listFiles();
         
 		int nRois=listOfFiles.length;
 		
 		for(File file:listOfFiles) {
 			
-			Roi roi=RoiDecoder.open(dir.toString()+file.getName());
+			Roi roi=RoiDecoder.open(dir.toString()+"\\"+file.getName());
 		
 			if (roi.getClass().equals(OvalRoi.class)) {
 				OvalRoi circle = (OvalRoi) roi;
@@ -408,19 +412,9 @@ public class SphereSegAdapted implements Command {
 	}
 	
 	
-	public void setImp2(String path) {
+	public void setImp2() {
 		
-		ImagePlus[] images = null;
-		File dir = new File(path.toString()+"\\ImageSequece");
-		File[] listOfImages=dir.listFiles();
-		int i=0;
-		
-		for(File image: listOfImages) {
-		images[i]=IJ.openImage(dir.toString()+'\\'+image.getName());
-		i++;
-		}
-		
-		this.imp=images;
+		this.imp=FolderOpener.open(path.toString()+"\\ImageSequence");
 	}
 
 	/**
