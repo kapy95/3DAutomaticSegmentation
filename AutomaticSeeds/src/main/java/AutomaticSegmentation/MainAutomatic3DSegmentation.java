@@ -91,9 +91,9 @@ public class MainAutomatic3DSegmentation implements PlugIn {
 		SphereSegAdapted seg=new SphereSegAdapted();
 		seg.set_path(dir.toString());
 		seg.setD_0(5);
-		seg.setF_pressure(4);
-		seg.setZ_scale(2);
-		seg.setRange_in_d0_units(5);
+		seg.setF_pressure((float) 0.02);
+		seg.setZ_scale((float) 4.06);
+		seg.setRange_in_d0_units(2);
 		seg.run();
 		
 		/*
