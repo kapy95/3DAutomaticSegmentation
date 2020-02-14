@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
@@ -194,16 +195,28 @@ public class SphereSegAdapted implements Command {
 			LimeSeg.putCurrentCellTToOptimizer();
 		}
 		
+
     	if (show3D) {
+
     		LimeSeg.make3DViewVisible();
-    		LimeSeg.putAllCellsTo3DDisplay();
+    		LimeSeg.putAllCellsTo3DDisplay();//es aqui donde peta
     		LimeSeg.set3DViewCenter(avgX/NCells,avgY/NCells,avgZ/NCells);
+    		
     	}
+    	/*
+		long start = System.nanoTime();    
+	    methodToTime();
+	    	long elapsedTime = System.nanoTime() - start;
+	    	System.out.println(elapsedTime);
+	    	/*if(elapsedTime) {
+	    	LimeSeg.stopOptimisation();
+	    	}*/
  	    float k_grad=(float) LimeSeg.opt.getOptParam("k_grad");
         LimeSeg.opt.setOptParam("k_grad",0.0f);
         LimeSeg.opt.setOptParam("normalForce",0);        
        	//LimeSeg.opt.setCUDAContext();
-       	LimeSeg.runOptimisation(500);
+       	LimeSeg.runOptimisation(100);// el comando runOptimisation determina los pasos que se dan hasta que se pare la segmentacion
+       	//LimeSeg.stopOptimisation();
         LimeSeg.opt.requestResetDotsConvergence=true;
         LimeSeg.opt.setOptParam("k_grad",k_grad);
         LimeSeg.opt.setOptParam("normalForce",f_pressure);
@@ -212,10 +225,14 @@ public class SphereSegAdapted implements Command {
         	RadiusDeltaChanged=true;
         	LimeSeg.opt.setOptParam("radiusDelta", d_0/2);
         }
+        
+        
         LimeSeg.runOptimisation(numberOfIntegrationStep);
         if (RadiusDeltaChanged) {
         	LimeSeg.opt.setOptParam("radiusDelta", 0);
         }
+      
+       
        	if (constructMesh) {
        	   	for (CellT ct : currentlyOptimizedCellTs) {
        	   		ct.constructMesh();
@@ -223,6 +240,7 @@ public class SphereSegAdapted implements Command {
        	   	for (CellT ct : currentlyOptimizedCellTs) {
        	   		LimeSeg.setCell3DDisplayMode(1);
             	LimeSeg.currentCell=ct.c;
+            	
    	    	}
        	}
        	LimeSeg.notifyCellExplorerCellsModif=true;
@@ -500,4 +518,13 @@ public class SphereSegAdapted implements Command {
 	public void setStallDotsPreviouslyInOptimizer(boolean stallDotsPreviouslyInOptimizer) {
 		this.stallDotsPreviouslyInOptimizer = stallDotsPreviouslyInOptimizer;
 	}
+	
+	private static void methodToTime() {
+	    try {
+	      TimeUnit.SECONDS.sleep(3);
+	    } catch (InterruptedException e) {
+	      e.printStackTrace();
+	    }
+	  }
+	
 }
