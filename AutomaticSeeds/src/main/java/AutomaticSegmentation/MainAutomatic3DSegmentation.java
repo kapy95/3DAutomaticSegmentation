@@ -3,12 +3,8 @@
  */
 package AutomaticSegmentation;
 
-//import java.io.File; SOLUCIONARLO PARA IMPORTAR EL TIPO
+
 import java.io.File;
-
-
-import ij.io.Opener;
-import ij.io.RoiDecoder;
 
 //import org.reflections.vfs.Vfs.File;
 
@@ -19,9 +15,6 @@ import AutomaticSegmentation.limeSeg.SphereSegAdapted;
 import eu.kiaru.limeseg.LimeSeg;
 import ij.IJ;
 import ij.ImageJ;
-import ij.ImagePlus;
-import ij.gui.OvalRoi;
-import ij.gui.Roi;
 import ij.plugin.PlugIn;
 
 /**
@@ -29,7 +22,7 @@ import ij.plugin.PlugIn;
  * @author
  *
  */
-public class MainAutomatic3DSegmentation implements PlugIn {
+public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 
 	/**
 	 * 
@@ -94,7 +87,54 @@ public class MainAutomatic3DSegmentation implements PlugIn {
 		seg.setF_pressure((float) 0.02);
 		seg.setZ_scale((float) 4.06);
 		seg.setRange_in_d0_units(2);
-		seg.run();
+		seg.start();//empieza a ejecutarse run del hilo de limeseg
+
+		
+		
+		long startTime = System.currentTimeMillis();
+		long endTime=0;
+		
+		
+		boolean cond=true;
+		while (seg.isAlive() && cond==true) {
+			
+			endTime= System.currentTimeMillis();
+			System.out.println((endTime-startTime) /1000);
+			
+			if( ((endTime-startTime) /1000) >100) { //si el tiempo de ejecucion es mayor que 20 segundos corta?
+				cond=false;
+				System.out.println("PAM");
+				cond=false;
+				LimeSeg.stopOptimisation();
+				//LimeSeg.saveStateToXmlPly((seg.getPath().toString()+"\\resultados"));
+				//seg.interrupt();
+			}
+
+		}
+		
+		/*
+		//así se registra automaticamente una vez solo pero hay que esperar ese tiempo siempre (100 segundos) y no se que puede pasar si ha terminado
+		//el hilo de sphereSegAdapted y hago LimeSeg.stopOptimization
+		boolean cond=true;
+		while (cond==true) {
+			
+			endTime= System.currentTimeMillis();
+			System.out.println("Este es el tiempo final:");
+			System.out.println(endTime/1000);
+			System.out.println("Resta:");
+			System.out.println((endTime-startTime) /1000);
+			
+			if( ((endTime-startTime) /1000) >100) { //si el tiempo de ejecucion es mayor que 20 segundos corta?
+				cond=false;
+				System.out.println("PAM");
+				LimeSeg.stopOptimisation();
+				//LimeSeg.saveStateToXmlPly((seg.getPath().toString()+"\\resultados"));
+				//seg.interrupt();
+			}
+
+		}
+		*/
+		
 		
 		/*
 		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\RoiSet");

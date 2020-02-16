@@ -33,7 +33,7 @@ import ij.plugin.FolderOpener;
  *
  */
 @Plugin(type = Command.class, menuPath = "Plugins>LimeSeg>Sphere Seg (Advanced)")
-public class SphereSegAdapted implements Command {
+public class SphereSegAdapted extends Thread implements Command {
 	
 	protected Path path;
 
@@ -88,10 +88,13 @@ public class SphereSegAdapted implements Command {
 	@Parameter(persist=true)
 	protected boolean stallDotsPreviouslyInOptimizer=false;
 	
+	protected LimeSeg lms;
+	
 	@Override
 	public void run() {
 		
 		this.setImp2();
+		setLimeSeg();
 		//RoiManager roiManager = RoiManager.getRoiManager();
 		
 		//roiManager
@@ -102,7 +105,6 @@ public class SphereSegAdapted implements Command {
         	return;
         }
         */
-		LimeSeg lms = new LimeSeg();
         lms.initialize();
 		LimeSeg.saveOptState();
         if (clearOptimizer) {LimeSeg.clearOptimizer();}
@@ -519,12 +521,13 @@ public class SphereSegAdapted implements Command {
 		this.stallDotsPreviouslyInOptimizer = stallDotsPreviouslyInOptimizer;
 	}
 	
-	private static void methodToTime() {
-	    try {
-	      TimeUnit.SECONDS.sleep(3);
-	    } catch (InterruptedException e) {
-	      e.printStackTrace();
-	    }
-	  }
+	public void setLimeSeg() {
+		this.lms = new LimeSeg();
+	}
+	
+	public void stopLimeSeg() {
+		LimeSeg.stopOptimisation();
+	}
+
 	
 }
