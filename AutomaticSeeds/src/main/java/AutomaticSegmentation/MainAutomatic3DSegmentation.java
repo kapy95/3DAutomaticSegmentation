@@ -4,7 +4,15 @@
 package AutomaticSegmentation;
 
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+import org.python.modules.math;
 
 //import org.reflections.vfs.Vfs.File;
 
@@ -12,6 +20,7 @@ import java.io.File;
 
 import AutomaticSegmentation.gui.MainWindow;
 import AutomaticSegmentation.limeSeg.SphereSegAdapted;
+import AutomaticSegmentation.limeSeg.evolutionary_algorithm;
 import eu.kiaru.limeseg.LimeSeg;
 import ij.IJ;
 import ij.ImageJ;
@@ -78,8 +87,11 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		*/
 		
 		//establezco el directorio de trabajo con las imágenes y roi
-		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos");
-		
+		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
+		evolutionary_algorithm ev=new evolutionary_algorithm();
+		ev.setDir(dir);
+		ev.PopulationGenerator(5);
+		/*
 		//llamo a la clase que va a llamar limeseg:
 		SphereSegAdapted seg=new SphereSegAdapted();
 		seg.set_path(dir.toString());
@@ -111,44 +123,73 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 			}
 
 		}
-		
+		*/
 		/*
-		//así se registra automaticamente una vez solo pero hay que esperar ese tiempo siempre (100 segundos) y no se que puede pasar si ha terminado
-		//el hilo de sphereSegAdapted y hago LimeSeg.stopOptimization
-		boolean cond=true;
-		while (cond==true) {
-			
-			endTime= System.currentTimeMillis();
-			System.out.println("Este es el tiempo final:");
-			System.out.println(endTime/1000);
-			System.out.println("Resta:");
-			System.out.println((endTime-startTime) /1000);
-			
-			if( ((endTime-startTime) /1000) >100) { //si el tiempo de ejecucion es mayor que 20 segundos corta?
-				cond=false;
-				System.out.println("PAM");
-				LimeSeg.stopOptimisation();
-				//LimeSeg.saveStateToXmlPly((seg.getPath().toString()+"\\resultados"));
-				//seg.interrupt();
+		System.out.println("El bucle ha terminado");
+		
+       	File newdir =new File(dir.toString()+"\\resultados"+String.valueOf(1));
+       	newdir.mkdir();
+       	//LimeSeg.saveStateToXmlPly((newdir.toString()));
+       	
+       	File[] listOfFiles = newdir.listFiles();
+       	System.out.println(listOfFiles.length);
+       	//listOfFiles.remove(listOfFiles.size()); //el archivo limeseg params se elimina,(si pones delete se elimina
+       	//del directorio la idea seria copiar toda la lista menos el último
+       	ArrayList<Integer> listOfElements = new ArrayList<Integer>();
+       	
+       	int i;
+       	//la máxima iteracion es length-1 porque el ultimo elemento es el limesegparams que no nos interesa
+       	for(i=0;i<(listOfFiles.length-1);i++) {
+       		
+	       		File ruta= new File(listOfFiles[i].toString()+"\\T_1.ply");
+	       		System.out.println(ruta.toString());
+	       		
+	       	   try {
+				Scanner in = new Scanner(new FileReader(ruta.toString()));
+				StringBuilder sb = new StringBuilder();
+				String numberOfVertex="";
+				
+				//el numero de elementos siempre va antes que la primera propiedad, por tanto si la siguiente linea es property no debe entrar ya que tenemos el numero
+				while(in.hasNext("property")==false) {
+				   numberOfVertex =in.next().toString();
+				   System.out.println(numberOfVertex);
+				}
+				in.close();
+				
+				System.out.println(numberOfVertex);
+				
+				listOfElements.add(Integer.parseInt(numberOfVertex));
+							
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-
-		}
-		*/
-		
-		
-		/*
-		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\RoiSet");
-		File[] listOfFiles = dir.listFiles();
-        
-		int nRois=listOfFiles.length;
-		
-		String roiname=dir.toString()+"\\"+listOfFiles[1].getName();
-		System.out.println(roiname);
 			
-		//Roi roi=RoiDecoder.open("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM\\Datos\\RoiSet\\0024-0377-0550.roi");
-		Roi roi=RoiDecoder.open(roiname);
-		System.out.println(roi.getFloatHeight());
+       	}
+       	
+		Double std=0d;
+		double media=0;
+		
+		for(Integer elementosCelulaSegmentada:listOfElements) {
+			media+=elementosCelulaSegmentada;
+		}
+		
+		media=media/listOfElements.size();
+		System.out.println(media);
+		
+		for(Integer elementosCelulaSegmentada:listOfElements) {
+			//restamos, elevamos al cuadrado y sumamos
+			std+=Math.pow((elementosCelulaSegmentada-media),2);
+			
+		}
+		
+		std=math.sqrt( (std/listOfElements.size()) );
+		System.out.println(std);
 		*/
+
+       	
+ 
+
 	}
 	
 

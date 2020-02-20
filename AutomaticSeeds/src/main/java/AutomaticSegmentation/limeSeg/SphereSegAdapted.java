@@ -142,7 +142,7 @@ public class SphereSegAdapted extends Thread implements Command {
         }
      
         
-		File dir = new File(path.toString()+"\\RoiSet");
+		File dir = new File(path.toString()+"\\datos\\RoiSet");
 		File[] listOfFiles = dir.listFiles();
         
 		int nRois=listOfFiles.length;
@@ -217,7 +217,7 @@ public class SphereSegAdapted extends Thread implements Command {
         LimeSeg.opt.setOptParam("k_grad",0.0f);
         LimeSeg.opt.setOptParam("normalForce",0);        
        	//LimeSeg.opt.setCUDAContext();
-       	LimeSeg.runOptimisation(100);// el comando runOptimisation determina los pasos que se dan hasta que se pare la segmentacion
+       	LimeSeg.runOptimisation(500);// el comando runOptimisation determina los pasos que se dan hasta que se pare la segmentacion, antes lo pusiste a 100 y salian cosas raras
        	//LimeSeg.stopOptimisation();
         LimeSeg.opt.requestResetDotsConvergence=true;
         LimeSeg.opt.setOptParam("k_grad",k_grad);
@@ -259,7 +259,12 @@ public class SphereSegAdapted extends Thread implements Command {
 //       												this.constructMesh);
 //       	}
        	
-       	LimeSeg.saveStateToXmlPly((path.toString()+"\\resultados"));
+       	/*
+       	File dir = new File("nameoffolder");
+       	dir.mkdir();
+       	*/
+       	System.out.println("SphereSegAdapted ha terminado");
+       	//LimeSeg.saveStateToXmlPly((path.toString()+"\\resultados"));
 	}
 
 	/**
@@ -434,7 +439,7 @@ public class SphereSegAdapted extends Thread implements Command {
 	
 	public void setImp2() {
 		
-		this.imp=FolderOpener.open(path.toString()+"\\ImageSequence");
+		this.imp=FolderOpener.open(path.toString()+"\\datos\\ImageSequence");
 	}
 
 	/**
