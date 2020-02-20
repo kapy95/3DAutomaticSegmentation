@@ -87,10 +87,11 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		*/
 		
 		//establezco el directorio de trabajo con las imágenes y roi
-		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
+		/*File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
 		evolutionary_algorithm ev=new evolutionary_algorithm();
 		ev.setDir(dir);
-		ev.PopulationGenerator(5);
+		ev.PopulationGenerator(5);*/
+		
 		/*
 		//llamo a la clase que va a llamar limeseg:
 		SphereSegAdapted seg=new SphereSegAdapted();
