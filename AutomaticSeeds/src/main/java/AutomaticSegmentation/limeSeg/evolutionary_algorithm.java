@@ -14,6 +14,8 @@ import java.util.TreeMap;
 import org.bridj.cpp.std.list;
 import org.python.modules.math;
 
+import com.google.common.base.Objects;
+
 import eu.kiaru.limeseg.LimeSeg;
 
 public class evolutionary_algorithm {
@@ -25,33 +27,44 @@ public class evolutionary_algorithm {
 	}
 	
 	public void MutationFunction(Map<Double,Integer> stdsWithResults,Integer nPoblacion) {
-		Double stdmin1=(Double) stdsWithResults.values().toArray()[0];
-		Double stdmin2=(Double) stdsWithResults.values().toArray()[1];
 		
-		Integer[]resultadosMin=null;
-		resultadosMin[0]=stdsWithResults.get(stdmin1);
-		resultadosMin[1]=stdsWithResults.get(stdmin2);
+		System.out.println(stdsWithResults.values().toArray());
+		System.out.println(stdsWithResults.values().toArray()[0]);
+		
+		Integer stdmin1=(Integer) stdsWithResults.values().toArray()[0];
+		Integer stdmin2=(Integer) stdsWithResults.values().toArray()[1];
+		
+		//Double[]resultadosMin=null;
+		//resultadosMin[0]=stdsWithResults.get(stdmin1);
+		//resultadosMin[1]=stdsWithResults.get(stdmin2);
 		
 		float min_fp=-0.03f; // variable con el valor de la presion [-0.03..0.03].
 		float min_d0=1;//d_0: 1 and >20 pixels.
 		float min_range_d0=0.5f;// from 0.5 to >10
 		
 		//factores por lo que se van multiplicando y sumando los valores d_0 y demás de cada poblacion
-		float factor_fp=(float) (0.06/nPoblacion);
-		float factor_d0=(float) (19/nPoblacion);
-		float factor_rangeD0= (float) (9.5f/nPoblacion);
+		float factor_fp=(float) (0.06f/(nPoblacion-1));
+		float factor_d0=(float) (19.0f/(nPoblacion-1));
+		float factor_rangeD0= (float) (9.5f/(nPoblacion-1));
 		
-		float fp=(float)(min_fp+(factor_fp*resultadosMin[0]));
-		float d0=(float)(min_d0+(factor_d0*resultadosMin[0]));
-		float range_d0=(float)(min_range_d0+(factor_rangeD0*resultadosMin[0]));
+		//individuo optimo 1:
+		float fp_individuo1=(float)(min_fp+(factor_fp*stdmin1));
+		float d0_individuo1=(float)(min_d0+(factor_d0*stdmin1));
+		float range_d0_individuo1=(float)(min_range_d0+(factor_rangeD0*stdmin1));
+
 		
+		//individuo optimo 2
+		float fp_individuo2=(float)(min_fp+(factor_fp*stdmin2));
+		float d0_individuo2=(float)(min_d0+(factor_d0*stdmin2));
+		float range_d0_individuo2=(float)(min_range_d0+(factor_rangeD0*stdmin2));
 		
-		
-		
+		System.out.println("D_0 primer individuo:" +d0_individuo1 +" D_0 segundo individuo:" +d0_individuo2);
+		System.out.println("F_pressure primer individuo:" +fp_individuo1+ " F_pressure segundo individuo:" +fp_individuo2);
+		System.out.println("Range_d0 primer individuo:" +range_d0_individuo1+ " Range_d0 segundo individuo:" +range_d0_individuo2);
 	}
 	
 	
-	public Map<Double,Integer> EvaluationFunction() {
+	public Map<Double,Integer> FitnessCalculation() {
 		
 		//mapa que relaciona la desviacion tipica con su segmentacion
 		 Map<Double,Integer> stdsWithResults= new TreeMap<Double,Integer>();//TreeMap porque va ordenando las claves de menor a mayor 
@@ -61,10 +74,11 @@ public class evolutionary_algorithm {
    
        	File[] listOfResults = resdir.listFiles();
        	System.out.println(listOfResults.length);
-       	//
+       	Integer j=0;
        	for(File result: listOfResults) {
        	
        		File[] listOfCells=result.listFiles();
+      
        	
        		ArrayList<Integer> listOfElements = new ArrayList<Integer>();
        	
@@ -86,9 +100,7 @@ public class evolutionary_algorithm {
 						   System.out.println(numberOfVertex);
 						}
 						in.close();
-						
-						System.out.println(numberOfVertex);
-						
+						System.out.println(Integer.parseInt(numberOfVertex));
 						listOfElements.add(Integer.parseInt(numberOfVertex));
 									
 					} catch (FileNotFoundException e) {
@@ -97,9 +109,10 @@ public class evolutionary_algorithm {
 					}
 				
 		       	}
-		       	
+		       	System.out.println(listOfElements.contains(null));
 		       	//hacer desviacion estandar de lisfOfElements y añadirla en el map de tal forma que sepamos que solución le corresponde
-		       	stdsWithResults.put(calculaSTD(listOfElements),i);
+		       	stdsWithResults.put(calculaSTD(listOfElements),j);
+		     	j++;
 		    	
        	}
        	//y cuando acabe pues devolver ese map
@@ -118,14 +131,14 @@ public class evolutionary_algorithm {
 		//0.2/5=0.004 asi aumento la diferencia por cada iteracion
 		
 		//factores por lo que se van multiplicando y sumando los valores d_0 y demás de cada poblacion
-		float factor_fp=(float) (0.06/nPoblacion);
-		float factor_d0=(float) (19/nPoblacion);
-		float factor_rangeD0= (float) (9.5f/nPoblacion);
+		float factor_fp=(float) (0.06/(nPoblacion-1));
+		float factor_d0=(float) (19.0f/(nPoblacion-1));//poner 19.0f
+		float factor_rangeD0= (float) (9.5f/(nPoblacion-1));
 		//IntStream.iterate(start, i -> i + 1).limit(limit).boxed().collect(Collectors.toList());
 		
 		int i;
 		
-		for(i=0;i<=nPoblacion;i++) {
+		for(i=0;i<=(nPoblacion-1);i++) {
 			
 			float fp=(float)(min_fp+(factor_fp*i));
 			float d0=(float)(min_d0+(factor_d0*i));
@@ -161,6 +174,7 @@ public class evolutionary_algorithm {
 	       	dirNuevo.mkdir();
 	       	LimeSeg.saveStateToXmlPly(dirNuevo.toString());
 	       	LimeSeg.clear3DDisplay();
+	       	LimeSeg.clearAllCells();
 	       	
 		}
 	}
@@ -174,7 +188,7 @@ public class evolutionary_algorithm {
 	
 	public ArrayList<String> fitnessEvaluation(ArrayList<Double> stds){
 		
-		ArrayList<String> mejoresParametros;
+		//ArrayList<String> mejoresParametros;
 		
 		return null;
 		
@@ -183,7 +197,7 @@ public class evolutionary_algorithm {
 	
 	public Double calculaSTD (ArrayList<Integer> elementosSegmentacion) {
 
-		Double std=null;
+		Double std=0d;
 		double media=0;
 		
 		for(Integer elementosCelulaSegmentada:elementosSegmentacion) {

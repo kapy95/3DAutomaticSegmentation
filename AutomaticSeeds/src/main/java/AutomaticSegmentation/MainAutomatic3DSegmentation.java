@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.python.modules.math;
@@ -87,26 +88,26 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		*/
 		
 		//establezco el directorio de trabajo con las imágenes y roi
-		/*File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
+		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
 		evolutionary_algorithm ev=new evolutionary_algorithm();
 		ev.setDir(dir);
-		ev.PopulationGenerator(5);*/
+		//ev.PopulationGenerator(5);
+		Map<Double,Integer> stdsWithResults=ev.FitnessCalculation();
+		ev.MutationFunction(stdsWithResults, 5);
 		
 		/*
 		//llamo a la clase que va a llamar limeseg:
+		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
 		SphereSegAdapted seg=new SphereSegAdapted();
 		seg.set_path(dir.toString());
-		seg.setD_0(5);
-		seg.setF_pressure((float) 0.02);
+		seg.setD_0(4.0f);
+		seg.setF_pressure(-0.018f);
 		seg.setZ_scale((float) 4.06);
-		seg.setRange_in_d0_units(2);
+		seg.setRange_in_d0_units(2.4f);
 		seg.start();//empieza a ejecutarse run del hilo de limeseg
 
-		
-		
 		long startTime = System.currentTimeMillis();
 		long endTime=0;
-		
 		
 		boolean cond=true;
 		while (seg.isAlive() && cond==true) {
@@ -117,15 +118,48 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 			if( ((endTime-startTime) /1000) >100) { //si el tiempo de ejecucion es mayor que 20 segundos corta?
 				cond=false;
 				System.out.println("PAM");
-				cond=false;
 				LimeSeg.stopOptimisation();
-				//LimeSeg.saveStateToXmlPly((seg.getPath().toString()+"\\resultados"));
+				LimeSeg.saveStateToXmlPly((seg.getPath().toString()+"\\resultados1"));
 				//seg.interrupt();
 			}
 
 		}
-		*/
+		LimeSeg.saveStateToXmlPly((seg.getPath().toString()+"\\resultados1"));
+       	LimeSeg.clear3DDisplay();
+       	LimeSeg.clearAllCells();
+		
+		SphereSegAdapted seg2=new SphereSegAdapted();
+		seg2.set_path(dir.toString());
+		seg2.setD_0(7.0f);
+		seg2.setF_pressure(-0.0059f);
+		seg2.setZ_scale((float) 4.06);
+		seg2.setRange_in_d0_units(4.3f);
+		seg2.start();//empieza a ejecutarse run del hilo de limeseg
+
+		long startTime2 = System.currentTimeMillis();
+		long endTime2=0;
+		
+		boolean cond2=true;
+		while (seg2.isAlive() && cond2==true) {
+			
+			endTime2= System.currentTimeMillis();
+			System.out.println((endTime2-startTime2) /1000);
+			
+			if( ((endTime2-startTime2) /1000) >100) { //si el tiempo de ejecucion es mayor que 20 segundos corta?
+				cond2=false;
+				System.out.println("PAM2");
+				LimeSeg.stopOptimisation();
+				LimeSeg.saveStateToXmlPly((seg.getPath().toString()+"\\resultados2"));
+				//seg.interrupt();
+			}
+
+		}
+		LimeSeg.stopOptimisation();
+		LimeSeg.saveStateToXmlPly((seg.getPath().toString()+"\\resultados2"));
+		
+		
 		/*
+		
 		System.out.println("El bucle ha terminado");
 		
        	File newdir =new File(dir.toString()+"\\resultados"+String.valueOf(1));
