@@ -35,25 +35,25 @@ public class evolutionary_algorithm {
 		
 	}
 	
-	public void MutationFunction(Map<Double,Integer> stdsWithResults,Integer nPoblacion) {
+	public void MutationFunction(Map<Double,Integer> stdsWithResults) {
 		
 		//Voy a borrar aquellos valores que no sean los dos más optimos. Los más óptimos permaneceran en la siguiente generación
-		
+		//stdsWithResults.values().toArray().length-1 es igual a la poblacion
 		System.out.println(stdsWithResults.values().toArray()[0]);
 		
 		Integer NumStdmin1=(Integer) stdsWithResults.values().toArray()[0];
 		Integer NumStdmin2=(Integer) stdsWithResults.values().toArray()[1];
 		
-		Integer[]mejoresSoluciones = {NumStdmin1,NumStdmin2} ;
+		Integer[] mejoresSoluciones = {NumStdmin1,NumStdmin2} ;
 		
 		float min_fp=-0.03f; // variable con el valor de la presion [-0.03..0.03].
 		float min_d0=1;//d_0: 1 and >20 pixels.
 		float min_range_d0=0.5f;// from 0.5 to >10
 		
 		//factores por lo que se van multiplicando y sumando los valores d_0 y demás de cada poblacion
-		float factor_fp=(float) (0.06f/(nPoblacion-1));
-		float factor_d0=(float) (19.0f/(nPoblacion-1));
-		float factor_rangeD0= (float) (9.5f/(nPoblacion-1));
+		float factor_fp=(float) (0.06f/(stdsWithResults.values().toArray().length-1));
+		float factor_d0=(float) (19.0f/(stdsWithResults.values().toArray().length-1));
+		float factor_rangeD0= (float) (9.5f/(stdsWithResults.values().toArray().length-1));
 		
 		//individuo optimo 1:
 		float fp_individuo1=(float)(min_fp+(factor_fp*NumStdmin1));
@@ -65,16 +65,18 @@ public class evolutionary_algorithm {
 		float fp_individuo2=(float)(min_fp+(factor_fp*NumStdmin2));
 		float d0_individuo2=(float)(min_d0+(factor_d0*NumStdmin2));
 		float range_d0_individuo2=(float)(min_range_d0+(factor_rangeD0*NumStdmin2));
-		
+		/*
 		System.out.println("D_0 primer individuo:" +d0_individuo1 +" D_0 segundo individuo:" +d0_individuo2);
 		System.out.println("F_pressure primer individuo:" +fp_individuo1+ " F_pressure segundo individuo:" +fp_individuo2);
 		System.out.println("Range_d0 primer individuo:" +range_d0_individuo1+ " Range_d0 segundo individuo:" +range_d0_individuo2);
+		*/
 		
 		//Borrar otros candidatos:
 		File resdir =new File(dir.toString()+"\\resultados");// path de los resultados
        	File[] listOfResults = resdir.listFiles();
-       	File dirMejorSolucion0= new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(mejoresSoluciones[0]));
-       	File dirMejorSolucion1= new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(mejoresSoluciones[1]));
+
+       	File dirMejorSolucion0=listOfResults[mejoresSoluciones[0]];
+       	File dirMejorSolucion1=listOfResults[mejoresSoluciones[1]];
        	
        	for(File result:listOfResults) {
        		//Si el directorio es distinto al de la mejor solucion 0 y 1 se borra

@@ -93,19 +93,18 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		ev.setDir(dir);
 		
 		//Primera poblacion
-		//ev.PopulationGenerator(5,0);
+		ev.PopulationGenerator(50,0);
 		Map<Double,Integer> stdsWithResults=ev.FitnessCalculation();
-		ev.MutationFunction(stdsWithResults, 5);
-		
-		
+		ev.MutationFunction(stdsWithResults);
+	
 		int i;
-		//empezamos en 2 porque la poblacion inicial ya se ha calculado
+		//empezamos en 1 porque la poblacion inicial no contaría como una iteración del algoritmo
 		
-		for(i=2;i<=200;i++) {
+		for(i=1;i<=200;i++) {
 			
-			ev.PopulationGenerator(100,i);
+			ev.PopulationGenerator(50,i);
 			stdsWithResults=ev.FitnessCalculation();
-			ev.MutationFunction(stdsWithResults, 100);
+			ev.MutationFunction(stdsWithResults);
 			
 		}
 		
