@@ -91,9 +91,23 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
 		evolutionary_algorithm ev=new evolutionary_algorithm();
 		ev.setDir(dir);
-		//ev.PopulationGenerator(5);
+		
+		//Primera poblacion
+		//ev.PopulationGenerator(5,0);
 		Map<Double,Integer> stdsWithResults=ev.FitnessCalculation();
 		ev.MutationFunction(stdsWithResults, 5);
+		
+		
+		int i;
+		//empezamos en 2 porque la poblacion inicial ya se ha calculado
+		
+		for(i=2;i<=200;i++) {
+			
+			ev.PopulationGenerator(100,i);
+			stdsWithResults=ev.FitnessCalculation();
+			ev.MutationFunction(stdsWithResults, 100);
+			
+		}
 		
 		/*
 		//llamo a la clase que va a llamar limeseg:

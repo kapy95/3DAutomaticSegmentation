@@ -4,17 +4,25 @@ import java.awt.List;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import org.bridj.cpp.std.list;
 import org.python.modules.math;
 
 import com.google.common.base.Objects;
+
 
 import eu.kiaru.limeseg.LimeSeg;
 
@@ -24,19 +32,19 @@ public class evolutionary_algorithm {
 
 	public static void main(String[] args) {
 		
+		
 	}
 	
 	public void MutationFunction(Map<Double,Integer> stdsWithResults,Integer nPoblacion) {
 		
-		System.out.println(stdsWithResults.values().toArray());
+		//Voy a borrar aquellos valores que no sean los dos más optimos. Los más óptimos permaneceran en la siguiente generación
+		
 		System.out.println(stdsWithResults.values().toArray()[0]);
 		
-		Integer stdmin1=(Integer) stdsWithResults.values().toArray()[0];
-		Integer stdmin2=(Integer) stdsWithResults.values().toArray()[1];
+		Integer NumStdmin1=(Integer) stdsWithResults.values().toArray()[0];
+		Integer NumStdmin2=(Integer) stdsWithResults.values().toArray()[1];
 		
-		//Double[]resultadosMin=null;
-		//resultadosMin[0]=stdsWithResults.get(stdmin1);
-		//resultadosMin[1]=stdsWithResults.get(stdmin2);
+		Integer[]mejoresSoluciones = {NumStdmin1,NumStdmin2} ;
 		
 		float min_fp=-0.03f; // variable con el valor de la presion [-0.03..0.03].
 		float min_d0=1;//d_0: 1 and >20 pixels.
@@ -48,19 +56,47 @@ public class evolutionary_algorithm {
 		float factor_rangeD0= (float) (9.5f/(nPoblacion-1));
 		
 		//individuo optimo 1:
-		float fp_individuo1=(float)(min_fp+(factor_fp*stdmin1));
-		float d0_individuo1=(float)(min_d0+(factor_d0*stdmin1));
-		float range_d0_individuo1=(float)(min_range_d0+(factor_rangeD0*stdmin1));
+		float fp_individuo1=(float)(min_fp+(factor_fp*NumStdmin1));
+		float d0_individuo1=(float)(min_d0+(factor_d0*NumStdmin1));
+		float range_d0_individuo1=(float)(min_range_d0+(factor_rangeD0*NumStdmin1));
 
 		
 		//individuo optimo 2
-		float fp_individuo2=(float)(min_fp+(factor_fp*stdmin2));
-		float d0_individuo2=(float)(min_d0+(factor_d0*stdmin2));
-		float range_d0_individuo2=(float)(min_range_d0+(factor_rangeD0*stdmin2));
+		float fp_individuo2=(float)(min_fp+(factor_fp*NumStdmin2));
+		float d0_individuo2=(float)(min_d0+(factor_d0*NumStdmin2));
+		float range_d0_individuo2=(float)(min_range_d0+(factor_rangeD0*NumStdmin2));
 		
 		System.out.println("D_0 primer individuo:" +d0_individuo1 +" D_0 segundo individuo:" +d0_individuo2);
 		System.out.println("F_pressure primer individuo:" +fp_individuo1+ " F_pressure segundo individuo:" +fp_individuo2);
 		System.out.println("Range_d0 primer individuo:" +range_d0_individuo1+ " Range_d0 segundo individuo:" +range_d0_individuo2);
+		
+		//Borrar otros candidatos:
+		File resdir =new File(dir.toString()+"\\resultados");// path de los resultados
+       	File[] listOfResults = resdir.listFiles();
+       	File dirMejorSolucion0= new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(mejoresSoluciones[0]));
+       	File dirMejorSolucion1= new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(mejoresSoluciones[1]));
+       	
+       	for(File result:listOfResults) {
+       		//Si el directorio es distinto al de la mejor solucion 0 y 1 se borra
+       		if(result.equals(dirMejorSolucion0)==false && result.equals(dirMejorSolucion1)==false ){
+       			
+       			Stream<Path> archivos;
+       			//la sentencia try y catch es obligatoria
+				try {
+					//forma de borrar directorios enteros:
+					archivos = Files.walk(Paths.get(result.toString()));
+					archivos.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+       			
+       			
+       		}
+       		
+       	}
+		
 	}
 	
 	
@@ -97,7 +133,7 @@ public class evolutionary_algorithm {
 						//el numero de elementos siempre va antes que la primera propiedad, por tanto si la siguiente linea es property no debe entrar ya que tenemos el numero
 						while(in.hasNext("property")==false) {
 						   numberOfVertex =in.next().toString();
-						   System.out.println(numberOfVertex);
+						   //System.out.println(numberOfVertex);
 						}
 						in.close();
 						System.out.println(Integer.parseInt(numberOfVertex));
@@ -121,7 +157,8 @@ public class evolutionary_algorithm {
 	}
 	
 	
-	public void PopulationGenerator(Integer nPoblacion) {
+	public void PopulationGenerator(Integer nPoblacion,int iter) {
+		 //la variable iter se utiliza para generar nombres distintos a los resultados
 		
 		//valores mínimos:
 		float ZS=4.06f;// variable con el valor del z_scale
@@ -170,7 +207,7 @@ public class evolutionary_algorithm {
 			}
 		
 			System.out.println("Ha salido del while");
-	       	File dirNuevo= new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i));
+	       	File dirNuevo= new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter));
 	       	dirNuevo.mkdir();
 	       	LimeSeg.saveStateToXmlPly(dirNuevo.toString());
 	       	LimeSeg.clear3DDisplay();
@@ -197,12 +234,17 @@ public class evolutionary_algorithm {
 	
 	public Double calculaSTD (ArrayList<Integer> elementosSegmentacion) {
 
+		System.out.println(elementosSegmentacion.contains(null));
 		Double std=0d;
 		double media=0;
+		double sum = elementosSegmentacion.stream().mapToDouble(a -> a).sum();
 		
 		for(Integer elementosCelulaSegmentada:elementosSegmentacion) {
 			media+=elementosCelulaSegmentada;
 		}
+		
+		System.out.println(media);
+		System.out.println(sum);
 		
 		media=media/elementosSegmentacion.size();
 		
