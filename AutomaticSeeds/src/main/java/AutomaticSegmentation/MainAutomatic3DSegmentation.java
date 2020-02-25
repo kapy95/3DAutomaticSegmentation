@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 import org.python.modules.math;
 
@@ -20,6 +21,7 @@ import org.python.modules.math;
 //import javax.swing.SwingUtilities;
 
 import AutomaticSegmentation.gui.MainWindow;
+import AutomaticSegmentation.limeSeg.Individuo;
 import AutomaticSegmentation.limeSeg.SphereSegAdapted;
 import AutomaticSegmentation.limeSeg.evolutionary_algorithm;
 import eu.kiaru.limeseg.LimeSeg;
@@ -33,7 +35,6 @@ import ij.plugin.PlugIn;
  *
  */
 public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
-
 	/**
 	 * 
 	 */
@@ -88,13 +89,13 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		*/
 		
 		//establezco el directorio de trabajo con las imágenes y roi
-		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
+		File dir = new File("C:\\Users\\Carlo\\Desktop\\Máster\\TFM");
 		evolutionary_algorithm ev=new evolutionary_algorithm();
 		ev.setDir(dir);
 		
 		//Primera poblacion
-		ev.PopulationGenerator(50,0);
-		Map<Double,Integer> stdsWithResults=ev.FitnessCalculation();
+		//ev.PopulationGenerator(10,0);
+		TreeMap<Double,Individuo> stdsWithResults=ev.FitnessCalculation();
 		ev.MutationFunction(stdsWithResults);
 	
 		int i;
