@@ -1,6 +1,7 @@
 /**
  * AutomaticSegmentation
  */
+
 package AutomaticSegmentation;
 
 
@@ -89,23 +90,24 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		*/
 		
 		//establezco el directorio de trabajo con las imágenes y roi
-		File dir = new File("C:\\Users\\Carlo\\Desktop\\Máster\\TFM");
+		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
+		System.out.println(dir.exists());
 		evolutionary_algorithm ev=new evolutionary_algorithm();
 		ev.setDir(dir);
 		
 		//Primera poblacion
-		//ev.PopulationGenerator(10,0);
-		TreeMap<Double,Individuo> stdsWithResults=ev.FitnessCalculation();
-		ev.MutationFunction(stdsWithResults);
+		ev.InitialPopulationGenerator(100,0);
+		ev.FitnessCalculation();
+		ev.MutationFunction();
 	
 		int i;
 		//empezamos en 1 porque la poblacion inicial no contaría como una iteración del algoritmo
 		
 		for(i=1;i<=200;i++) {
 			
-			ev.PopulationGenerator(50,i);
-			stdsWithResults=ev.FitnessCalculation();
-			ev.MutationFunction(stdsWithResults);
+			//ev.PopulationGenerator(50,i);
+			ev.FitnessCalculation();
+			ev.MutationFunction();
 			
 		}
 		

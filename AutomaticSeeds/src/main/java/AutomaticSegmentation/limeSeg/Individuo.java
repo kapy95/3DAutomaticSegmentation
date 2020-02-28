@@ -9,7 +9,7 @@ public class Individuo {
 	private File dir;
 	private Double stdVertex; //standard deviation of the objects of the cells 
 	private Double meanVertex; //mean of the objects of the cells
-	private Double score;
+	public Double score;
 	
 	/**
 	 * 

@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -42,10 +43,40 @@ public class evolutionary_algorithm {
 	}
 
 	
-	public void MutationFunction(TreeMap<Double,Individuo> stdsWithResults) {
+	public void MutationFunction() {
+		
+		//ordeno los individos segun el score y obtengo los genes de los 5 primeros?
+		//poblacion.sort(Comparator.comparingDouble(Individuo::score));
+		/*
+		 Collections.sort(poblacion, new Comparator<Individuo>() {
+			public int compare(Individuo i1, Individuo i2) {
+
+				return i1.getScore().compareTo(i2.getScore());
+			}
+        });
+        */
+		 
+		Individuo[] bestIndividuals=(Individuo[]) poblacion.stream().filter(ind-> ind.getScore()>75).toArray();
+		
+		Arrays.sort(bestIndividuals, new Comparator<Individuo>() {
+				public int compare(Individuo i1, Individuo i2) {
+
+					return i1.getStdVertex().compareTo(i2.getStdVertex());
+				}
+	        });
+		
+	
+		
+		
+		
+		
+		//Ahora tendría que obtener una serie de posiciones:
+		//poblacion.get()
+		 
 		
 		//Voy a borrar aquellos valores que no sean los dos más optimos. Los más óptimos permaneceran en la siguiente generación
 		//stdsWithResults.values().toArray().length-1 es igual a la poblacion
+		/*
 		System.out.println(stdsWithResults.values().toArray()[0]);
 		
 		Individuo[] scoresOrdered = (Individuo[]) stdsWithResults.values().toArray();
@@ -53,27 +84,16 @@ public class evolutionary_algorithm {
 		Individuo best2=scoresOrdered[1];
 		
 		System.out.println("aaaaaaaaaaaa");
+		*/
+		System.out.println("aaaaaaaaaaaa");
 		
 	}
 	
-	
-	/**
-	 * @param dir
-	 * @param poblacion
-	 */
-	public evolutionary_algorithm(File dir, ArrayList<Individuo> poblacion) {
-		super();
-		this.dir = dir;
-		this.poblacion = poblacion;
-	}
 
 
-
-
-	public TreeMap<Double,Individuo> FitnessCalculation() {
+	public void FitnessCalculation() {
 		
-		//mapa que relaciona la desviacion tipica con su segmentacion
-		TreeMap<Double,Individuo> scoresWithIndividuals= new TreeMap<Double,Individuo>();//TreeMap porque va ordenando las claves de menor a mayor 
+		//mapa que relaciona la desviacion tipica con su segmentacion 
 			
 		//ArrayList<Double> stds = new ArrayList<Double>();//standard deviations
 		ArrayList<Double> globalMeanCellObjects= new ArrayList<Double>();
@@ -117,6 +137,7 @@ public class evolutionary_algorithm {
 		       	}
 		       	
 		       	
+		       	System.out.println("a");
 		       	mean=(double) (listOfElements.stream().mapToInt(Integer::intValue).sum()/listOfElements.size());
 		       	res.setMeanVertex(mean);
 		       	globalMeanCellObjects.add(mean);
@@ -126,7 +147,9 @@ public class evolutionary_algorithm {
 		       	globalMeanStdObjects.add(std);
 		    	
        	}
+	
        	
+	
        	Double globalStd=globalMeanStdObjects.stream().mapToDouble(Double::doubleValue).sum()/globalMeanStdObjects.size();
        	Double globalMean=globalMeanCellObjects.stream().mapToDouble(Double::doubleValue).sum()/globalMeanCellObjects.size();
        	
@@ -166,19 +189,18 @@ public class evolutionary_algorithm {
        			
        			res.setScore(res.getScore()-50);
        		}
-       		
-       		scoresWithIndividuals.put(res.getScore(), res);
        	}
-       	
-		return scoresWithIndividuals; 
+      
        
 	}
 	
 	
-	public void PopulationGenerator(Integer nPoblacion,int iter) {
+	public void InitialPopulationGenerator(Integer nPoblacion,int iter) {
 		 //la variable iter se utiliza para generar nombres distintos a los resultados, y saber en que generacion estamos
 		//si la generacion es la inicial se inicia con un rango determinado por la poblacion deseada:
-			if(iter==0) {
+		
+		//para generar valores aleatorias sería así: int randomInt = (int)(10.0 * Math.random());
+		//con math.random generamos valores del 0.0 al 1.0 y eso habría que multiplicarlo por el máximo de los valores de limeseg
 			//valores mínimos:
 			float ZS=4.06f;// variable con el valor del z_scale
 			float min_fp=-0.03f; // variable con el valor de la presion [-0.03..0.03].
@@ -197,7 +219,6 @@ public class evolutionary_algorithm {
 			for(i=0;i<=(nPoblacion-1);i++) {
 				
 				Individuo ind=new Individuo();
-				System.out.println("ha vuelto al for");
 				ind.setF_pressure((float)(min_fp+(factor_fp*i)) );
 				ind.setD0((float)(min_d0+(factor_d0*i)));
 				ind.setRange_d0( (float)(min_range_d0+(factor_rangeD0*i)));
@@ -237,7 +258,7 @@ public class evolutionary_algorithm {
 		       	
 		       	poblacion.add(ind);
 			}
-		}
+		
 	}
 	
 	
@@ -245,14 +266,6 @@ public class evolutionary_algorithm {
 		//establezco el directorio de trabajo con las imágenes y roi
 		//File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
 		this.dir=directorio;
-	}
-	
-	public ArrayList<String> fitnessEvaluation(ArrayList<Double> stds){
-		
-		//ArrayList<String> mejoresParametros;
-		
-		return null;
-		
 	}
 	
 	

@@ -94,7 +94,7 @@ public class SphereSegAdapted extends Thread implements Command {
 	public void run() {
 		
 		this.setImp2();
-		this.setLimeSeg();
+		setLimeSeg();
 		//RoiManager roiManager = RoiManager.getRoiManager();
 		
 		//roiManager
@@ -135,8 +135,9 @@ public class SphereSegAdapted extends Thread implements Command {
         	imp = IJ.openImage();
         */	
 		
-		
+		System.out.println(imp.getChannel());
         LimeSeg.currentChannel = imp.getChannel();
+        
         if (sameCell) {
         	LimeSeg.newCell();
         }
@@ -439,7 +440,7 @@ public class SphereSegAdapted extends Thread implements Command {
 	
 	public void setImp2() {
 		
-		this.imp=FolderOpener.open(path.toString()+"\\datos\\ImageSequence");
+		this.imp=FolderOpener.open(path.toString()+"\\Datos\\ImageSequence");
 	}
 
 	/**
