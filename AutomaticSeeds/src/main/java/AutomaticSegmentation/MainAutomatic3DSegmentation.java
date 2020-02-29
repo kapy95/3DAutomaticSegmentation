@@ -96,7 +96,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		ev.setDir(dir);
 		
 		//Primera poblacion
-		ev.InitialPopulationGenerator(100,0);
+		ev.InitialPopulationGenerator(10,0);
 		ev.FitnessCalculation();
 		ev.MutationFunction();
 	

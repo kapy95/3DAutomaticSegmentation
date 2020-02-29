@@ -251,7 +251,7 @@ public class SphereSegAdapted extends Thread implements Command {
        	   	for (CellT ct : currentlyOptimizedCellTs) {
        	   		LimeSeg.addToOverlay(ct);
        	   	}
-       	   	LimeSeg.updateOverlay();
+       	   	LimeSeg.updateOverlay(); //error aqui de concurrentmodificationException
        	}
        	
 //       	if (appendMeasures) {
