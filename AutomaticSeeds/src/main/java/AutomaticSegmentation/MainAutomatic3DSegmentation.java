@@ -91,12 +91,11 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		
 		//establezco el directorio de trabajo con las imágenes y roi
 		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
-		System.out.println(dir.exists());
 		evolutionary_algorithm ev=new evolutionary_algorithm();
 		ev.setDir(dir);
 		
 		//Primera poblacion
-		ev.InitialPopulationGenerator(10,0);
+		ev.InitialPopulationGenerator(100,0);
 		ev.FitnessCalculation();
 		ev.MutationFunction();
 	

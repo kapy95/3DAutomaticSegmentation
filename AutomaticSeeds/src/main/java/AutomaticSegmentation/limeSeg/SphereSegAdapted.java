@@ -135,7 +135,7 @@ public class SphereSegAdapted extends Thread implements Command {
         	imp = IJ.openImage();
         */	
 		
-		System.out.println(imp.getChannel());
+		//System.out.println(imp.getChannel());
         LimeSeg.currentChannel = imp.getChannel();
         
         if (sameCell) {
@@ -202,18 +202,11 @@ public class SphereSegAdapted extends Thread implements Command {
     	if (show3D) {
 
     		LimeSeg.make3DViewVisible();
-    		LimeSeg.putAllCellsTo3DDisplay();//es aqui donde peta
+    		LimeSeg.putAllCellsTo3DDisplay();
     		LimeSeg.set3DViewCenter(avgX/NCells,avgY/NCells,avgZ/NCells);
     		
     	}
-    	/*
-		long start = System.nanoTime();    
-	    methodToTime();
-	    	long elapsedTime = System.nanoTime() - start;
-	    	System.out.println(elapsedTime);
-	    	/*if(elapsedTime) {
-	    	LimeSeg.stopOptimisation();
-	    	}*/
+    	
  	    float k_grad=(float) LimeSeg.opt.getOptParam("k_grad");
         LimeSeg.opt.setOptParam("k_grad",0.0f);
         LimeSeg.opt.setOptParam("normalForce",0);        

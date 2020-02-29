@@ -68,7 +68,14 @@ public class evolutionary_algorithm {
 			
 			int i;
 			
+			
+			
 			for(i=0;i<=(nPoblacion-1);i++) {
+				
+				SphereSegAdapted seg=new SphereSegAdapted();
+				
+				
+				System.out.println(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter));
 				
 				Individuo ind=new Individuo();
 				ind.setF_pressure((float)(min_fp+(factor_fp*i)) );
@@ -76,7 +83,7 @@ public class evolutionary_algorithm {
 				ind.setRange_d0( (float)(min_range_d0+(factor_rangeD0*i)));
 				
 				//llamo a la clase que va a llamar limeseg:
-				SphereSegAdapted seg=new SphereSegAdapted();
+				
 				seg.set_path(dir.toString());
 				seg.setD_0(ind.getD0());
 				seg.setF_pressure(ind.getFp());
@@ -89,9 +96,10 @@ public class evolutionary_algorithm {
 				
 				boolean cond=true;
 				
+				
 				while (seg.isAlive() && cond==true) {
 					endTime= System.currentTimeMillis();
-					//System.out.println((endTime-startTime) /1000);
+					//System.out.println((endTime-startTime) /1000); print("\r")
 					
 					if( ((endTime-startTime) /1000) >100) { //si el tiempo de ejecucion es mayor que 100 segundos
 						cond=false;
@@ -108,6 +116,7 @@ public class evolutionary_algorithm {
 		       	LimeSeg.clear3DDisplay();
 		       	LimeSeg.clearAllCells();
 		       	
+		       	//seg.interrupt();
 		       	poblacion.add(ind);
 			}
 		
@@ -343,6 +352,7 @@ public class evolutionary_algorithm {
 				//but first the previous population must be deleted:
 				this.deletePopulation();
 				
+				//hay que cambiar este for para que sea para cada valor de los arrays random de arriba
 				for(i=0;i<=(nPoblacion-1);i++) {
 					
 					Individuo ind=new Individuo();
