@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -89,7 +90,8 @@ public class evolutionary_algorithm {
 				seg.setF_pressure(ind.getFp());
 				seg.setZ_scale(ZS);
 				seg.setRange_in_d0_units(ind.getRange_d0());
-				seg.start();//empieza a ejecutarse run del hilo de limeseg
+				try {
+				seg.start();//empieza a ejecutarse la función run del hilo de limeseg
 				
 				long startTime = System.currentTimeMillis();
 				long endTime=0;
@@ -102,6 +104,7 @@ public class evolutionary_algorithm {
 					//System.out.println((endTime-startTime) /1000); print("\r")
 					
 					if( ((endTime-startTime) /1000) >100) { //si el tiempo de ejecucion es mayor que 100 segundos
+						System.out.println("PAM");
 						cond=false;
 						LimeSeg.stopOptimisation();
 					}
@@ -113,8 +116,15 @@ public class evolutionary_algorithm {
 		       	//dirNuevo.mkdir();
 				ind.getDir().mkdir();//it creates the directory for that individual
 		       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
+		       	}
+				
+				catch(ConcurrentModificationException c) {
+					ind=null;
+		       	}
 		       	LimeSeg.clear3DDisplay();
 		       	LimeSeg.clearAllCells();
+		       	
+		       	System.out.println("Ha terminado una iteración del for");
 		       	
 		       	//seg.interrupt();
 		       	poblacion.add(ind);

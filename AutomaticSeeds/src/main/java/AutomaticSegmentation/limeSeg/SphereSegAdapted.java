@@ -1,9 +1,11 @@
 package AutomaticSegmentation.limeSeg;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.concurrent.TimeUnit;
 
 import org.scijava.command.Command;
@@ -223,7 +225,12 @@ public class SphereSegAdapted extends Thread implements Command {
         }
         
         
-        LimeSeg.runOptimisation(numberOfIntegrationStep);
+        try{LimeSeg.runOptimisation(numberOfIntegrationStep);
+        }catch(ConcurrentModificationException e) {
+        	
+        	LimeSeg.runOptimisation(numberOfIntegrationStep);
+        }
+        
         if (RadiusDeltaChanged) {
         	LimeSeg.opt.setOptParam("radiusDelta", 0);
         }
