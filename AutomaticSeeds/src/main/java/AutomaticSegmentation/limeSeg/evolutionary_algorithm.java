@@ -69,58 +69,38 @@ public class evolutionary_algorithm {
 			
 			int i;
 			
-			
+			SphereSegAdapted seg=new SphereSegAdapted();
+			seg.set_path(dir.toString());
+			seg.setImp2();
 			
 			for(i=0;i<=(nPoblacion-1);i++) {
-				
-				SphereSegAdapted seg=new SphereSegAdapted();
-				
 				
 				System.out.println(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter));
 				
 				Individuo ind=new Individuo();
+				stopLimeSeg sls= new stopLimeSeg();
+				
 				ind.setF_pressure((float)(min_fp+(factor_fp*i)) );
 				ind.setD0((float)(min_d0+(factor_d0*i)));
 				ind.setRange_d0( (float)(min_range_d0+(factor_rangeD0*i)));
 				
 				//llamo a la clase que va a llamar limeseg:
 				
-				seg.set_path(dir.toString());
+				
 				seg.setD_0(ind.getD0());
 				seg.setF_pressure(ind.getFp());
 				seg.setZ_scale(ZS);
 				seg.setRange_in_d0_units(ind.getRange_d0());
-				try {
-				seg.start();//empieza a ejecutarse la función run del hilo de limeseg
 				
-				long startTime = System.currentTimeMillis();
-				long endTime=0;
-				
-				boolean cond=true;
-				
-				
-				while (seg.isAlive() && cond==true) {
-					endTime= System.currentTimeMillis();
-					//System.out.println((endTime-startTime) /1000); print("\r")
-					
-					if( ((endTime-startTime) /1000) >100) { //si el tiempo de ejecucion es mayor que 100 segundos
-						System.out.println("PAM");
-						cond=false;
-						LimeSeg.stopOptimisation();
-					}
-	
-				}
+				sls.start();//empieza a ejecutarse la función run del hilo de stopLimeSeg
+				seg.run();
 			
-				System.out.println("Ha salido del while");
+
 				ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 		       	//dirNuevo.mkdir();
 				ind.getDir().mkdir();//it creates the directory for that individual
 		       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
-		       	}
-				
-				catch(ConcurrentModificationException c) {
-					ind=null;
-		       	}
+		       	
 		       	LimeSeg.clear3DDisplay();
 		       	LimeSeg.clearAllCells();
 		       	
@@ -377,23 +357,11 @@ public class evolutionary_algorithm {
 					seg.setF_pressure(ind.getFp());
 					seg.setZ_scale(ZS);
 					seg.setRange_in_d0_units(ind.getRange_d0());
-					seg.start();//empieza a ejecutarse run del hilo de limeseg
 					
-					long startTime = System.currentTimeMillis();
-					long endTime=0;
+					stopLimeSeg sls= new stopLimeSeg();
 					
-					boolean cond=true;
-					
-					while (seg.isAlive() && cond==true) {
-						endTime= System.currentTimeMillis();
-						//System.out.println((endTime-startTime) /1000);
-						
-						if( ((endTime-startTime) /1000) >100) { //si el tiempo de ejecucion es mayor que 100 segundos
-							cond=false;
-							LimeSeg.stopOptimisation();
-						}
-		
-					}
+					seg.run();//empieza a ejecutarse run
+				
 				
 					System.out.println("Ha salido del while");
 					ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));

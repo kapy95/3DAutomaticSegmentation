@@ -35,7 +35,7 @@ import ij.plugin.FolderOpener;
  *
  */
 @Plugin(type = Command.class, menuPath = "Plugins>LimeSeg>Sphere Seg (Advanced)")
-public class SphereSegAdapted extends Thread implements Command {
+public class SphereSegAdapted implements Command {
 	
 	protected Path path;
 
@@ -95,7 +95,7 @@ public class SphereSegAdapted extends Thread implements Command {
 	@Override
 	public void run() {
 		
-		this.setImp2();
+		//this.setImp2();
 		setLimeSeg();
 		//RoiManager roiManager = RoiManager.getRoiManager();
 		
