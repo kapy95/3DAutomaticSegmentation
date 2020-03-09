@@ -287,6 +287,10 @@ public class evolutionary_algorithm {
 	
 	public void NewPopulationGenerator(int iter, Individuo[] bestRandomIndividuals) {
 		
+			//the folder for the new individuals is created
+			File newres=new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(iter));
+			newres.mkdir();
+			
 			//only Zscale has the same value for the new generations:
 			float ZS=4.06f;// variable con el valor del z_scale
 			
@@ -418,7 +422,7 @@ public class evolutionary_algorithm {
 					}
 				
 					System.out.println("Ha salido del while");
-					ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
+					ind.setDir(new File(newres.toString()+String.valueOf(i)+String.valueOf(iter)));
 			       	//dirNuevo.mkdir();
 					ind.getDir().mkdir();//it creates the directory for that individual
 			       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual

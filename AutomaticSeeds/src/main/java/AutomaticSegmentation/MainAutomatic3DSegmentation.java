@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
@@ -92,7 +93,25 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		//establezco el directorio de trabajo con las imágenes y roi
 		//File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
 		File dir = new File("E:\\TFM");
+		/*
+		Individuo i1=new Individuo();
+		i1.setScore(15.0d);
 		
+		Individuo i2=new Individuo();
+		i2.setScore(16.0d);
+		
+		Individuo i3=new Individuo();
+		i3.setScore(17.0d);
+		
+		ArrayList<Individuo> prueba=new ArrayList<Individuo>(Arrays.asList(i1,i2, i3));
+		Object[] prueba2= prueba.stream().filter(ind-> ind.getScore()>15).toArray();
+		ArrayList<Individuo>prueba3= new ArrayList<Individuo>();
+		
+		for(Object o:prueba2) {
+			
+			prueba3.add(Individuo.class.cast(o));
+		}
+		*/
 		evolutionary_algorithm ev=new evolutionary_algorithm();
 		ev.setDir(dir);
 		
