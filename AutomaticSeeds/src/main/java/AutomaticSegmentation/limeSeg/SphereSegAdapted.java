@@ -35,7 +35,7 @@ import ij.plugin.FolderOpener;
  *
  */
 @Plugin(type = Command.class, menuPath = "Plugins>LimeSeg>Sphere Seg (Advanced)")
-public class SphereSegAdapted implements Command {
+public class SphereSegAdapted extends Thread implements Command {
 	
 	protected Path path;
 
@@ -90,13 +90,16 @@ public class SphereSegAdapted implements Command {
 	@Parameter(persist=true)
 	protected boolean stallDotsPreviouslyInOptimizer=false;
 	
-	protected LimeSeg lms;
+	private LimeSeg lms;
+	
+	private static Object cerradura;
 	
 	@Override
 	public void run() {
 		
-		//this.setImp2();
-		setLimeSeg();
+		//synchronized(cerradura) {
+		this.setImp2();
+		this.setLimeSeg();
 		//RoiManager roiManager = RoiManager.getRoiManager();
 		
 		//roiManager
@@ -225,11 +228,7 @@ public class SphereSegAdapted implements Command {
         }
         
         
-        try{LimeSeg.runOptimisation(numberOfIntegrationStep);
-        }catch(ConcurrentModificationException e) {
-        	
-        	LimeSeg.runOptimisation(numberOfIntegrationStep);
-        }
+        LimeSeg.runOptimisation(numberOfIntegrationStep);
         
         if (RadiusDeltaChanged) {
         	LimeSeg.opt.setOptParam("radiusDelta", 0);
