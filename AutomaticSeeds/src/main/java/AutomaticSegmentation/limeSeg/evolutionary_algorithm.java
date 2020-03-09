@@ -96,15 +96,14 @@ public class evolutionary_algorithm {
 				long startTime = System.currentTimeMillis();
 				long endTime=0;
 				
-				boolean cond=true;
 				
-				while (seg.isAlive() && cond==true) {
+				while (seg.isAlive()) {
 					endTime= System.currentTimeMillis();
 					System.out.println((endTime-startTime) /1000);
 					
-					if( ((endTime-startTime) /1000) >120) { //si el tiempo de ejecucion es mayor que 100 segundos
+					if( ((endTime-startTime) /1000) >60) { //si el tiempo de ejecucion es mayor que 100 segundos
 						System.out.println("PAM");
-						cond=false;
+						
 						LimeSeg.stopOptimisation();
 						}
 					}
@@ -137,8 +136,7 @@ public class evolutionary_algorithm {
 	
 	
 	public void FitnessCalculation() {
-		
-		//mapa que relaciona la desviacion tipica con su segmentacion 
+	
 			
 		//ArrayList<Double> stds = new ArrayList<Double>();//standard deviations
 		ArrayList<Double> globalMeanCellObjects= new ArrayList<Double>();
@@ -253,7 +251,7 @@ public class evolutionary_algorithm {
 		
 		for(Object o:bestIndividuals1) {
 			
-			bestIndividuals2.add((Individuo) o);
+			bestIndividuals2.add(Individuo.class.cast(o));
 		}
 		
 		
@@ -287,7 +285,7 @@ public class evolutionary_algorithm {
 	}
 	
 	
-	public void NewPopulationGenerator(Integer nPoblacion,int iter, Individuo[] bestRandomIndividuals) {
+	public void NewPopulationGenerator(int iter, Individuo[] bestRandomIndividuals) {
 		
 			//only Zscale has the same value for the new generations:
 			float ZS=4.06f;// variable con el valor del z_scale
@@ -365,11 +363,11 @@ public class evolutionary_algorithm {
 				//10 new values are calculated for each parameter within a range, which is established by the minimum, and the maximum
 				//of each parameter:
 				Random r = new Random();
-				double[] randomD0_values= r.doubles(10,lowerBoundD0,upperBoundD0).toArray();
+				double[] randomD0_values= r.doubles(2,lowerBoundD0,upperBoundD0).toArray();
 				
-				double[] randomRange_D0_values= r.doubles(10,lowerBoundRangeD0,upperBoundRangeD0).toArray();
+				double[] randomRange_D0_values= r.doubles(2,lowerBoundRangeD0,upperBoundRangeD0).toArray();
 				
-				double[] randomF_pressure_values= r.doubles(10,lowerBoundF_pressure_values,upperBoundF_pressure_values).toArray();
+				double[] randomF_pressure_values= r.doubles(2,lowerBoundF_pressure_values,upperBoundF_pressure_values).toArray();
 			
 				int i;
 				
@@ -378,7 +376,7 @@ public class evolutionary_algorithm {
 				this.deletePopulation();
 				
 				//hay que cambiar este for para que sea para cada valor de los arrays random de arriba
-				for(i=0;i<=(nPoblacion-1);i++) {
+				for(i=0;i<=(randomD0_values.length-1);i++) {
 					
 					Individuo ind=new Individuo();
 					ind.setF_pressure((float) randomF_pressure_values[i]);
@@ -393,10 +391,31 @@ public class evolutionary_algorithm {
 					seg.setZ_scale(ZS);
 					seg.setRange_in_d0_units(ind.getRange_d0());
 					
-					stopLimeSeg sls= new stopLimeSeg();
 					
 					seg.run();//empieza a ejecutarse run
-				
+					
+					long startTime = System.currentTimeMillis();
+					long endTime=0;
+					
+					while (seg.isAlive()) {
+						endTime= System.currentTimeMillis();
+						System.out.println((endTime-startTime) /1000);
+						
+						if( ((endTime-startTime) /1000) >60) { //si el tiempo de ejecucion es mayor que 100 segundos
+							System.out.println("PAM");
+							LimeSeg.stopOptimisation();
+							}
+						}
+
+					System.out.println("Ha salido del while");
+					
+					//Evolutionary Algorithm is going to wait for sphere seg adapted to finish
+					try{
+						seg.join();
+						System.out.println("Espera");
+					}catch(Exception e) {
+						System.out.println("No funciona");
+					}
 				
 					System.out.println("Ha salido del while");
 					ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));

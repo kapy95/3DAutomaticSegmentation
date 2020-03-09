@@ -90,13 +90,14 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		*/
 		
 		//establezco el directorio de trabajo con las imágenes y roi
-		File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
-
+		//File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
+		File dir = new File("E:\\TFM");
+		
 		evolutionary_algorithm ev=new evolutionary_algorithm();
 		ev.setDir(dir);
 		
 		//Primera poblacion
-		ev.InitialPopulationGenerator(10,0);
+		ev.InitialPopulationGenerator(5,0);
 		ev.FitnessCalculation();
 		Individuo[] bestIndividuals =ev.MutationFunction();
 	
@@ -105,7 +106,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		
 		for(i=1;i<=200;i++) {
 			
-			ev.NewPopulationGenerator(10,i,bestIndividuals);
+			ev.NewPopulationGenerator(i,bestIndividuals);
 			ev.FitnessCalculation();
 			bestIndividuals=ev.MutationFunction();
 			
