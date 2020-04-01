@@ -73,51 +73,54 @@ public class evolutionary_algorithm {
 				
 				SphereSegAdapted seg=new SphereSegAdapted();
 				seg.set_path(dir.toString());
-	
-				
-				System.out.println(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter));
-				
-				Individuo ind=new Individuo();
-				//stopLimeSeg sls= new stopLimeSeg();
-				
-				ind.setF_pressure((float)(min_fp+(factor_fp*i)) );
-				ind.setD0((float)(min_d0+(factor_d0*i)));
-				ind.setRange_d0( (float)(min_range_d0+(factor_rangeD0*i)));
-				
-				//llamo a la clase que va a llamar limeseg:
-				
-				seg.setD_0(ind.getD0());
-				seg.setF_pressure(ind.getFp());
-				seg.setZ_scale(ZS);
-				seg.setRange_in_d0_units(ind.getRange_d0());
-				seg.start();
-				
-				//sls.start();//empieza a ejecutarse la función run del hilo de stopLimeSeg
-				long startTime = System.currentTimeMillis();
-				long endTime=0;
-				
-				
-				while (seg.isAlive()) {
-					endTime= System.currentTimeMillis();
-					System.out.println((endTime-startTime) /1000);
-					
-					if( ((endTime-startTime) /1000) >60) { //si el tiempo de ejecucion es mayor que 100 segundos
-						System.out.println("PAM");
-						
-						LimeSeg.stopOptimisation();
-						}
-					}
 
-				System.out.println("Ha salido del while");
 				
-				//Evolutionary Algorithm is going to wait for sphere seg adapted to finish
-				try{
-					seg.join();
-					System.out.println("Espera");
-				}catch(Exception e) {
-					System.out.println("No funciona");
-				}
-				
+					System.out.println(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter));
+					
+					Individuo ind=new Individuo();
+					//stopLimeSeg sls= new stopLimeSeg();
+					
+					ind.setF_pressure((float)(min_fp+(factor_fp*i)) );
+					ind.setD0((float)(min_d0+(factor_d0*i)));
+					ind.setRange_d0( (float)(min_range_d0+(factor_rangeD0*i)));
+					
+					//llamo a la clase que va a llamar limeseg:
+					try {
+					seg.setD_0(ind.getD0());
+					seg.setF_pressure(ind.getFp());
+					seg.setZ_scale(ZS);
+					seg.setRange_in_d0_units(ind.getRange_d0());
+					seg.start();
+					
+					//sls.start();//empieza a ejecutarse la función run del hilo de stopLimeSeg
+					long startTime = System.currentTimeMillis();
+					long endTime=0;
+					
+					
+					while (seg.isAlive()) {
+						endTime= System.currentTimeMillis();
+						System.out.println((endTime-startTime) /1000);
+						
+						if( ((endTime-startTime) /1000) >60) { //si el tiempo de ejecucion es mayor que 100 segundos
+							System.out.println("PAM");
+							
+							LimeSeg.stopOptimisation();
+							}
+						}
+	
+					System.out.println("Ha salido del while");
+					
+					//Evolutionary Algorithm is going to wait for sphere seg adapted to finish
+					try{
+						seg.join();
+						System.out.println("Espera");
+					}catch(Exception e) {
+						System.out.println("No funciona");
+					}
+					
+			}catch(Exception e) {
+				System.out.println("Excepcion");
+			}
 				ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 		       	//dirNuevo.mkdir();
 				ind.getDir().mkdir();//it creates the directory for that individual

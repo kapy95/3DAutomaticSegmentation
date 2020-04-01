@@ -116,7 +116,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		ev.setDir(dir);
 		
 		//Primera poblacion
-		ev.InitialPopulationGenerator(5,0);
+		ev.InitialPopulationGenerator(100,0);
 		ev.FitnessCalculation();
 		Individuo[] bestIndividuals =ev.MutationFunction();
 	
@@ -131,6 +131,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 			
 		}
 		
+		/*
 		//llamo a la clase que va a llamar limeseg:
 		
 		SphereSegAdapted seg=new SphereSegAdapted();
