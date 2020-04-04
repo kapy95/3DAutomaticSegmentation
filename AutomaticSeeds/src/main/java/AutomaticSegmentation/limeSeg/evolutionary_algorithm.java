@@ -99,12 +99,12 @@ public class evolutionary_algorithm {
 					
 					while (seg.isAlive()) {
 						endTime= System.currentTimeMillis();
-						System.out.println((endTime-startTime) /1000);
+						//System.out.println((endTime-startTime) /1000);
 						
-						if( ((endTime-startTime) /1000) >60) { //si el tiempo de ejecucion es mayor que 100 segundos
-							System.out.println("PAM");
-							
+						if( ((endTime-startTime) /1000) >30) { //si el tiempo de ejecucion es mayor que 100 segundos
+							LimeSeg.requestStopOptimisation=true;
 							LimeSeg.stopOptimisation();
+
 							}
 						}
 	

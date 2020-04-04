@@ -216,7 +216,12 @@ public class SphereSegAdapted extends Thread implements Command {
         LimeSeg.opt.setOptParam("k_grad",0.0f);
         LimeSeg.opt.setOptParam("normalForce",0);        
        	//LimeSeg.opt.setCUDAContext();
-       	LimeSeg.runOptimisation(500);// el comando runOptimisation determina los pasos que se dan hasta que se pare la segmentacion, antes lo pusiste a 100 y salian cosas raras
+       	try{
+       		LimeSeg.runOptimisation(200);// el comando runOptimisation determina los pasos que se dan hasta que se pare la segmentacion, antes lo pusiste a 100 y salian cosas raras
+       	}catch(NullPointerException n) {
+       		LimeSeg.requestStopOptimisation=true;
+       		LimeSeg.stopOptimisation();
+       	}
        	//LimeSeg.stopOptimisation();
         LimeSeg.opt.requestResetDotsConvergence=true;
         LimeSeg.opt.setOptParam("k_grad",k_grad);
@@ -227,8 +232,13 @@ public class SphereSegAdapted extends Thread implements Command {
         	LimeSeg.opt.setOptParam("radiusDelta", d_0/2);
         }
         
-        
+        try {
         LimeSeg.runOptimisation(numberOfIntegrationStep);
+        }catch(NullPointerException n) {
+        	LimeSeg.requestStopOptimisation=true;
+       		LimeSeg.stopOptimisation();
+        	
+        }
         
         if (RadiusDeltaChanged) {
         	LimeSeg.opt.setOptParam("radiusDelta", 0);
