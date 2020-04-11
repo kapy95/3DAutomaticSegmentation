@@ -19,6 +19,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.bridj.cpp.std.list;
@@ -62,53 +65,75 @@ public class evolutionary_algorithm {
 			//0.2/5=0.004 asi aumento la diferencia por cada iteracion
 			
 			//factores por lo que se van multiplicando y sumando los valores d_0 y demás de cada poblacion
-			float factor_fp=(float) (0.06/(nPoblacion-1));
-			float factor_d0=(float) (19.0f/(nPoblacion-1));//poner 19.0f
-			float factor_rangeD0= (float) (9.5f/(nPoblacion-1));
+			float factor_fp=(float) (0.05/(nPoblacion-1));
+			float factor_d0=(float) (17.0f/(nPoblacion-1));//poner 19.0f
+			float factor_rangeD0= (float) (8.5f/(nPoblacion-1));
 			//IntStream.iterate(start, i -> i + 1).limit(limit).boxed().collect(Collectors.toList());
+			
+			//ExecutorService pool=Executors.newFixedThreadPool(1);
 			
 			int i;
 		
 			for(i=0;i<=(nPoblacion-1);i++) {
 				
-				SphereSegAdapted seg=new SphereSegAdapted();
-				seg.set_path(dir.toString());
+
 
 				
-					System.out.println(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter));
+				System.out.println(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter));
 					
-					Individuo ind=new Individuo();
-					//stopLimeSeg sls= new stopLimeSeg();
-					
-					ind.setF_pressure((float)(min_fp+(factor_fp*i)) );
-					ind.setD0((float)(min_d0+(factor_d0*i)));
-					ind.setRange_d0( (float)(min_range_d0+(factor_rangeD0*i)));
-					
-					//llamo a la clase que va a llamar limeseg:
-					try {
-					seg.setD_0(ind.getD0());
-					seg.setF_pressure(ind.getFp());
-					seg.setZ_scale(ZS);
-					seg.setRange_in_d0_units(ind.getRange_d0());
-					seg.start();
-					
-					//sls.start();//empieza a ejecutarse la función run del hilo de stopLimeSeg
-					long startTime = System.currentTimeMillis();
-					long endTime=0;
+				Individuo ind=new Individuo();
 					
 					
-					while (seg.isAlive()) {
-						endTime= System.currentTimeMillis();
-						//System.out.println((endTime-startTime) /1000);
-						
-						if( ((endTime-startTime) /1000) >30) { //si el tiempo de ejecucion es mayor que 100 segundos
-							LimeSeg.requestStopOptimisation=true;
-							LimeSeg.stopOptimisation();
+				ind.setF_pressure((float)(min_fp+(factor_fp*i)) );
+				ind.setD0((float)(min_d0+(factor_d0*i)));
+				ind.setRange_d0( (float)(min_range_d0+(factor_rangeD0*i)));
+					
+				//llamo a la clase que va a llamar limeseg:
+				
+				//Runnable seg2=new SphereSegAdapted(dir.toString(),ind.getD0(),ind.getFp(),ZS,ind.getRange_d0());
+				//Thread seg=new Thread(seg2);
+				SphereSegAdapted seg = new SphereSegAdapted(dir.toString(),ind.getD0(),ind.getFp(),ZS,ind.getRange_d0());
 
-							}
-						}
+				seg.set_path(dir.toString());
+				/*
+				seg.setD_0(ind.getD0());
+				seg.setF_pressure(ind.getFp());
+				seg.setZ_scale(ZS);
+				seg.setRange_in_d0_units(ind.getRange_d0());
+				*/
+				seg.start();
+				//pool.execute(seg);
+				System.out.println("Ha empezado el hilo"+String.valueOf(i));
+				/*
+				try {
+					
+					pool.awaitTermination(60,TimeUnit.SECONDS);
+					
+				} catch (InterruptedException e) {
+					
+					LimeSeg.requestStopOptimisation=true;
+					LimeSeg.stopOptimisation();
+				}*/
+				
+				
+				long startTime = System.currentTimeMillis();
+				long endTime=0;
+					
+					
+				while (seg.isAlive()) {
+					endTime= System.currentTimeMillis();
+					//System.out.println((endTime-startTime) /1000);
+						
+					if( ((endTime-startTime) /1000) >30) { //si el tiempo de ejecucion es mayor que 100 segundos
+						LimeSeg.requestStopOptimisation=true;
+						LimeSeg.stopOptimisation();
+
+					}
+				 }
+				 System.out.println("Ha salido del while");
+				 
 	
-					System.out.println("Ha salido del while");
+				
 					
 					//Evolutionary Algorithm is going to wait for sphere seg adapted to finish
 					try{
@@ -117,10 +142,7 @@ public class evolutionary_algorithm {
 					}catch(Exception e) {
 						System.out.println("No funciona");
 					}
-					
-			}catch(Exception e) {
-				System.out.println("Excepcion");
-			}
+				
 				ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 		       	//dirNuevo.mkdir();
 				ind.getDir().mkdir();//it creates the directory for that individual
@@ -131,9 +153,12 @@ public class evolutionary_algorithm {
 		       	
 		       	System.out.println("Ha terminado una iteración del for");
 		       	
-		       	//seg.interrupt();
 		       	poblacion.add(ind);
+		       	
 			}
+			//pool.shutdown();
+			//while(!pool.isTerminated());
+			
 		
 	}
 	
@@ -381,7 +406,7 @@ public class evolutionary_algorithm {
 				//For each combination a new individual will be created:
 				//but first the previous population must be deleted:
 				this.deletePopulation();
-				
+				/*
 				//hay que cambiar este for para que sea para cada valor de los arrays random de arriba
 				for(i=0;i<=(randomD0_values.length-1);i++) {
 					
@@ -434,6 +459,7 @@ public class evolutionary_algorithm {
 			       	
 			       	poblacion.add(ind);
 				}
+				*/
 			}
 		
 	}

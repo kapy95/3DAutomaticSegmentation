@@ -35,7 +35,7 @@ import ij.plugin.FolderOpener;
  *
  */
 @Plugin(type = Command.class, menuPath = "Plugins>LimeSeg>Sphere Seg (Advanced)")
-public class SphereSegAdapted extends Thread implements Command {
+public class SphereSegAdapted extends Thread{//implements Runnable {
 	
 	protected Path path;
 
@@ -55,7 +55,7 @@ public class SphereSegAdapted extends Thread implements Command {
     @Parameter(persist=true)
     protected float range_in_d0_units = 2;
     
-    protected static int index=0;
+    protected int index=0;
     
     @Parameter(persist=true)
     protected ColorRGB color;
@@ -90,14 +90,13 @@ public class SphereSegAdapted extends Thread implements Command {
 	@Parameter(persist=true)
 	protected boolean stallDotsPreviouslyInOptimizer=false;
 	
-	private LimeSeg lms;
+	private limeSegAdapted lms;
 	
-	private static Object cerradura;
 	
 	@Override
 	public void run() {
 		
-		//synchronized(cerradura) {
+
 		this.setImp2();
 		this.setLimeSeg();
 		//RoiManager roiManager = RoiManager.getRoiManager();
@@ -111,24 +110,24 @@ public class SphereSegAdapted extends Thread implements Command {
         }
         */
         lms.initialize();
-		LimeSeg.saveOptState();
-        if (clearOptimizer) {LimeSeg.clearOptimizer();}
+		lms.saveOptState2();
+        if (clearOptimizer) {lms.clearOptimizer2();}
         if ((!clearOptimizer)) {
         	if ((stallDotsPreviouslyInOptimizer)) {        		
-	        	LimeSeg.opt.dots.forEach(dn -> {
+	        	lms.Opt2.dots.forEach(dn -> {
 	        		dn.stallDot();
 	        	});
         	} else {
-        		LimeSeg.opt.dots.forEach(dn -> {
+        		lms.Opt2.dots.forEach(dn -> {
         			dn.freeDot();
             	});
         	}
         }
         
-    	LimeSeg.opt.setOptParam("ZScale", (float)z_scale);
-        LimeSeg.opt.setOptParam("d_0",d_0);
-        LimeSeg.opt.setOptParam("radiusSearch",d_0*range_in_d0_units);
-        LimeSeg.opt.setOptParam("normalForce",f_pressure);
+    	lms.Opt2.setOptParam("ZScale", (float)z_scale);
+        lms.Opt2.setOptParam("d_0",d_0);
+        lms.Opt2.setOptParam("radiusSearch",d_0*range_in_d0_units);
+        lms.Opt2.setOptParam("normalForce",f_pressure);
 
         float avgX=0;
         float avgY=0;
@@ -141,10 +140,10 @@ public class SphereSegAdapted extends Thread implements Command {
         */	
 		
 		//System.out.println(imp.getChannel());
-        LimeSeg.currentChannel = imp.getChannel();
+        lms.currentChannel2 = imp.getChannel();
         
         if (sameCell) {
-        	LimeSeg.newCell();
+        	lms.newCell2();
         }
      
         
@@ -160,8 +159,8 @@ public class SphereSegAdapted extends Thread implements Command {
 			if (roi.getClass().equals(OvalRoi.class)) {
 				OvalRoi circle = (OvalRoi) roi;
 				float r0 = (float) ((circle.getFloatWidth()/2 + circle.getFloatHeight()/2)/2);
-				LimeSeg.currentFrame = circle.getTPosition();
-				if (LimeSeg.currentFrame==0) {LimeSeg.currentFrame=1;}
+				lms.currentFrame2 = circle.getTPosition();
+				if (lms.currentFrame2==0) {lms.currentFrame2=1;}
 				float z0 = circle.getZPosition();
 				if (z0 == 0){
 					z0 = circle.getPosition();
@@ -175,49 +174,49 @@ public class SphereSegAdapted extends Thread implements Command {
 				NCells++;
 
 		    	if (!sameCell) {
-		    		LimeSeg.newCell();
+		    		lms.newCell2();
 		    	}
 		        if ((this.sameCell)||(nRois==1)) {
-		        	LimeSeg.setCellColor((float) (color.getRed()/255.0),
+		        	lms.setCellColor2((float) (color.getRed()/255.0),
 		        					 	 (float) (color.getGreen()/255.0),
 		        					 	 (float) (color.getBlue()/255.0),
 		        					 	 1.0f);
 		        } else {
-		        	LimeSeg.setCellColor((float) (java.lang.Math.random()),
+		        	lms.setCellColor2((float) (java.lang.Math.random()),
     					 				 (float) (java.lang.Math.random()),
     					 				 (float) (java.lang.Math.random()),
     					 				 1.0f);
 		        }		       
-		        LimeSeg.makeSphere(x0,y0,z0,r0);      
-		        LimeSeg.pasteDotsToCellT();
+		        lms.makeSphere2(x0,y0,z0,r0);      
+		        lms.pasteDotsToCell2T();
 		        if (!sameCell) {
-		        	LimeSeg.putCurrentCellTToOptimizer();
+		        	lms.putCurrentCellTToOptimizer2();
 		        }
-		    	currentlyOptimizedCellTs.add(LimeSeg.currentCell.getCellTAt(LimeSeg.currentFrame));
+		    	currentlyOptimizedCellTs.add(lms.currentCell2.getCellTAt(lms.currentFrame2));
 			}			
 		
-		LimeSeg.setWorkingImage(imp, LimeSeg.currentChannel, LimeSeg.currentFrame);
+		lms.setWorkingImage2(imp, lms.currentChannel2, lms.currentFrame2);
 		}
 		
 		if (sameCell) {
-			LimeSeg.putCurrentCellTToOptimizer();
+			lms.putCurrentCellTToOptimizer2();
 		}
 		
 
     	if (show3D) {
 
-    		LimeSeg.make3DViewVisible();
-    		LimeSeg.putAllCellsTo3DDisplay();
-    		LimeSeg.set3DViewCenter(avgX/NCells,avgY/NCells,avgZ/NCells);
+    		lms.make3DViewVisible2();
+    		lms.putallCells2To3DDisplay2();
+    		lms.set3DViewCenter2(avgX/NCells,avgY/NCells,avgZ/NCells);
     		
     	}
     	
- 	    float k_grad=(float) LimeSeg.opt.getOptParam("k_grad");
-        LimeSeg.opt.setOptParam("k_grad",0.0f);
-        LimeSeg.opt.setOptParam("normalForce",0);        
+ 	    float k_grad=(float) lms.Opt2.getOptParam("k_grad");
+        lms.Opt2.setOptParam("k_grad",0.0f);
+        lms.Opt2.setOptParam("normalForce",0);        
        	//LimeSeg.opt.setCUDAContext();
        	try{
-       		LimeSeg.runOptimisation(200);// el comando runOptimisation determina los pasos que se dan hasta que se pare la segmentacion, antes lo pusiste a 100 y salian cosas raras
+       		lms.runOptimisation2(200);// el comando runOptimisation determina los pasos que se dan hasta que se pare la segmentacion, antes lo pusiste a 100 y salian cosas raras
        	}catch(NullPointerException n) {
        		LimeSeg.requestStopOptimisation=true;
        		LimeSeg.stopOptimisation();
@@ -537,11 +536,22 @@ public class SphereSegAdapted extends Thread implements Command {
 	}
 	
 	public void setLimeSeg() {
-		this.lms = new LimeSeg();
+		this.lms = new limeSegAdapted();
 	}
 	
 	public void stopLimeSeg() {
 		LimeSeg.stopOptimisation();
+	}
+	
+	public SphereSegAdapted(String dir, float D0 , float F_pressure, float Zs, float range_D0) {
+		
+		super();
+		this.set_path(dir);
+		this.setD_0(D0);
+		this.setF_pressure(F_pressure);
+		this.setZ_scale(Zs);
+		this.setRange_in_d0_units(range_D0);
+		
 	}
 
 	
