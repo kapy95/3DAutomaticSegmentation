@@ -62,9 +62,9 @@ public class evolutionary_algorithm {
 			//0.2/5=0.004 asi aumento la diferencia por cada iteracion
 			
 			//factores por lo que se van multiplicando y sumando los valores d_0 y demás de cada poblacion
-			float factor_fp=(float) (0.06/(nPoblacion-1));
-			float factor_d0=(float) (19.0f/(nPoblacion-1));//poner 19.0f
-			float factor_rangeD0= (float) (9.5f/(nPoblacion-1));
+			float factor_fp=(float) (0.05/(nPoblacion-1));
+			float factor_d0=(float) (18.0f/(nPoblacion-1));//poner 19.0f
+			float factor_rangeD0= (float) (8.5f/(nPoblacion-1));
 			//IntStream.iterate(start, i -> i + 1).limit(limit).boxed().collect(Collectors.toList());
 			
 			int i;
