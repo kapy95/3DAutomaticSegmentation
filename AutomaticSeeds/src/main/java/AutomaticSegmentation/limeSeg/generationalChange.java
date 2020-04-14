@@ -68,31 +68,56 @@ public class generationalChange {
 			}
 		}
 		
+		this.rouletteWheelSelection(rouletteIndividuals,)
+		
 		
 		
 	}
 	
 	
 	
-	public ArrayList<Individuo> rouletteWheelSelection(ArrayList<Individuo> pob){
+	public ArrayList<Individuo> rouletteWheelSelection(ArrayList<Individuo> pob,int selpobnum){//selpobnum is the number of candidates to be selected to generate the new population
 		ArrayList<Individuo> pobroul = new ArrayList<Individuo>();
 		
 		double sum=pob.stream().mapToDouble(a -> a.getScore()).sum();
+		double[]partialSums=new double[pob.size()];//array with the likelihoods of all candidates;
+		double partialsum=0;//each individual will have the sum of the scores of the previous individuals as likelihood
+		int i;
 		
-		int i=0;
-		
-		double rng = (Math.random()*((sum-0)+1))+0;
-		double partialSum=0;
-		
-		for (i=0;i<pob.size();i++){
-		
-			partialSum+=pob.get(i).getScore();
-			
-				if(partialSum>=rng) {
-					
-					pobroul.add(pob.get(i));
-				}
+		//the probabilities are saved:
+		for(i=0;i<pob.size();i++) {
+			partialsum+=pob.get(i).getScore();
+			partialSums[i]=partialsum;
 		}
+		
+		int j=0;
+		
+		//first we calculate the first value, where the roulette will stop
+		double rng = (Math.random()*((sum-partialSums[0])+1))+partialSums[0];//it generates a number between the first score and the sum of all scores, which will state the candidates to be chosen
+		
+		//now we execute the roulette until the number of selected candidates is equal to selpobnum:
+		
+		while(pobroul.size()<=selpobnum) {//while the size of the candidates selected is not equal to selpobnum the roulette will be repeated again:
+			
+			//if the partialsum of the candidate is greater than the value of the roulette, it will be selected
+			if(partialSums[j]>=rng) {
+						
+						pobroul.add(pob.get(i));
+			}
+			
+			//if we have not looped all the array, we continue checking if the likelihood is greater than rng;
+			if(j<partialSums.length) {
+				
+				j++;
+				
+			}else {
+				//if we have checked the whole array, it starts again:
+				j=0;
+				rng = (Math.random()*((sum-partialSums[0])+1))+partialSums[0];
+			}
+							
+		}
+		
 			
 		return pobroul;
 	}
