@@ -68,7 +68,7 @@ public class generationalChange {
 			}
 		}
 		
-		this.rouletteWheelSelection(rouletteIndividuals,)
+		//this.rouletteWheelSelection(rouletteIndividuals,)
 		
 		
 		
