@@ -355,7 +355,7 @@ public class limeSegAdapted extends LimeSeg {
      public void addToOverlay2(cellAdapted c) {
         for (int i=0;i<c.cellTs.size();i++) {
             cellTAdapted ct= c.cellTs.get(i);
-            addToOverlay(ct);
+            addToOverlay2(ct);
         }
     }  
     
@@ -1323,7 +1323,7 @@ public class limeSegAdapted extends LimeSeg {
     	//return 0;
         int ans=-1;
         if (currentCell2!=null) {
-            CellT ct=currentCell2.getCellTAt(currentFrame);
+            cellTAdapted ct=currentCell2.getCellTAt(currentFrame);
             if (ct!=null) {
                 ans=ct.constructMesh();
                 ct.modified=true;
@@ -1343,7 +1343,7 @@ public class limeSegAdapted extends LimeSeg {
         if (currentCell2==null) {
             return;
         }
-        CellT ct = currentCell2.getCellTAt(currentFrame);
+        cellTAdapted ct = currentCell2.getCellTAt(currentFrame);
         if (ct==null) {
             return;
         }
@@ -1381,7 +1381,7 @@ public class limeSegAdapted extends LimeSeg {
     	}
     	if (allCells2!=null) {
     		for (cellAdapted c:allCells2) {
-    			for (CellT ct:c.cellTs) {
+    			for (cellTAdapted ct:c.cellTs) {
     				if (ct.frame>maxFrames) {
     					maxFrames=ct.frame;
     				}
@@ -1399,7 +1399,7 @@ public class limeSegAdapted extends LimeSeg {
         if (currentCell2==null) {
             return;
         }
-        CellT ct = currentCell2.getCellTAt(currentFrame);
+        cellTAdapted ct = currentCell2.getCellTAt(currentFrame);
         if (ct==null) {
             return;
         } else {
@@ -1420,7 +1420,7 @@ public class limeSegAdapted extends LimeSeg {
 	 public void removeFlaggedDots2() {
 	    Predicate<DotN> dotNPredicate = nd -> (nd.userDefinedFlag);
 	    if (currentCell2!=null) {
-	    	CellT ct = currentCell2.getCellTAt(currentFrame);
+	    	cellTAdapted ct = currentCell2.getCellTAt(currentFrame);
 		    if (ct!=null) {
 		        if (ct.dots.stream().anyMatch(dotNPredicate)) {
 		            ct.dots.removeIf(dotNPredicate);
@@ -1857,7 +1857,7 @@ public class limeSegAdapted extends LimeSeg {
     	if (currentCell2!=null) {
     		if (currentCell2.getCellTAt(currentFrame)!=null) {
     			if (currentCell2.getCellTAt(currentFrame).dots!=null) {
-    				CellT ct = currentCell2.getCellTAt(currentFrame);
+    				cellTAdapted ct = currentCell2.getCellTAt(currentFrame);
     				ct.updateCenter();
     		        px[0] = new Double(ct.center.x);
     		        py[0] = new Double(ct.center.y);
@@ -1897,7 +1897,7 @@ public class limeSegAdapted extends LimeSeg {
     public DotN findDotNearTo(float px,float py,float pz) {
         DotN ans=null;        
         if (currentCell2!=null) {
-            CellT ct = currentCell2.getCellTAt(currentFrame);
+            cellTAdapted ct = currentCell2.getCellTAt(currentFrame);
             if (ct!=null) {
                 float minDist=Float.MAX_VALUE;
                 Vector3D v = new Vector3D(px,py,pz);
@@ -1914,8 +1914,9 @@ public class limeSegAdapted extends LimeSeg {
         return ans;        
     }
     
-     Cell findCell(String id) {
-  
+     cellAdapted findCell(String id) {
+    	 cellAdapted ans;
+    	 
         for (cellAdapted c : allCells2) {
             if (c.id_Cell.equals(id)) {ans=c;}
         }
