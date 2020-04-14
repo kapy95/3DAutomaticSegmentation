@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import org.bridj.cpp.std.list;
@@ -68,59 +70,34 @@ public class evolutionary_algorithm {
 			//IntStream.iterate(start, i -> i + 1).limit(limit).boxed().collect(Collectors.toList());
 			
 			int i;
+			
+			ExecutorService pool=Executors.newFixedThreadPool(3);
 		
 			for(i=0;i<=(nPoblacion-1);i++) {
 				
-				SphereSegAdapted seg=new SphereSegAdapted();
-				seg.set_path(dir.toString());
-
-				
-					System.out.println(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter));
-					
 					Individuo ind=new Individuo();
-					//stopLimeSeg sls= new stopLimeSeg();
-					
 					ind.setF_pressure((float)(min_fp+(factor_fp*i)) );
 					ind.setD0((float)(min_d0+(factor_d0*i)));
 					ind.setRange_d0( (float)(min_range_d0+(factor_rangeD0*i)));
 					
-					//llamo a la clase que va a llamar limeseg:
-					try {
-					seg.setD_0(ind.getD0());
-					seg.setF_pressure(ind.getFp());
-					seg.setZ_scale(ZS);
-					seg.setRange_in_d0_units(ind.getRange_d0());
-					seg.start();
+					Runnable seg=new SphereSegAdapted(dir.toString(),ind.getD0(),ind.getFp(),ZS,ind.getRange_d0());
+					Thread segt=new Thread(seg);
 					
-					//sls.start();//empieza a ejecutarse la función run del hilo de stopLimeSeg
-					long startTime = System.currentTimeMillis();
-					long endTime=0;
+					Runnable seg2=new SphereSegAdapted(dir.toString(),ind.getD0(),ind.getFp(),ZS,ind.getRange_d0());
+					Thread segt2=new Thread(seg2);
+					
+					System.out.println(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter));
 					
 					
-					while (seg.isAlive()) {
-						endTime= System.currentTimeMillis();
-						//System.out.println((endTime-startTime) /1000);
-						
-						if( ((endTime-startTime) /1000) >30) { //si el tiempo de ejecucion es mayor que 100 segundos
-							LimeSeg.requestStopOptimisation=true;
-							LimeSeg.stopOptimisation();
-
-							}
-						}
-	
-					System.out.println("Ha salido del while");
+					//stopLimeSeg sls= new stopLimeSeg();
 					
-					//Evolutionary Algorithm is going to wait for sphere seg adapted to finish
-					try{
-						seg.join();
-						System.out.println("Espera");
-					}catch(Exception e) {
-						System.out.println("No funciona");
-					}
+					pool.execute(segt);
+					pool.execute(segt2);
 					
-			}catch(Exception e) {
-				System.out.println("Excepcion");
-			}
+					pool.shutdown(); 
+					
+					
+				/*	
 				ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 		       	//dirNuevo.mkdir();
 				ind.getDir().mkdir();//it creates the directory for that individual
@@ -132,7 +109,7 @@ public class evolutionary_algorithm {
 		       	System.out.println("Ha terminado una iteración del for");
 		       	
 		       	//seg.interrupt();
-		       	poblacion.add(ind);
+		       	poblacion.add(ind);*/
 			}
 		
 	}
@@ -389,7 +366,7 @@ public class evolutionary_algorithm {
 					ind.setF_pressure((float) randomF_pressure_values[i]);
 					ind.setD0((float) randomD0_values[i]);
 					ind.setRange_d0((float) randomRange_D0_values[i]);
-					
+					/*
 					//llamo a la clase que va a llamar limeseg:
 					SphereSegAdapted seg=new SphereSegAdapted();
 					seg.set_path(dir.toString());
@@ -433,8 +410,10 @@ public class evolutionary_algorithm {
 			       	LimeSeg.clearAllCells();
 			       	
 			       	poblacion.add(ind);
+			       	*/
 				}
 			}
+			
 		
 	}
 	
