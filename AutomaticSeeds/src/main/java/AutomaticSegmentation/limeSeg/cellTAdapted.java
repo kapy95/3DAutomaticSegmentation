@@ -140,7 +140,7 @@ public class cellTAdapted implements Cloneable{
     public void updateCenter() {
         center = new Vector3D(0,0,0);
         for (int i=0;i<dots.size();i++){
-            DotN nd = dots.get(i);
+            DotnAdapted nd = dots.get(i);
             center.x+=nd.pos.x;            
             center.y+=nd.pos.y;            
             center.z+=nd.pos.z;
