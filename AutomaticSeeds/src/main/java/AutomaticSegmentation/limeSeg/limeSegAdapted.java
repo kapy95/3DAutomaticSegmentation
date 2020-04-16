@@ -12,6 +12,7 @@ import eu.kiaru.limeseg.LimeSeg;
 import eu.kiaru.limeseg.gui.CurrentCellColorLUT;
 import eu.kiaru.limeseg.gui.DefaultDotNColorSupplier;
 import eu.kiaru.limeseg.gui.DisplayableOutput;
+import eu.kiaru.limeseg.gui.DotNColorSupplier;
 import eu.kiaru.limeseg.gui.JFrameLimeSeg;
 import eu.kiaru.limeseg.gui.JOGL3DCellRenderer;
 import eu.kiaru.limeseg.gui.JTableCellsExplorer;
@@ -42,11 +43,11 @@ public class limeSegAdapted extends LimeSeg {
      public ArrayList<cellAdapted> allCells2;  				// List of cells currently stored by LimeSeg
      public boolean notifyCellExplorerCellsModif2;		// Flags any change of allCells to the cellExplorer tab (Swing GUI)
    
-     public ArrayList<DotN> dots_to_overlay2;			// Set of dots being overlayed on workingImP
+     public ArrayList<DotnAdapted> dots_to_overlay2;			// Set of dots being overlayed on workingImP
     
      public cellAdapted currentCell2; //lo dejamos aquí   						// Current selected Cell of limeseg
     
-     public DotN currentDot2;							// Current selected Dot of limeseg
+     public DotnAdapted currentDot2;							// Current selected Dot of limeseg
    
 	 public ImagePlus workingImP2;            			// Current working image in IJ1 format - Used for IJ1 interaction (ROI, and JOGLCellRenderer synchronization)
 	
@@ -54,7 +55,7 @@ public class limeSegAdapted extends LimeSeg {
     	
 	 public int currentFrame2=1;						// specifies the Frame of the workingImP to work with
     
-     public  ArrayList<DotN> copiedDots2;				// Internal equivalent of Clipboard for set of dots in limeseg
+     public  ArrayList<DotnAdapted> copiedDots2;				// Internal equivalent of Clipboard for set of dots in limeseg
      Skeleton2D skeleton2;  							// Current skeleton of Limeseg. Serves to generate initial shapes in 3D
     
      public boolean OptimizerIsRunning2=false;			// Flags if Optimizer is running
@@ -209,13 +210,13 @@ public class limeSegAdapted extends LimeSeg {
      * @param pz  z position of the sheet
      * @return List of dots generated
      */
-     public ArrayList<DotN> makeXYSheet2(float d_0, float pxi, float pyi, float pxf, float pyf, float pz) {
-        ArrayList<DotN> ans = new ArrayList<DotN>();
+     public ArrayList<DotnAdapted> makeXYSheet2(float d_0, float pxi, float pyi, float pxf, float pyf, float pz) {
+        ArrayList<DotnAdapted> ans = new ArrayList<DotnAdapted>();
         for (float x=pxi;x<pxf;x+=d_0) {
             for (float y=pyi;y<pyf;y+=d_0) {
                 Vector3D pos = new Vector3D(x,y,pz);
                 Vector3D normal = new Vector3D(0,0,1);
-                DotN nd=new DotN(pos,normal);                            
+                DotnAdapted nd=new DotnAdapted(pos,normal);                            
                 ans.add(nd);      
             }
         }
@@ -231,8 +232,8 @@ public class limeSegAdapted extends LimeSeg {
      * @param radius sphere radius
      * @return
      */
-     public ArrayList<DotN> makeSphere2(float d_0, float px, float py, float pz, float radius) {
-        ArrayList<DotN> ans = new ArrayList<DotN>();
+     public ArrayList<DotnAdapted> makeSphere2(float d_0, float px, float py, float pz, float radius) {
+        ArrayList<DotnAdapted> ans = new ArrayList<DotnAdapted>();
         float dlat=d_0/radius;
         float lat_i=(float) (-java.lang.Math.PI/2);
         float lat_f=(float) (java.lang.Math.PI/2);//-dlat;               
@@ -248,7 +249,7 @@ public class limeSegAdapted extends LimeSeg {
                 Vector3D pos = new Vector3D(px+normal.x,
                                               py+normal.y,
                                               pz+normal.z);
-                DotN nd=new DotN(pos,normal);
+                DotnAdapted nd=new DotnAdapted(pos,normal);
                 ans.add(nd);               
             }
         }
@@ -264,8 +265,8 @@ public class limeSegAdapted extends LimeSeg {
      * @param radius sphere radius
      * @return
      */
-     public ArrayList<DotN> makeCylinder2(float d_0, float px, float py, float pz, float radius, float height) {
-        ArrayList<DotN> ans = new ArrayList<DotN>();
+     public ArrayList<DotnAdapted> makeCylinder2(float d_0, float px, float py, float pz, float radius, float height) {
+        ArrayList<DotnAdapted> ans = new ArrayList<DotnAdapted>();
         for (float z=pz-height/2; z<pz+height/2; z=z+d_0) {
             // We put points around a circle of radius = radius.cos(lat)
             float R=(float) radius;
@@ -278,7 +279,7 @@ public class limeSegAdapted extends LimeSeg {
                 Vector3D pos = new Vector3D(px+normal.x,
                         py+normal.y,
                         z);
-                DotN nd=new DotN(pos,normal);
+                DotnAdapted nd=new DotnAdapted(pos,normal);
                 ans.add(nd);
             }
         }
@@ -329,7 +330,7 @@ public class limeSegAdapted extends LimeSeg {
         jcr2.fillBufferCellRenderer_TR();
     }
     
-    public  void fillBufferCellRenderer2(ArrayList<DotN> aList) {
+    public  void fillBufferCellRenderer2(ArrayList<DotnAdapted> aList) {
         jcr2.fillBufferCellRenderer_PC(aList);
     }
     
@@ -343,8 +344,8 @@ public class limeSegAdapted extends LimeSeg {
      */
      public void addToOverlay2(cellTAdapted ct) {
         for (int i=0;i<ct.dots.size();i++) {
-            DotN dn= ct.dots.get(i);
-            dots_to_overlay.add(dn);           
+            DotnAdapted dn= ct.dots.get(i);
+            this.dots_to_overlay2.add(dn);           
         }
     }
     
@@ -462,7 +463,7 @@ public class limeSegAdapted extends LimeSeg {
     
     //----------------- Optimizer
     
-     ArrayList<CellT> savedCellTInOptimizer = new ArrayList<>(); // For Optimizer cancellation
+     ArrayList<cellTAdapted> savedCellTInOptimizer = new ArrayList<>(); // For Optimizer cancellation
     
     /**
      * UNSTABLE WITH GPU MODE - save the state of the Optimizer 
@@ -506,11 +507,11 @@ public class limeSegAdapted extends LimeSeg {
     		}
     		limeSegAdapted.clearOptimizer();    		
 
-    		for (CellT ct:savedCellTInOptimizer) {
-    			for (DotN dn:ct.dots) {
+    		for (cellTAdapted ct:savedCellTInOptimizer) {
+    			for (DotnAdapted dn:ct.dots) {
     				dn.ct=ct;
     			}
-    			CellT ctToRemove = ct.c.getCellTAt(ct.frame);
+    			cellTAdapted ctToRemove = ct.c.getCellTAt(ct.frame);
     			ct.c.cellTs.remove(ctToRemove);
     			ct.c.cellTs.add(ct);
     			Opt2.addDots(ct);
@@ -819,9 +820,9 @@ public class limeSegAdapted extends LimeSeg {
 	    	for (cellAdapted c:allCells2) {
 	    		cellTAdapted ct = c.getCellTAt(this.currentFrame2);
 	    		if (ct!=null) {
-	    			for (DotN dn:ct.dots) {
+	    			for (DotnAdapted dn:ct.dots) {
 	    				if ((int)(dn.pos.z/ZS)==zSlice-1) {
-	    					limeSegAdapted.dots_to_overlay.add(dn);
+	    					this.dots_to_overlay2.add(dn);
 	    				}
 	    			}
 	    		}
@@ -835,7 +836,7 @@ public class limeSegAdapted extends LimeSeg {
 	    	for (cellAdapted c:allCells2) {
 	    		cellTAdapted ct = c.getCellTAt(this.currentFrame2);
 	    		if (ct!=null) {
-	    			for (DotN dn:ct.dots) {
+	    			for (DotnAdapted dn:ct.dots) {
 	    					this.dots_to_overlay2.add(dn);
 	    			}
 	    		}
@@ -871,11 +872,11 @@ public class limeSegAdapted extends LimeSeg {
         Overlay ov = new Overlay();
         if (workingImP!=null) {
 	        workingImP.setOverlay(ov);
-	        Iterator<DotN> i=dots_to_overlay.iterator();
+	        Iterator<DotnAdapted> i=dots_to_overlay.iterator();
 	        float ZS=(float) Opt2.getOptParam("ZScale");
 	        if ((workingImP.getNFrames()!=1)||(workingImP.getNChannels()!=1)) {
 	            while (i.hasNext()) {
-	                DotN nd = i.next();
+	                DotnAdapted nd = i.next();
 	                PointRoi roi;
 	                roi = new PointRoi(nd.pos.x,nd.pos.y);//,c);
 	                Color color = new Color((int)(nd.ct.c.color[0]*255),(int)(nd.ct.c.color[1]*255),(int)(nd.ct.c.color[2]*255));
@@ -888,7 +889,7 @@ public class limeSegAdapted extends LimeSeg {
 	            }   
 	        } else {
 	            while (i.hasNext()) {
-	                DotN nd = i.next();
+	                DotnAdapted nd = i.next();
 	                PointRoi roi;
 	                roi = new PointRoi(nd.pos.x,nd.pos.y);//,c);   
 	                Color color = new Color((int)(nd.ct.c.color[0]*255),(int)(nd.ct.c.color[1]*255),(int)(nd.ct.c.color[2]*255));
@@ -953,7 +954,7 @@ public class limeSegAdapted extends LimeSeg {
     @IJ1ScriptableMethod(target=VIEW_3D, ui="STD", pr=2)
      public void setDefaultColor3DDisplay2() {
         make3DViewVisible();
-        this.jcr2.colorSupplier = new DefaultDotNColorSupplier();
+        this.jcr2.colorSupplier = new DotNColorSupplier();
         notifyCellRendererCellsModif=true;
     }
 
@@ -1207,7 +1208,7 @@ public class limeSegAdapted extends LimeSeg {
                 notifyCellRendererCellsModif = true;
             }
         } else if (findCell(arg)!=null) {
-            Cell c = findCell(arg);           
+            cellAdapted c = findCell(arg);           
             if (c!=null) {
                 allCells2.remove(c);                
                 if ((jcr2!=null)) {jcr2.removeDisplayedCell(c);}
@@ -1347,17 +1348,17 @@ public class limeSegAdapted extends LimeSeg {
         if (ct==null) {
             return;
         }
-        ArrayList<DotN> dTemp=ct.dots;
-        copiedDots=new ArrayList<>();
+        ArrayList<DotnAdapted> dTemp=ct.dots;
+        copiedDots2=new ArrayList<>();
         for (int i=0;i<dTemp.size();i++){
-            DotN nd = dTemp.get(i);
-            DotN nd_copy = new DotN(new Vector3D(nd.pos.x,nd.pos.y,nd.pos.z),new Vector3D(nd.Norm.x,nd.Norm.y,nd.Norm.z));
+            DotnAdapted nd = dTemp.get(i);
+            DotnAdapted nd_copy = new DotnAdapted(new Vector3D(nd.pos.x,nd.pos.y,nd.pos.z),new Vector3D(nd.Norm.x,nd.Norm.y,nd.Norm.z));
             nd_copy.N_Neighbor=nd.N_Neighbor;
             nd_copy.userDestroyable=nd.userDestroyable;
             nd_copy.userMovable=nd.userMovable;
             nd_copy.userGenerate=nd.userGenerate;
             nd_copy.userRotatable=nd.userRotatable;
-            copiedDots.add(nd_copy);
+            copiedDots2.add(nd_copy);
         }
     }
     
@@ -1418,12 +1419,12 @@ public class limeSegAdapted extends LimeSeg {
 	 */
 	@IJ1ScriptableMethod(target=CURRENT_CELLT, ui="STD", pr=5)
 	 public void removeFlaggedDots2() {
-	    Predicate<DotN> dotNPredicate = nd -> (nd.userDefinedFlag);
+	    Predicate<DotnAdapted> DotnAdaptedPredicate = nd -> (nd.userDefinedFlag);
 	    if (currentCell2!=null) {
 	    	cellTAdapted ct = currentCell2.getCellTAt(currentFrame);
 		    if (ct!=null) {
-		        if (ct.dots.stream().anyMatch(dotNPredicate)) {
-		            ct.dots.removeIf(dotNPredicate);
+		        if (ct.dots.stream().anyMatch(DotnAdaptedPredicate)) {
+		            ct.dots.removeIf(DotnAdaptedPredicate);
 		        }
 		    }
             notifyCellExplorerCellsModif=true;
@@ -1447,7 +1448,7 @@ public class limeSegAdapted extends LimeSeg {
 	 * @param nz
 	 */
 	@IJ1ScriptableMethod(target=CURRENT_DOT, ui="STD", tt="(float nx, float ny, float nz)", pr=2)
-	 public void setDotNorm2(float nx, float ny, float nz) { 
+	 public void setDotnAdaptedorm2(float nx, float ny, float nz) { 
 	    if (currentDot!=null) {
 	        currentDot.Norm.x=nx;
 	        currentDot.Norm.y=ny;
@@ -1521,7 +1522,7 @@ public class limeSegAdapted extends LimeSeg {
     @IJ1ScriptableMethod(target=CLIPPED_DOTS, ui="STD", pr=6)
      public void invertClippedDotsPolarity2() {
         if (copiedDots!=null) {
-            for (DotN dn : copiedDots) {
+            for (DotnAdapted dn : copiedDots) {
                 dn.Norm.x*=-1;
                 dn.Norm.y*=-1;
                 dn.Norm.z*=-1;
@@ -1543,7 +1544,7 @@ public class limeSegAdapted extends LimeSeg {
         boolean gen=(gen_==1);
         if (copiedDots!=null)
         for (int i=0;i<copiedDots.size();i++) {
-        	DotN dn=copiedDots.get(i);
+        	DotnAdapted dn=copiedDots.get(i);
             dn.userMovable=mov;
             dn.userRotatable=rot;
             dn.userDestroyable=des;
@@ -1559,9 +1560,9 @@ public class limeSegAdapted extends LimeSeg {
     @IJ1ScriptableMethod(target=CLIPPED_DOTS, ui="STD", tt="(float tx,float ty,float tz)", pr=4)
      public void translateDots2(float tx,float ty,float tz) {
         float ZS=(float)Opt2.getOptParam("ZScale");
-        if (copiedDots!=null)
-        for (int i=0;i<copiedDots.size();i++) {
-                DotN dn=copiedDots.get(i);
+        if (copiedDots2!=null)
+        for (int i=0;i<copiedDots2.size();i++) {
+                DotnAdapted dn=(DotnAdapted) copiedDots2.get(i);
                 dn.pos.x+=tx;
                 dn.pos.y+=ty;
                 dn.pos.z+=tz*ZS;
@@ -1817,7 +1818,7 @@ public class limeSegAdapted extends LimeSeg {
      * @param nz
      */
     @IJ1ScriptableMethod(target=CURRENT_CELL, tt="(String paramName, Double value)")
-     public void getDotNorm2(Double[] nx, Double[] ny, Double[] nz) {
+     public void getDotnAdaptedorm2(Double[] nx, Double[] ny, Double[] nz) {
 	    if (currentDot!=null) {
 	        nx[0] = new Double(currentDot.Norm.x);
 	        ny[0] = new Double(currentDot.Norm.y);
@@ -1894,8 +1895,8 @@ public class limeSegAdapted extends LimeSeg {
     }
     */
     
-    public DotN findDotNearTo(float px,float py,float pz) {
-        DotN ans=null;        
+    public DotnAdapted findDotnAdaptedearTo(float px,float py,float pz) {
+        DotnAdapted ans=null;        
         if (currentCell2!=null) {
             cellTAdapted ct = currentCell2.getCellTAt(currentFrame);
             if (ct!=null) {
@@ -1903,7 +1904,7 @@ public class limeSegAdapted extends LimeSeg {
                 Vector3D v = new Vector3D(px,py,pz);
                 if (ct.dots.size()>0) {ans=ct.dots.get(0);}
                 for (int i=1;i<ct.dots.size();i++) {
-                    DotN dn = ct.dots.get(i);
+                    DotnAdapted dn = ct.dots.get(i);
                     if (Vector3D.dist2(dn.pos, v)<minDist) {
                         ans=dn;
                         minDist=Vector3D.dist2(dn.pos, v);
@@ -1915,7 +1916,7 @@ public class limeSegAdapted extends LimeSeg {
     }
     
      cellAdapted findCell(String id) {
-    	 cellAdapted ans;
+    	 cellAdapted ans=null;
     	 
         for (cellAdapted c : allCells2) {
             if (c.id_Cell.equals(id)) {ans=c;}

@@ -148,7 +148,7 @@ public class cellAdapted {
 	        if (dots_in!=null)
 	        for (int i=0;i<dots_in.size();i++) {
 	            DotN nd = dots_in.get(i);
-	            DotN nd_copy = new DotN(new Vector3D(nd.pos.x ,nd.pos.y ,nd.pos.z ),
+	            DotnAdapted nd_copy = new DotnAdapted(new Vector3D(nd.pos.x ,nd.pos.y ,nd.pos.z ),
 	            		                new Vector3D(nd.Norm.x,nd.Norm.y,nd.Norm.z));
 	            nd_copy.ct=curCellT;
 	            nd_copy.N_Neighbor=nd.N_Neighbor;

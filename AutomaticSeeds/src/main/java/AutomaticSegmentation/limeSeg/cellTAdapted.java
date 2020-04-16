@@ -1,4 +1,4 @@
-package eu.kiaru.limeseg.struct;
+package AutomaticSegmentation.limeSeg;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +21,7 @@ public class cellTAdapted implements Cloneable{
      * Set of dots representing the cell timepoint
      * @see DotN
      */
-    public ArrayList<DotN> dots = new ArrayList<>();
+    public ArrayList<DotnAdapted> dots = new ArrayList<>();
     /**
      * Center of mass of the cell. Needs to be updated with the updateCenter() method
      */
@@ -177,7 +177,7 @@ public class cellTAdapted implements Cloneable{
             throw new RuntimeException("superclass messed up", ex);
         }
         clone.dots = new ArrayList<>(this.dots.size());
-        for (DotN item : this.dots) {
+        for (DotnAdapted item : this.dots) {
         	clone.dots.add(item.clone());
         }
         return clone;
