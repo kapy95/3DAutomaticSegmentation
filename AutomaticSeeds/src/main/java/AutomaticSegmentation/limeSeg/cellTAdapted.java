@@ -6,6 +6,7 @@ import java.util.Map;
 
 import eu.kiaru.limeseg.LimeSeg;
 import eu.kiaru.limeseg.opt.Optimizer;
+import eu.kiaru.limeseg.struct.CellT;
 import eu.kiaru.limeseg.struct.DotN;
 import eu.kiaru.limeseg.struct.MeshConstructor;
 import eu.kiaru.limeseg.struct.TriangleN;
@@ -34,7 +35,7 @@ public class cellTAdapted implements Cloneable{
     /**
      * Counter for static identifier of the cell timepoint
      */
-    static public int idIntStatic;
+    public int idIntStatic;
     /**
      * Parent cell to which this cell timepoint belongs
      */

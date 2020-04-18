@@ -474,8 +474,8 @@ public class limeSegAdapted extends LimeSeg {
     	if (Opt2!=null) {
     		//savedOptDots.clear();
     		savedCellTInOptimizer.clear();
-    		for (CellT ct:Opt2.cellTInOptimizer) {
-    			CellT nct = ct.clone();
+    		for (cellTAdapted ct:Opt2.cellTInOptimizer) {
+    			 cellTAdapted nct = ct.clone();
     			savedCellTInOptimizer.add(nct);
     		}
     	}
@@ -872,7 +872,7 @@ public class limeSegAdapted extends LimeSeg {
         Overlay ov = new Overlay();
         if (workingImP!=null) {
 	        workingImP.setOverlay(ov);
-	        Iterator<DotnAdapted> i=dots_to_overlay.iterator();
+	        Iterator<DotnAdapted> i=dots_to_overlay2.iterator();
 	        float ZS=(float) Opt2.getOptParam("ZScale");
 	        if ((workingImP.getNFrames()!=1)||(workingImP.getNChannels()!=1)) {
 	            while (i.hasNext()) {
@@ -1033,7 +1033,7 @@ public class limeSegAdapted extends LimeSeg {
      * 	0 : Full view
      *  1 : Shows only dots below the displayed slice  
      *  2 : Shows only dots above the displayed slice  
-     *  3 : Shows only dots within the displayed slice
+     *  3 : Shows only 9dots within the displayed slice
      *  
      * 	8 : Full view of dots within the Optimizer
      *  9 : Shows only dots of the Optimizer below the displayed slice  
@@ -1439,7 +1439,7 @@ public class limeSegAdapted extends LimeSeg {
 	 */
 	@IJ1ScriptableMethod(target=CURRENT_DOT, ui="STD", tt="(int id)", pr=0)
 	 public void selectDot2(int id) {
-		currentDot = currentCell2.getCellTAt(currentFrame).dots.get(id);
+		DotnAdapted currentDot2 = this.currentCell2.getCellTAt(currentFrame2).dots.get(id);
 	}
 	/**
 	 * Sets current dot normal vector
@@ -1521,8 +1521,8 @@ public class limeSegAdapted extends LimeSeg {
      */
     @IJ1ScriptableMethod(target=CLIPPED_DOTS, ui="STD", pr=6)
      public void invertClippedDotsPolarity2() {
-        if (copiedDots!=null) {
-            for (DotnAdapted dn : copiedDots) {
+        if (copiedDots2!=null) {
+            for (DotnAdapted dn : copiedDots2) {
                 dn.Norm.x*=-1;
                 dn.Norm.y*=-1;
                 dn.Norm.z*=-1;
@@ -1544,7 +1544,7 @@ public class limeSegAdapted extends LimeSeg {
         boolean gen=(gen_==1);
         if (copiedDots!=null)
         for (int i=0;i<copiedDots.size();i++) {
-        	DotnAdapted dn=copiedDots.get(i);
+        	DotnAdapted dn=(DotnAdapted) copiedDots.get(i);
             dn.userMovable=mov;
             dn.userRotatable=rot;
             dn.userDestroyable=des;

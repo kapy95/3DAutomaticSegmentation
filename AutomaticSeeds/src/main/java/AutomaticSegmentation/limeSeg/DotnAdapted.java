@@ -3,6 +3,7 @@ package AutomaticSegmentation.limeSeg;
 import java.util.ArrayList;
 
 import eu.kiaru.limeseg.opt.Optimizer;
+import eu.kiaru.limeseg.struct.DotN;
 import eu.kiaru.limeseg.struct.Vector3D;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.type.NativeType;
