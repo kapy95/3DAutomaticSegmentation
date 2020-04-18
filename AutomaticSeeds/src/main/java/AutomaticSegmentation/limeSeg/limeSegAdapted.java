@@ -1544,7 +1544,7 @@ public class limeSegAdapted extends LimeSeg {
         boolean gen=(gen_==1);
         if (copiedDots!=null)
         for (int i=0;i<copiedDots.size();i++) {
-        	DotnAdapted dn=(DotnAdapted) copiedDots.get(i);
+        	DotnAdapted dn=(DotnAdapted) copiedDots2.get(i);
             dn.userMovable=mov;
             dn.userRotatable=rot;
             dn.userDestroyable=des;
