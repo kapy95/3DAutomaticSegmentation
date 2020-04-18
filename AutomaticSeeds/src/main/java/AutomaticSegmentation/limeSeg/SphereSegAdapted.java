@@ -92,12 +92,11 @@ public class SphereSegAdapted extends Thread implements Command {
 	
 	private LimeSeg lms;
 	
-	private static Object cerradura;
 	
 	@Override
 	public void run() {
 		
-		//synchronized(cerradura) {
+
 		this.setImp2();
 		this.setLimeSeg();
 		//RoiManager roiManager = RoiManager.getRoiManager();
