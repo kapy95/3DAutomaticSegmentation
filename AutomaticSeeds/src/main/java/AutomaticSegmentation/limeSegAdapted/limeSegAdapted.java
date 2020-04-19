@@ -1,4 +1,4 @@
-package AutomaticSegmentation.limeSeg;
+package AutomaticSegmentation.limeSegAdapted;
 
 import java.awt.Color;
 import java.text.DecimalFormat;
@@ -440,7 +440,7 @@ public class limeSegAdapted extends LimeSeg {
      */
     public void putCellTo3DDisplay2(cellAdapted c) {
         make3DViewVisible();
-        jcr2.addCellToDisplay2(c);
+        jcr2.addCellToDisplay(c);
         notifyCellRendererCellsModif=true;
     }    
     

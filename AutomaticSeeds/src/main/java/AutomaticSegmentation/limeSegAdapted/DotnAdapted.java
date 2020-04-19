@@ -1,4 +1,4 @@
-package AutomaticSegmentation.limeSeg;
+package AutomaticSegmentation.limeSegAdapted;
 
 import java.util.ArrayList;
 
@@ -22,7 +22,7 @@ import net.imglib2.type.numeric.RealType;
  * @author Nicolas Chiaruttini
  * @see Optimizer
  */
-public class DotnAdapted implements Cloneable {    
+public class DotnAdapted extends DotN implements Cloneable {    
     /**
      * Index of dot within ArrayList - a bit ugly
      */
@@ -468,12 +468,7 @@ public class DotnAdapted implements Cloneable {
     public DotnAdapted clone() {
     	
     	 final DotnAdapted clone;
-         try {
-             clone = (DotnAdapted) super.clone();
-         }
-         catch (CloneNotSupportedException ex) {
-             throw new RuntimeException("DotN superclass messed up", ex);
-         }
+         clone = (DotnAdapted) super.clone();
          
          clone.pos = pos.clone();
          clone.Norm = Norm.clone();
