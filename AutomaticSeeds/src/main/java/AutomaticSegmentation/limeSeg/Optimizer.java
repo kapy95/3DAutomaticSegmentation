@@ -47,12 +47,14 @@ public class Optimizer {
     public ArrayList<DotN> dots;
     public ArrayList<CellT> cellTInOptimizer = new ArrayList<>();
     // GPU
-    GPUDots gpuDots;
+    public GPUDots gpuDots;
+    public BlockOfDots block;
+    public GPUBlockList gpublocklist;
     
     /**
      * Keys to the list of parameters that can be set to customize the optimizer
      */
-    public final static String[] paramList = {"ka","pa","pr","kr",
+    public final  String[] paramList = {"ka","pa","pr","kr",
     		"k_grad","k_bend", "k_align","d_0",
     		"fillHoles","rmOutliers","attractToMax",
     		"radiusTresholdInteract",
@@ -113,6 +115,7 @@ public class Optimizer {
     // GPU
     GPUBlockList gpuAllBlocks;
     GPUBlockList gpuIgnoredBlocks;
+    GPUBlockList staticblocklist;
     WGPUBlockList gpuWorkingBlocks_in;
     WGPUBlockList gpuWorkingBlocks_out;
     
@@ -151,17 +154,17 @@ public class Optimizer {
     
     //----------------- CUDA Variables
     public boolean CUDAEnabled=false;
-    static int MAX_THREADS_PER_BLOCK;    
-    static int CUDA_DEVICE_ID=0;
+     int MAX_THREADS_PER_BLOCK;    
+     int CUDA_DEVICE_ID=0;
     int CUDATreshold = 24000/10;
     
-    static CUfunction fComputePairsOfDot;
-    static CUfunction fAVGBlocks;
-    static CUfunction fKDTree_FindFurthestBlocks;
-    static CUfunction fCalcDir;
-    static CUfunction fMapDots;
-    static CUfunction fSortBlocks;
-    static CUfunction fDispatchDots;
+     CUfunction fComputePairsOfDot;
+     CUfunction fAVGBlocks;
+     CUfunction fKDTree_FindFurthestBlocks;
+     CUfunction fCalcDir;
+     CUfunction fMapDots;
+     CUfunction fSortBlocks;
+     CUfunction fDispatchDots;
     
     /**
      * 3D image LimeSeg works on
@@ -518,16 +521,16 @@ public class Optimizer {
                       .collect(Collectors.groupingBy(block -> block.splitBlock(sqLimitInteractAttract, minNumberOfInteractionsPerBlock)));
               
               workingBlocks.clear();
-              if (map.get(BlockOfDots.BLOCK_SPLIT)!=null)
-              map.get(BlockOfDots.BLOCK_SPLIT).forEach((block) -> {
+              if (map.get(this.block.BLOCK_SPLIT)!=null)
+              map.get(this.block.BLOCK_SPLIT).forEach((block) -> {
                       workingBlocks.addAll(block.childrenBlocks);
               });
-              if (map.get(BlockOfDots.BLOCK_KEEP)!=null)
-              map.get(BlockOfDots.BLOCK_KEEP).forEach((block) -> {
+              if (map.get(this.block.BLOCK_KEEP)!=null)
+              map.get(this.block.BLOCK_KEEP).forEach((block) -> {
                       allBlocks.addAll(block.childrenBlocks);
               });
-              if (map.get(BlockOfDots.BLOCK_DISCARD)!=null)
-              map.get(BlockOfDots.BLOCK_DISCARD).forEach((block) -> {
+              if (map.get(this.block.BLOCK_DISCARD)!=null)
+              map.get(this.block.BLOCK_DISCARD).forEach((block) -> {
                       if ((block.numberOfDotsInBlock()> this.thresholdSuperDotCreationWorthTest)) {
                           ignoredBlocks.addAll(block.childrenBlocks);
                       }
@@ -560,7 +563,7 @@ public class Optimizer {
     	tic();
     	int targetGPUBlockSize=0;// = java.lang.Math.min(512, Optimizer.MAX_THREADS_PER_BLOCK);
         if ((CUDAEnabled)&&(dots.size()>CUDATreshold)) {
-            targetGPUBlockSize = java.lang.Math.min(256, Optimizer.MAX_THREADS_PER_BLOCK);            
+            targetGPUBlockSize = java.lang.Math.min(256, this.MAX_THREADS_PER_BLOCK);            
             this.setCUDAContext();
             buildTreeGPU(iniBlocks, blockSize);//Optimizer.MAX_THREADS_PER_BLOCK);
             allBlocks = gpuAllBlocks.pop(dots);
@@ -599,7 +602,7 @@ public class Optimizer {
         if (writeTimeInfos) tic();
         int targetGPUBlockSize=0;// = java.lang.Math.min(512, Optimizer.MAX_THREADS_PER_BLOCK);
         if ((CUDAEnabled)&&(dots.size()>CUDATreshold)) {
-            targetGPUBlockSize = java.lang.Math.min(256, Optimizer.MAX_THREADS_PER_BLOCK);
+            targetGPUBlockSize = java.lang.Math.min(256, this.MAX_THREADS_PER_BLOCK);
             buildTreeGPU(makeFirstBlocks(),targetGPUBlockSize);//Optimizer.MAX_THREADS_PER_BLOCK);
             ignoredBlocks = gpuIgnoredBlocks.pop(dots);
             if (writeTimeInfos) System.out.print("BuildTreeGPU=\t"+(toc()/1000)+"\t");
@@ -925,13 +928,13 @@ public class Optimizer {
         if (gpuDots.hasBeenPushed==false) {gpuDots.push(dots);}
         // 2 - Allocate and create gpuBlocks if needed
         if (gpuAllBlocks==null) {gpuAllBlocks = new GPUBlockList();}
-        if (gpuWorkingBlocks_in==null) {gpuWorkingBlocks_in = new WGPUBlockList();}
-        if (gpuWorkingBlocks_out==null) {gpuWorkingBlocks_out = new WGPUBlockList();}
+        if (gpuWorkingBlocks_in==null) {gpuWorkingBlocks_in = new WGPUBlockList(this);}
+        if (gpuWorkingBlocks_out==null) {gpuWorkingBlocks_out = new WGPUBlockList(this);}
         if (gpuIgnoredBlocks==null) {gpuIgnoredBlocks = new GPUBlockList();}
         gpuAllBlocks.resetBlocks();
         // 3 - Initialize blocks     
         gpuWorkingBlocks_in.push(iniBlocks);
-        int gpuBlockSize=Optimizer.MAX_THREADS_PER_BLOCK;
+        int gpuBlockSize=this.MAX_THREADS_PER_BLOCK;
         //gpuWorkingBlocks_in.writeGPUBlockInfos();
         // 3 - LOOP  
         //          Split blocks
@@ -945,16 +948,16 @@ public class Optimizer {
             // roundNumber++;
             // Split and dispatch
             //System.out.println("\n loopNumber ="+(++loopNumber));
-            int avgBlock = gpuWorkingBlocks_in.getAverageNumberOfRequiredThreadPerBlock(GPUBlockList.ONE_THREAD_PER_DOT);
+            int avgBlock = gpuWorkingBlocks_in.getAverageNumberOfRequiredThreadPerBlock(this.gpublocklist.ONE_THREAD_PER_DOT);
             int gpuNewSize  = 1;
-            if (avgBlock>=Optimizer.MAX_THREADS_PER_BLOCK) {
-                gpuNewSize = Optimizer.MAX_THREADS_PER_BLOCK;
+            if (avgBlock>=this.MAX_THREADS_PER_BLOCK) {
+                gpuNewSize =this.MAX_THREADS_PER_BLOCK;
             } else {
                 while (gpuNewSize<avgBlock) {gpuNewSize*=2;}
             } 
             //System.out.println("roundNumber=\t "+roundNumber+"\t avgBlock=\t "+avgBlock+ "\t GPUBlockSize = "+gpuNewSize);
             gpuBlockSize=gpuNewSize;
-            gpuWorkingBlocks_in.mapBlocksToGPU(GPUBlockList.ONE_THREAD_PER_DOT, gpuBlockSize);//, true);
+            gpuWorkingBlocks_in.mapBlocksToGPU(this.gpublocklist.ONE_THREAD_PER_DOT, gpuBlockSize);//, true);
             GPUSplitBlocks(gpuWorkingBlocks_in,gpuWorkingBlocks_out,gpuAllBlocks,gpuIgnoredBlocks, gpuBlockSize, minNumberOfInteractionsPerBlock, this.thresholdSuperDotCreationWorthTest);        
             // Switch in and out working blocks
             //System.out.println("gpuWorkingBlocks_in.nBlocks=\t "+gpuWorkingBlocks_in.nBlocks+"\t gpuWorkingBlocks_in.nDots=\t "+gpuWorkingBlocks_in.nDots);
@@ -1021,7 +1024,7 @@ public class Optimizer {
             gpuAllBlocks.push(allBlocks);
         }*/
         //int gpuBlockSize=Optimizer.MAX_THREADS_PER_BLOCK;
-        gpuAllBlocks.mapBlocksToGPU(GPUBlockList.ONE_THREAD_PER_INTERACTION,gpuBlockSize);//, false);
+        gpuAllBlocks.mapBlocksToGPU(this.gpublocklist.ONE_THREAD_PER_INTERACTION,gpuBlockSize);//, false);
         // 2 - Compute Forces
         GPUComputeForces(gpuDots, gpuAllBlocks, gpuBlockSize);    
         // 3 - POP dots
@@ -1031,18 +1034,18 @@ public class Optimizer {
     void GPUComputeForces(GPUDots gDots, GPUBlockList gBlocks, int gpuBlockSize) {
         Pointer kernelParameters = Pointer.to(
                     // Dots properties
-                    Pointer.to(gDots.iGA_Float[GPUDots.PX].gpuArray), Pointer.to(gDots.iGA_Float[GPUDots.PY].gpuArray), Pointer.to(gDots.iGA_Float[GPUDots.PZ].gpuArray), 
-                    Pointer.to(gDots.iGA_Float[GPUDots.NX].gpuArray), Pointer.to(gDots.iGA_Float[GPUDots.NY].gpuArray), Pointer.to(gDots.iGA_Float[GPUDots.NZ].gpuArray), 
-                    Pointer.to(gDots.iGA_Float[GPUDots.FX].gpuArray), Pointer.to(gDots.iGA_Float[GPUDots.FY].gpuArray), Pointer.to(gDots.iGA_Float[GPUDots.FZ].gpuArray), 
-                    Pointer.to(gDots.iGA_Float[GPUDots.RFX].gpuArray), Pointer.to(gDots.iGA_Float[GPUDots.RFY].gpuArray), Pointer.to(gDots.iGA_Float[GPUDots.RFZ].gpuArray),
-                    Pointer.to(gDots.iGA_Float[GPUDots.MX].gpuArray), Pointer.to(gDots.iGA_Float[GPUDots.MY].gpuArray), Pointer.to(gDots.iGA_Float[GPUDots.MZ].gpuArray),
-                    Pointer.to(gDots.iGA_Float[GPUDots.SUPER_DOT_RADIUS_SQUARED].gpuArray),
-                    Pointer.to(gDots.iGA_Float[GPUDots.RELAXED].gpuArray),
-                    Pointer.to(gDots.iGA_Int[GPUDots.N_NEIGH].gpuArray),
-                    Pointer.to(gDots.iGA_Int[GPUDots.CELL_ID].gpuArray),                   
-                    Pointer.to(gDots.iGA_Int[GPUDots.HAS_CONVERGED].gpuArray),
-                    Pointer.to(gDots.iGA_Int[GPUDots.ALL_NEIGHBORS_HAVE_CONVERGED].gpuArray),                  
-                    Pointer.to(gDots.iGA_Int[GPUDots.ALL_NEIGHBORS_HAVE_CONVERGED_PREVIOUSLY].gpuArray),                    
+                    Pointer.to(gDots.iGA_Float[this.gpuDots.PX].gpuArray), Pointer.to(gDots.iGA_Float[this.gpuDots.PY].gpuArray), Pointer.to(gDots.iGA_Float[this.gpuDots.PZ].gpuArray), 
+                    Pointer.to(gDots.iGA_Float[this.gpuDots.NX].gpuArray), Pointer.to(gDots.iGA_Float[this.gpuDots.NY].gpuArray), Pointer.to(gDots.iGA_Float[this.gpuDots.NZ].gpuArray), 
+                    Pointer.to(gDots.iGA_Float[this.gpuDots.FX].gpuArray), Pointer.to(gDots.iGA_Float[this.gpuDots.FY].gpuArray), Pointer.to(gDots.iGA_Float[this.gpuDots.FZ].gpuArray), 
+                    Pointer.to(gDots.iGA_Float[this.gpuDots.RFX].gpuArray), Pointer.to(gDots.iGA_Float[this.gpuDots.RFY].gpuArray), Pointer.to(gDots.iGA_Float[this.gpuDots.RFZ].gpuArray),
+                    Pointer.to(gDots.iGA_Float[this.gpuDots.MX].gpuArray), Pointer.to(gDots.iGA_Float[this.gpuDots.MY].gpuArray), Pointer.to(gDots.iGA_Float[this.gpuDots.MZ].gpuArray),
+                    Pointer.to(gDots.iGA_Float[this.gpuDots.SUPER_DOT_RADIUS_SQUARED].gpuArray),
+                    Pointer.to(gDots.iGA_Float[this.gpuDots.RELAXED].gpuArray),
+                    Pointer.to(gDots.iGA_Int[this.gpuDots.N_NEIGH].gpuArray),
+                    Pointer.to(gDots.iGA_Int[this.gpuDots.CELL_ID].gpuArray),                   
+                    Pointer.to(gDots.iGA_Int[this.gpuDots.HAS_CONVERGED].gpuArray),
+                    Pointer.to(gDots.iGA_Int[this.gpuDots.ALL_NEIGHBORS_HAVE_CONVERGED].gpuArray),                  
+                    Pointer.to(gDots.iGA_Int[this.gpuDots.ALL_NEIGHBORS_HAVE_CONVERGED_PREVIOUSLY].gpuArray),                    
                     // Blocks Properties
                     Pointer.to(gBlocks.iGA_addrStartBlock0.gpuArray),Pointer.to(gBlocks.iGA_nPtBlock0.gpuArray),
                     Pointer.to(gBlocks.iGA_addrStartBlock1.gpuArray),Pointer.to(gBlocks.iGA_nPtBlock1.gpuArray),
@@ -1101,3 +1104,4 @@ public class Optimizer {
         if (gpuWorkingBlocks_out!=null) gpuWorkingBlocks_out.freeMem();
         if (gpuDots!=null) gpuDots.freeMem();
     }
+}
