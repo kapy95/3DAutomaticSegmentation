@@ -1,4 +1,4 @@
-package AutomaticSegmentation.limeSeg;
+package AutomaticSegmentation.limeSegAdapted;
 
 import java.util.ArrayList;
 
@@ -8,7 +8,7 @@ import eu.kiaru.limeseg.struct.CellT;
 import eu.kiaru.limeseg.struct.DotN;
 import eu.kiaru.limeseg.struct.Vector3D;
 
-public class cellAdapted {
+public class cellAdapted extends Cell{
 
 
 	    /**

@@ -1,4 +1,4 @@
-package AutomaticSegmentation.limeSeg;
+package AutomaticSegmentation.limeSegAdapted;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +17,7 @@ import eu.kiaru.limeseg.struct.Vector3D;
  * @author Nicolas Chiaruttini
  * @see Cell
  */
-public class cellTAdapted implements Cloneable{
+public class cellTAdapted extends CellT implements Cloneable{
     /**
      * Set of dots representing the cell timepoint
      * @see DotN
@@ -76,6 +76,7 @@ public class cellTAdapted implements Cloneable{
      * @param frame_in Frame number (IJ1 convention) to which this cell timpeoint is attached
      */
     public cellTAdapted(cellAdapted c_in, int frame_in) {
+    	super(c_in, frame_in);
         c=c_in;
         frame=frame_in;
         c.modified=true;
@@ -171,12 +172,7 @@ public class cellTAdapted implements Cloneable{
     @Override
     public cellTAdapted clone() {
         final cellTAdapted clone;
-        try {
-            clone = (cellTAdapted) super.clone();
-        }
-        catch (CloneNotSupportedException ex) {
-            throw new RuntimeException("superclass messed up", ex);
-        }
+        clone = (cellTAdapted) super.clone();
         clone.dots = new ArrayList<>(this.dots.size());
         for (DotnAdapted item : this.dots) {
         	clone.dots.add(item.clone());
