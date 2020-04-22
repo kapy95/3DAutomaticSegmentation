@@ -24,22 +24,6 @@ public class generationalChange {
 		this.candidates.add(bestIndividual2);
 		population.remove(bestIndividual2);
 		
-		/*
-		Object[] bestIndividuals= population.stream().filter(ind-> ind.getScore()>75).toArray();
-		Object bestIndividual = bestIndividuals[0];
-		Object bestIndividual2 = bestIndividuals[1];
-		
-		//these individuals will be included in the next population directly (this tactic is elitism):
-		Individuo bestIndividualdef1 = Individuo.class.cast(bestIndividual);
-		Individuo bestIndividualdef2 = Individuo.class.cast(bestIndividual2);
-		
-		this.candidates.add(bestIndividualdef1);
-		this.candidates.add(bestIndividualdef2)
-		
-		//now the best individuals are removed owing to they are not going to received changes:
-		population.remove(bestIndividualdef1);
-		population.remove(bestIndividualdef2);
-		*/
 		
 		//finally the rest of the population is passed to the list of individuals which participate in the selection:
 		this.setPreviousPopulation(population);
@@ -133,7 +117,7 @@ public class generationalChange {
 		//since the tournaments will include more individuals fitter than them.
 		
 		//the comparison will be done bearing in mind tournamentSize, which establishes how many individuals will be involved in one tournament;
-		int tournamentSize= pob.size()/numIndividuals;
+		int tournamentSize= Math.round(pob.size()/numIndividuals);
 		
 		int i=1;
 		int j=0;
