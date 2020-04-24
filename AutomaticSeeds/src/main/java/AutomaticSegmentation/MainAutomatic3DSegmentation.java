@@ -112,6 +112,16 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 			prueba3.add(Individuo.class.cast(o));
 		}
 		*/
+		
+		int selectedMethod=1 + (int)(Math.random() * ((3 - 1) + 1));
+		System.out.println(selectedMethod);
+		
+		int selectedMethod2=1 + (int)(Math.random() * ((3 - 1) + 1));
+		System.out.println(selectedMethod2);
+		
+		int selectedMethod3=1 + (int)(Math.random() * ((3 - 1) + 1));
+		System.out.println(selectedMethod3);
+		
 		evolutionary_algorithm ev=new evolutionary_algorithm();
 		ev.setDir(dir);
 		

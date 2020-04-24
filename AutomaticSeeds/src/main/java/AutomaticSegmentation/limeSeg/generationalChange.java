@@ -4,29 +4,46 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.stream.IntStream;
 
 public class generationalChange {
 	
 	private ArrayList<Individuo> previousPopulation;// list of individuals which participate in the selection
-	private ArrayList<Individuo> candidates;//list of individuals which will generate the new population after mutation methods...etc-
+	private ArrayList<Individuo> nextGeneration;//list of individuals which will generate the new population after mutation methods...etc-
 	
-	public generationalChange(ArrayList<Individuo> population) {
-		
+	public generationalChange(ArrayList<Individuo> population, int nextPopulationSize) {
 		super();
-	
+		
+		this.nextGeneration =new ArrayList<Individuo>(nextPopulationSize);
+		
 		//First we get the two individuals with maximum score, they will pass directly to the next generation:
 		Individuo bestIndividual = Collections.max(population, Comparator.comparingDouble(Individuo::getScore));
-		this.candidates.add(bestIndividual);
-		population.remove(bestIndividual);//it is removed so that it is not consider in the selection process
-		
+		this.nextGeneration.add(bestIndividual);
+		population.remove(bestIndividual);//the best individual is removed temporarily in order to find the second maximum value
+
 		//we do the same for the second best individual:
 		Individuo bestIndividual2 = Collections.max(population, Comparator.comparingDouble(Individuo::getScore));
-		this.candidates.add(bestIndividual2);
-		population.remove(bestIndividual2);
+		this.nextGeneration.add(bestIndividual2);
+		population.add(bestIndividual);//we add the bestIndividual again
+				
+				
+
+		while(this.nextGeneration.size()<nextPopulationSize) {
+			
+			int selectedMethodForGeneration = 1 + (int)(Math.random() * ((2 - 1) + 1));//this variable represents the method selected to generate one individual of the next population
+			//There two methods: only one parent(1) or two parents(2).
+			if(selectedMethodForGeneration==1) {//the individual of the next population will be generated taking into account only one individual of the previous population
+				
+				//elegir la nueva mutacion de un individuo seleccionado por torneo o ruleta
+				
+			}else {//the individual of the next population will be generated taking into account two individuals of the previous generation
+				
+				//elegir el método para generar el nuevo individuo
+				
+			}
 		
+		}
 		
-		//finally the rest of the population is passed to the list of individuals which participate in the selection:
-		this.setPreviousPopulation(population);
 			
 	}
 	
@@ -60,50 +77,60 @@ public class generationalChange {
 	
 	
 	
-	public ArrayList<Individuo> rouletteWheelSelection(ArrayList<Individuo> pob,int selpobnum){//selpobnum is the number of candidates to be selected to generate the new population
-		ArrayList<Individuo> pobroul = new ArrayList<Individuo>();
+	public Individuo rouletteWheelSelection(ArrayList<Individuo> pob,int maxRange){//maxRange is a parameter to determine the range of numbers of the wheel selection
+		Individuo selectedIndividual = null;
 		
-		double sum=pob.stream().mapToDouble(a -> a.getScore()).sum();
-		double[]partialSums=new double[pob.size()];//array with the likelihoods of all candidates;
-		double partialsum=0;//each individual will have the sum of the scores of the previous individuals as likelihood
+		
+		int [] numbers=new int[maxRange];//an array will be created with the size of maxRange, whose values will go from 0 to maxRange.
+		int z;
+		
+		for(z=0;z<maxRange;z++) {
+			numbers[z]=z;
+		}
+		
+		int globalIndex= 0;
+		
+		double sum=pob.stream().mapToDouble(a -> a.getScore()).sum();//the sum of all scores is calculated to create likelihoods
+		
+		int[][]probabilities=new int[pob.size()][];//array with the likelihoods of all candidates;
+		
 		int i;
 		
-		//the probabilities are saved:
-		for(i=0;i<pob.size();i++) {
-			partialsum+=pob.get(i).getScore();
-			partialSums[i]=partialsum;
+		for(i=0;i<pob.size();i++) { 
+			//for each individual his probability is calcualted:pob.get(i).getScore()/sum)
+			//depending on the likelihood they will get more numbers of the array:Math.round( ( (pob.get(i).getScore()/sum) *maxRange) )
+			//For example, if there is a population with three individuals: I1 (Score:10), I2 (Score:20), I3(Score:30), the scores sum is 60
+			//therefore: P(I1)=10/60=0.16667=0.17, P(I2)=20/60=0.33333...=0.33, P(I3)=30/60=1/2=0.5, where P is the probability of an individual
+			 int range=(int) Math.round( ( (pob.get(i).getScore()/sum) *maxRange) );
+			 
+			//Finally, if we create an array of 10 numbers representing the likelihoods [0,1,2,3...10] their corresponding numbers are:
+			//I1:10 x 0.2= 2 numbers (1,2), I2:10 X0.33=3.3=3 3 numbers (3,4,5), and I3: 10 x 0.5 = 5 numbers (6,7,8,9,10)
+			 probabilities[i]=Arrays.copyOfRange(numbers, globalIndex, range);//calculus of the corresponding numbers of an individual
+			 globalIndex=range+1;
+			 
+			 //Thus, the higher is the fitness of the individuals, the more is the likelihood of being selected
 		}
+		
 		
 		int j=0;
+		//Now we create a number between 0 and 100. This number determines where the roulette will stop, the individual with that number will be selected
+		int rng = (int) Math.round((Math.random()*((100-0)+1))+0); //it generates a number between 0 and 100,which will establish the candidate to be chosen
 		
-		//first we calculate the first value, where the roulette will stop
-		double rng = (Math.random()*((sum-partialSums[0])+1))+partialSums[0];//it generates a number between the first score and the sum of all scores, which will state the candidates to be chosen
-		
-		//now we execute the roulette until the number of selected candidates is equal to selpobnum:
-		
-		while(pobroul.size()<=selpobnum) {//while the size of the candidates selected is not equal to selpobnum the roulette will be repeated again:
+		while(selectedIndividual == null) {
 			
-			//if the partialsum of the candidate is greater than the value of the roulette, it will be selected
-			if(partialSums[j]>=rng) {
-						
-						pobroul.add(pob.get(i));
+			int[] a = probabilities[j];
+			boolean contains = IntStream.of(a).anyMatch(x -> x == rng);
+			
+			if(contains == true) {
+				selectedIndividual=pob.get(j);
 			}
 			
-			//if we have not looped all the array, we continue checking if the likelihood is greater than rng;
-			if(j<partialSums.length) {
-				
-				j++;
-				
-			}else {
-				//if we have checked the whole array, it starts again:
-				j=0;
-				rng = (Math.random()*((sum-partialSums[0])+1))+partialSums[0];
-			}
-							
+			
+			j=j+1;
 		}
 		
-			
-		return pobroul;
+	
+		return selectedIndividual;
 	}
 	
 	
