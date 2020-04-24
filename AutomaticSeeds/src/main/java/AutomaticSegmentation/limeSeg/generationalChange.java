@@ -134,70 +134,86 @@ public class generationalChange {
 	}
 	
 	
-	public ArrayList<Individuo> tournamentSelection(ArrayList<Individuo> pob, int numIndividuals){
-		//numIndividuals is the variable to represent the number of individuals selected for the new population after the tournaments
+	public Individuo tournamentSelection(ArrayList<Individuo> pob, int numIndividuals){
+		//numIndividuals is the variable to represent the number of individuals which participate in a tournament
 		
 		//The fittest individuals of the tournaments will be stored in this variable:
 		ArrayList<Individuo> fittestIndividuals = new ArrayList<Individuo>();
 		
-		//the lower numIndividuals is, the lower it is the likelihood of weak individuals to pass to the next population,
-		//since the tournaments will include more individuals fitter than them.
+		//the lower numIndividuals is, the lower it is the likelihood of an individual to pass to the next population since they have to compete against more individuals to be selected
 		
 		//the comparison will be done bearing in mind tournamentSize, which establishes how many individuals will be involved in one tournament;
-		int tournamentSize= Math.round(pob.size()/numIndividuals);
+		int numOfTournaments= Math.round(pob.size()/numIndividuals);
 		
 		int i=1;
 		int j=0;
+		int z=0;
+		ArrayList<ArrayList<Individuo>> winners =  new ArrayList<ArrayList<Individuo>>(numOfTournaments+1); 
+		winners.get(0).addAll(pob);//the first arraylist of winners will be the whole population
 		
-		for(i=0;i<=numIndividuals;i=i+1){
+		for(z=0;z<winners.size();z++) {
 			
-				//tournamentIndividuals represents the individuals which will participate in the tournament:
-				ArrayList<Individuo> tournamentIndividuals = new ArrayList<Individuo>();
-			
-				//now we select the individuals using the size of the tournament to select the individuals:
-				//for example the selection of 40 candidates of a population of 200 candidates (tournamentSize=5): 
-				//tournament 1(starts in individual 0 and finishes the selection in the individual 4):0,1,2,3,4
-				//tournament 3(starts in individual 5 and finishes the selection in the individual 9):5,6,7,8,9
-				//etc
-			
-				for(j=i*tournamentSize; j<(j+tournamentSize);j++) {
-					tournamentIndividuals.add(pob.get(j));
-				}
-				
-				//Individuo fittestIndividual = Collections.max(tournamentIndividuals, Comparator.comparingDouble(Individuo::getScore));->calcula el maximo 
-				
-				//now we filter the Individuals basing on the score:
-				ArrayList <Individuo>fittestIndividual= new ArrayList<Individuo>();
-				tournamentIndividuals.stream().filter(a-> a.getScore()>75).forEach(a->fittestIndividual.add(a));
-				
-				if(fittestIndividual.isEmpty()) {
+		
+			for(i=0;i<winners.get(z).size();i=i+1){
 					
-					 tournamentIndividuals.stream().filter(a-> a.getScore()>25).forEach(a->fittestIndividual.add(a));
-					 
-				}else if(fittestIndividual.size()>1) {
+					//tournamentIndividuals represents the individuals which will participate in the tournament:
+					ArrayList<Individuo> tournamentIndividuals = new ArrayList<Individuo>();
 					
-					//if there is more than one individual of the tournament with equal score, it will be selected the fittest individual 
-					//depending on the standard deviation:
-					
-					Collections.sort(fittestIndividual, new Comparator<Individuo>() {
-						public int compare(Individuo i1, Individuo i2) {
-
-							return i1.getStdVertex().compareTo(i2.getStdVertex());
-						}
-			        });
-					
-					fittestIndividuals.add(fittestIndividual.get(0));
+					//now we select the individuals using the size of the tournament to select the individuals:
+					//for example the selection of 40 candidates of a population of 200 candidates (tournamentSize=5): 
+					//tournament 1(starts in individual 0 and finishes the selection in the individual 4):0,1,2,3,4
+					//tournament 3(starts in individual 5 and finishes the selection in the individual 9):5,6,7,8,9
+					//etc
 				
-				}else {
-					//if there is only one candidate, it will be in the first position
-					fittestIndividuals.add(fittestIndividual.get(0));
-				}
-				
+					for(j=i*numIndividuals; j<(j+numIndividuals);j++) {//the individuals 
+						tournamentIndividuals.add(winners.get(z).get(j));
+					}
+					
+					double rng = Math.random()*(((1-0)+1))+0;
+					if(rng<0.75) {//if rng is not greater than 0.75 the best Individual is selected
+						
+						Individuo fittestIndividual = Collections.max(tournamentIndividuals, Comparator.comparingDouble(Individuo::getScore));//it calculates the maximum of the array
+						winners.get(z+1).add(fittestIndividual);
+					
+					}else {//else the worst individual is selected
+							
+						Individuo worstIndividual = Collections.min(tournamentIndividuals, Comparator.comparingDouble(Individuo::getScore));//it calculates the minimum of the array
+						winners.get(z+1).add(worstIndividual);
+					}
+					
+					/*
+					//now we filter the Individuals basing on the score:
+					ArrayList <Individuo>fittestIndividual= new ArrayList<Individuo>();
+					tournamentIndividuals.stream().filter(a-> a.getScore()>75).forEach(a->fittestIndividual.add(a));
+					
+					if(fittestIndividual.isEmpty()) {
+						
+						 tournamentIndividuals.stream().filter(a-> a.getScore()>25).forEach(a->fittestIndividual.add(a));
+						 
+					}else if(fittestIndividual.size()>1) {
+						
+						//if there is more than one individual of the tournament with equal score, it will be selected the fittest individual 
+						//depending on the standard deviation:
+						
+						Collections.sort(fittestIndividual, new Comparator<Individuo>() {
+							public int compare(Individuo i1, Individuo i2) {
 	
+								return i1.getStdVertex().compareTo(i2.getStdVertex());
+							}
+				        });
+						
+						fittestIndividuals.add(fittestIndividual.get(0));
+					
+					}else {
+						//if there is only one candidate, it will be in the first position
+						fittestIndividuals.add(fittestIndividual.get(0));
+					}
+					*/
+			}
 		}
 		
 		
-		return fittestIndividuals;
+		return winners.get(z).get(0);//returns the only element of the last list,which will be the winner of the tournament.
 		
 	}
 	
