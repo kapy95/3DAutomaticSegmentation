@@ -68,8 +68,7 @@ public class generationalChange {
 					selectedIndividual2=this.tournamentSelection(population, 4);
 				}
 				
-				
-				
+
 				int selectedMethod2 =	1 + (int)(Math.random() * ((3 - 1) + 1));//it selects which crossover method is going to be selected:
 			
 				if(selectedMethod2==1) {//only crossover
