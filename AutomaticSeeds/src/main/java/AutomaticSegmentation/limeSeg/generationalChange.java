@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 public class generationalChange {
@@ -218,7 +219,6 @@ public class generationalChange {
 	}
 	
 	public Individuo SinglePointCrossOver(Individuo i1, Individuo i2) {
-		
 		Individuo indGeneratedSPX = new Individuo();
 		int rng = 1 + (int)(Math.random() * ((2 - 1) + 1));
 		
@@ -261,7 +261,87 @@ public class generationalChange {
 	}
 	
 	
-	
+	public Individuo blendCrossOver(Individuo i1, Individuo i2) {//blend alpha algorithm for crossover in real coded algorithms
+		Individuo indGenerated= new Individuo();
+		
+		float[] D0_values = {i1.getD0(),i2.getD0()};
+		float[] Range_D0_values = {i1.getRange_d0(),i2.getRange_d0()};
+		float[] F_pressure_values = {i1.getFp(),i2.getFp()};
+		
+		//gene:limeseg parameters
+		//Now all the arrays are ordered in ascending order so that we can figure out which gene has the minimum value and the maximum value
+		Arrays.sort(D0_values);
+		Arrays.sort(Range_D0_values);
+		Arrays.sort(F_pressure_values);
+		
+		//therefore the first element will be the minimum and the next element will be the maximum
+		float minD0=D0_values[0];
+		float maxD0=D0_values[1];
+		
+		float minRange_D0_values=Range_D0_values[0];
+		float maxRange_D0_values=Range_D0_values[1];
+
+		
+		float minF_pressure_values=F_pressure_values[0];
+		float maxF_pressure_values=F_pressure_values[1];
+		
+		//the parameters of the BLX algorithm are calculated in order to produce new individuals:
+		float alfa=0.1f;//fixed value of the algorithm, it must be within 0 and 1, in other words:[0,1]
+		
+		//First the bounds to generate the new values are calculated for each parameter (gene)
+		float upperBoundD0=maxD0+(alfa*(maxD0-minD0));
+		float lowerBoundD0=minD0+(alfa*(maxD0-minD0));
+		
+		//if the upperbound is bigger than the maximum of limeseg, it will be set to the maximum of limeseg:
+		if(upperBoundD0>18.0f) {
+			upperBoundD0=18.0f;
+		}
+		
+		//if the lowerbound is lower than the minimum of limeseg, it will be set to the minimum of limeseg:
+		if(lowerBoundD0<1.0f) {
+			lowerBoundD0=1.0f;
+		}
+		
+		//the same process is repeated for the others genes:
+		
+		//RangeD0:
+		float upperBoundRangeD0=maxRange_D0_values+(alfa*(maxRange_D0_values-minRange_D0_values));
+		float lowerBoundRangeD0=minRange_D0_values+(alfa*(maxRange_D0_values-minRange_D0_values));
+		
+		if(upperBoundRangeD0>8.5f) {
+			upperBoundD0=8.5f;
+		}
+		
+		if(lowerBoundRangeD0<0.5f) {
+			lowerBoundD0=0.5f;
+		}
+		
+		
+		//F_pressure:
+		float upperBoundF_pressure_values=maxF_pressure_values+(alfa*(maxF_pressure_values-minF_pressure_values));
+		float lowerBoundF_pressure_values=minF_pressure_values+(alfa*(maxF_pressure_values-minF_pressure_values));
+		
+		if(upperBoundF_pressure_values>0.025f) {
+			upperBoundD0=0.025f;
+		}
+		
+		if(lowerBoundRangeD0<-0.03f) {
+			lowerBoundD0=-0.03f;
+		}
+		//Min + (int)(Math.random() * ((Max - Min) + 1))
+		
+		//finally the values for the individual are calculated:
+		float D0 = lowerBoundD0 + (float) (Math.random() * ( (upperBoundD0 - lowerBoundD0) + 1) );
+		float range_D0= lowerBoundD0 + (float) (Math.random() * ( (upperBoundRangeD0 - lowerBoundRangeD0) + 1) );
+		float f_pressure= lowerBoundF_pressure_values + (float) (Math.random() * ( (upperBoundF_pressure_values- lowerBoundF_pressure_values) + 1) );
+		
+		indGenerated.setD0(D0);
+		indGenerated.setRange_d0(range_D0);
+		indGenerated.setF_pressure(f_pressure);
+		
+		
+		return indGenerated;
+	}
 	
 	
 	
