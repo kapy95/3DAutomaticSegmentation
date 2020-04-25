@@ -15,8 +15,6 @@ public class generationalChange {
 	public generationalChange(ArrayList<Individuo> population, int nextPopulationSize) {
 		super();
 		
-		this.nextGeneration =new ArrayList<Individuo>(nextPopulationSize);
-		
 		//First we get the two individuals with maximum score, they will pass directly to the next generation:
 		Individuo bestIndividual = Collections.max(population, Comparator.comparingDouble(Individuo::getScore));
 		this.nextGeneration.add(bestIndividual);
@@ -26,26 +24,41 @@ public class generationalChange {
 		Individuo bestIndividual2 = Collections.max(population, Comparator.comparingDouble(Individuo::getScore));
 		this.nextGeneration.add(bestIndividual2);
 		population.add(bestIndividual);//we add the bestIndividual again
-				
-				
-
-		while(this.nextGeneration.size()<nextPopulationSize) {
-			
-			int selectedMethodForGeneration = 1 + (int)(Math.random() * ((2 - 1) + 1));//this variable represents the method selected to generate one individual of the next population
-			//There two methods: only one parent(1) or two parents(2).
-			if(selectedMethodForGeneration==1) {//the individual of the next population will be generated taking into account only one individual of the previous population
-				
-				//elegir la nueva mutacion de un individuo seleccionado por torneo o ruleta
-				
-			}else {//the individual of the next population will be generated taking into account two individuals of the previous generation
-				
-				//elegir el método para generar el nuevo individuo
-				
-			}
 		
+		int counterMutated=0;
+		int maxMutated=(int) Math.round(0.85f*nextPopulationSize);
+		
+		int counterCrossover=0;
+		int maxCrossover=(int) Math.round(0.85f*nextPopulationSize);
+		
+		this.nextGeneration =new ArrayList<Individuo>(nextPopulationSize);
+		while(this.nextGeneration.size()<nextPopulationSize) {
+		int selectedMethod1 =	1 + (int)(Math.random() * ((2 - 1) + 1));//it selects whether mutation or crossover is going to be used:
+		
+		//if selectedMethod1 is equal to 1 and if the maximum amount of individuals created by crossover is lower than 85% of the new populationsize, the new individual will be created by crossover:
+			if(selectedMethod1==1 && maxCrossover>counterCrossover) {
+				
+				counterCrossover=counterCrossover+1;// we increase the counter
+				
+				int selectedMethod2 =	1 + (int)(Math.random() * ((3 - 1) + 1));//it selects whether mutation or crossover is going to be used:
+				
+				
+			}else{
+				
+				int selectedMethod2 =	1 + (int)(Math.random() * ((3 - 1) + 1));//it selects whether roulette or tournament is going to be used to select the individual
+				
+				
+					
+			}
+			
+			
+			
+			
 		}
 		
+		
 			
+		
 	}
 	
 	
@@ -262,6 +275,7 @@ public class generationalChange {
 	
 	
 	public Individuo blendCrossOver(Individuo i1, Individuo i2) {//blend alpha algorithm for crossover in real coded algorithms
+		
 		Individuo indGenerated= new Individuo();
 		
 		float[] D0_values = {i1.getD0(),i2.getD0()};
@@ -332,7 +346,7 @@ public class generationalChange {
 		
 		//finally the values for the individual are calculated:
 		float D0 = lowerBoundD0 + (float) (Math.random() * ( (upperBoundD0 - lowerBoundD0) + 1) );
-		float range_D0= lowerBoundD0 + (float) (Math.random() * ( (upperBoundRangeD0 - lowerBoundRangeD0) + 1) );
+		float range_D0= lowerBoundRangeD0 + (float) (Math.random() * ( (upperBoundRangeD0 - lowerBoundRangeD0) + 1) );
 		float f_pressure= lowerBoundF_pressure_values + (float) (Math.random() * ( (upperBoundF_pressure_values- lowerBoundF_pressure_values) + 1) );
 		
 		indGenerated.setD0(D0);
@@ -344,6 +358,75 @@ public class generationalChange {
 	}
 	
 	
+	public Individuo mutation(Individuo i1) {
+		
+		Individuo indMutated=new Individuo();
+		
+		//First the bound to generate the new value of D0 are calculated
+		float lowerBoundD0=i1.getD0()-0.5f;
+		float upperBoundD0=i1.getD0()+0.5f;
+
+		
+		//if the upperbound is bigger than the maximum of limeseg, it will be set to the maximum of limeseg:
+		if(upperBoundD0>18.0f) {
+			upperBoundD0=18.0f;
+		}
+		
+		//if the lowerbound is lower than the minimum of limeseg, it will be set to the minimum of limeseg:
+		if(lowerBoundD0<1.0f) {
+			lowerBoundD0=1.0f;
+		}
+		
+		//then we calculate the value for D0:
+		float D0 = lowerBoundD0 + (float) (Math.random() * ( (upperBoundD0 - lowerBoundD0) + 1) );
+		
+		
+		float rng = 0 + (float) (Math.random() * ( (1 - 0) + 1) );//it generates a number between 0 and 1
+		
+		if(rng>0.8) {// if rng is greater than 0.8 the other genes are also mutated
+			
+			//the same process is applied to the other genes
+			
+			//RangeD0:
+			float upperBoundRangeD0=i1.getRange_d0()+0.25f;
+			float lowerBoundRangeD0=i1.getRange_d0()-0.25f;
+			
+			if(upperBoundRangeD0>8.5f) {
+				upperBoundD0=8.5f;
+			}
+			
+			if(lowerBoundRangeD0<0.5f) {
+				lowerBoundD0=0.5f;
+			}
+			
+			
+			//F_pressure:
+			float upperBoundF_pressure_values=i1.getFp()+0.05f;
+			float lowerBoundF_pressure_values=i1.getFp()-0.05f;
+			
+			if(upperBoundF_pressure_values>0.025f) {
+				upperBoundD0=0.025f;
+			}
+			
+			if(lowerBoundRangeD0<-0.03f) {
+				lowerBoundD0=-0.03f;
+			}
+			//finally the values for the individual are calculated:
+			
+			float range_D0= lowerBoundD0 + (float) (Math.random() * ( (upperBoundRangeD0 - lowerBoundRangeD0) + 1) );
+			float f_pressure= lowerBoundF_pressure_values + (float) (Math.random() * ( (upperBoundF_pressure_values- lowerBoundF_pressure_values) + 1) );
+			
+			indMutated.setF_pressure(f_pressure);
+			indMutated.setRange_d0(range_D0);
+		}
+		
+		indMutated.setD0(D0);
+		
+		return indMutated ;
+		
+		
+	}
+	
 	
 	public ArrayList<Individuo> getPreviousPopulation() {
 		return previousPopulation;
@@ -353,7 +436,6 @@ public class generationalChange {
 	public void setPreviousPopulation(ArrayList<Individuo> previousPopulation) {
 		this.previousPopulation = previousPopulation;
 	}
-	
 	
 	
 
