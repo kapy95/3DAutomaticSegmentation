@@ -241,52 +241,6 @@ public class evolutionary_algorithm {
 	}
 	
 	
-	public Individuo[] MutationFunction() {
-		
-		 
-		Object[] bestIndividuals1= poblacion.stream().filter(ind-> ind.getScore()>75).toArray();
-		
-		if(bestIndividuals1==null || bestIndividuals1.length==1) {
-			bestIndividuals1= poblacion.stream().filter(ind-> ind.getScore()>50).toArray();
-		}
-		
-		ArrayList<Individuo> bestIndividuals2= new ArrayList<>();
-		
-		for(Object o:bestIndividuals1) {
-			
-			bestIndividuals2.add(Individuo.class.cast(o));
-		}
-		
-		
-		Collections.sort(bestIndividuals2, new Comparator<Individuo>() {
-				public int compare(Individuo i1, Individuo i2) {
-
-					return i1.getStdVertex().compareTo(i2.getStdVertex());
-				}
-	        });
-		
-		int size;
-		
-		if((bestIndividuals2.size()%2)!=0) {
-			size=(bestIndividuals2.size()-1)/2;
-		}else {
-			size=(bestIndividuals2.size())/2;
-		}
-		
-		int i;	  
-		
-		Individuo[] bestRandomIndividuals= new Individuo[size];
-		
-		for(i=0;i<size;i++) {
-			
-			 int randomInt = (int)(bestIndividuals2.size() * Math.random());
-			 bestRandomIndividuals[i]=bestIndividuals2.get(randomInt);
-		}
-		
-		return bestRandomIndividuals;
-		
-	}
-	
 	
 	public void NewPopulationGenerator(int iter, Individuo[] bestRandomIndividuals) {
 		

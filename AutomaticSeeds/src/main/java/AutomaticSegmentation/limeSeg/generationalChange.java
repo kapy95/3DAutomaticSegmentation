@@ -82,8 +82,19 @@ public class generationalChange {
 					}
 					
 					
-				}else if(selectedMethod2==2) {
+				}else if(selectedMethod2==2) {//crossover+mutation:
 					
+					Individuo i1mutated=this.mutation(selectedIndividual1);
+					Individuo i2mutated=this.mutation(selectedIndividual2);
+					
+					int selectedMethodCrossover =	1 + (int)(Math.random() * ((2 - 1) + 1));//it selects which crossover method is going to be selected:
+					
+					if(selectedMethodCrossover==1) {//if it is equal to 1 it will be selected double point crossover
+						this.nextGeneration.add(this.DoublePointCrossOver(i1mutated, i2mutated));
+						
+					}else {//else it will be selected single point crossover
+						this.nextGeneration.add(this.SinglePointCrossOver(i1mutated, i2mutated));
+					}
 					
 					
 				}else { //blend algorithm will be selected for crossover
@@ -112,13 +123,7 @@ public class generationalChange {
 				
 			}
 			
-			
-			
-			
 		}
-		
-		
-			
 		
 	}
 	
