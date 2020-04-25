@@ -122,22 +122,21 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		int selectedMethod3=1 + (int)(Math.random() * ((3 - 1) + 1));
 		System.out.println(selectedMethod3);
 		
-		evolutionary_algorithm ev=new evolutionary_algorithm();
-		ev.setDir(dir);
+		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
 		
 		//Primera poblacion
 		ev.InitialPopulationGenerator(100,0);
 		ev.FitnessCalculation();
-		Individuo[] bestIndividuals =ev.MutationFunction();
+
 	
 		int i;
 		//empezamos en 1 porque la poblacion inicial no contaría como una iteración del algoritmo
 		
 		for(i=1;i<=200;i++) {
 			
-			ev.NewPopulationGenerator(i,bestIndividuals);
-			ev.FitnessCalculation();
-			bestIndividuals=ev.MutationFunction();
+			//ev.NewPopulationGenerator(i,bestIndividuals);
+			//ev.FitnessCalculation();
+			//bestIndividuals=ev.MutationFunction();
 			
 		}
 		

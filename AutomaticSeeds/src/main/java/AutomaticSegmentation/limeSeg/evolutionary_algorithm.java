@@ -37,15 +37,37 @@ public class evolutionary_algorithm {
 	/**
 	 * 
 	 */
-	public evolutionary_algorithm() {
+	public evolutionary_algorithm(File path) {
 		super();
 		// TODO Auto-generated constructor stub
 		this.poblacion=new ArrayList<Individuo>();
-		this.dir=null;
+		this.dir=path;
 	}
-
 	
 	
+	public void main() {
+		
+		this.InitialPopulationGenerator(100,0);
+		this.FitnessCalculation();
+		int i=0;
+		generationalChange change=new generationalChange(this.poblacion,10);
+		this.deletePopulation();
+		this.poblacion=change.nextGeneration;
+			
+		for(i=0;i<200;i++){
+			
+			this.NewPopulationGenerator(i);
+			this.FitnessCalculation();
+			generationalChange iterativeChange=new generationalChange(this.poblacion,10);
+			this.deletePopulation();
+			this.poblacion=iterativeChange.getNextPopulation();
+			
+		}
+		
+		Individuo bestIndividual = Collections.max(this.poblacion, Comparator.comparingDouble(Individuo::getScore));
+		System.out.println(bestIndividual.getDir());
+		
+	}
 	
 	
 	public void InitialPopulationGenerator(Integer nPoblacion,int iter) {
@@ -242,7 +264,7 @@ public class evolutionary_algorithm {
 	
 	
 	
-	public void NewPopulationGenerator(int iter, Individuo[] bestRandomIndividuals) {
+	public void NewPopulationGenerator(int iter) {
 		
 			//the folder for the new individuals is created
 			File newres=new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(iter));
@@ -250,99 +272,9 @@ public class evolutionary_algorithm {
 			
 			//only Zscale has the same value for the new generations:
 			float ZS=4.06f;// variable con el valor del z_scale
+			int i=0;
 			
-			int j;
-			
-			for(j=0;j<= bestRandomIndividuals.length-2;j=j+2) {
-				
-				//the first two parents are selected:
-				float[] D0_values = {bestRandomIndividuals[j].getD0(),bestRandomIndividuals[j+1].getD0()};
-				float[] Range_D0_values = {bestRandomIndividuals[j].getRange_d0(),bestRandomIndividuals[j+1].getRange_d0()};
-				float[] F_pressure_values = {bestRandomIndividuals[j].getFp(),bestRandomIndividuals[j+1].getFp()};
-				
-				//gene:limeseg parameters
-				//Now all the arrays are ordered in ascending order so that we can figure out which gene has the minimum value and the maximum value
-				Arrays.sort(D0_values);
-				Arrays.sort(Range_D0_values);
-				Arrays.sort(F_pressure_values);
-				
-				//therefore the first element will be the minimum and the next element will be the maximum
-				float minD0=D0_values[0];
-				float maxD0=D0_values[1];
-				
-				float minRange_D0_values=Range_D0_values[0];
-				float maxRange_D0_values=Range_D0_values[1];
-
-				
-				float minF_pressure_values=F_pressure_values[0];
-				float maxF_pressure_values=F_pressure_values[1];
-				
-				//the parameters of the BLX algorithm are calculated in order to produce new individuals:
-				float alfa=0.1f;//fixed value of the algorithm, it must be within 0 and 1, in other words:[0,1]
-				
-				//First the bounds to generate the new values are calculated for each parameter (gene)
-				float upperBoundD0=maxD0+(alfa*(maxD0-minD0));
-				float lowerBoundD0=minD0+(alfa*(maxD0-minD0));
-				
-				//if the upperbound is bigger than the maximum of limeseg, it will be set to the maximum of limeseg:
-				if(upperBoundD0>20.0f) {
-					upperBoundD0=20.0f;
-				}
-				
-				//if the lowerbound is lower than the minimum of limeseg, it will be set to the minimum of limeseg:
-				if(lowerBoundD0<1.0f) {
-					lowerBoundD0=1.0f;
-				}
-				
-				//the same process is repeated for the others genes:
-				
-				//RangeD0:
-				float upperBoundRangeD0=maxRange_D0_values+(alfa*(maxRange_D0_values-minRange_D0_values));
-				float lowerBoundRangeD0=minRange_D0_values+(alfa*(maxRange_D0_values-minRange_D0_values));
-				
-				if(upperBoundRangeD0>10.0f) {
-					upperBoundD0=10.0f;
-				}
-				
-				if(lowerBoundRangeD0<0.5f) {
-					lowerBoundD0=0.5f;
-				}
-				
-				
-				//F_pressure:
-				float upperBoundF_pressure_values=maxF_pressure_values+(alfa*(maxF_pressure_values-minF_pressure_values));
-				float lowerBoundF_pressure_values=minF_pressure_values+(alfa*(maxF_pressure_values-minF_pressure_values));
-				
-				if(upperBoundF_pressure_values>0.03f) {
-					upperBoundD0=0.03f;
-				}
-				
-				if(lowerBoundRangeD0<-0.03f) {
-					lowerBoundD0=-0.03f;
-				}
-				
-				//10 new values are calculated for each parameter within a range, which is established by the minimum, and the maximum
-				//of each parameter:
-				Random r = new Random();
-				double[] randomD0_values= r.doubles(2,lowerBoundD0,upperBoundD0).toArray();
-				
-				double[] randomRange_D0_values= r.doubles(2,lowerBoundRangeD0,upperBoundRangeD0).toArray();
-				
-				double[] randomF_pressure_values= r.doubles(2,lowerBoundF_pressure_values,upperBoundF_pressure_values).toArray();
-			
-				int i;
-				
-				//For each combination a new individual will be created:
-				//but first the previous population must be deleted:
-				this.deletePopulation();
-				
-				//hay que cambiar este for para que sea para cada valor de los arrays random de arriba
-				for(i=0;i<=(randomD0_values.length-1);i++) {
-					
-					Individuo ind=new Individuo();
-					ind.setF_pressure((float) randomF_pressure_values[i]);
-					ind.setD0((float) randomD0_values[i]);
-					ind.setRange_d0((float) randomRange_D0_values[i]);
+				for(Individuo ind:this.poblacion) {
 					
 					//llamo a la clase que va a llamar limeseg:
 					SphereSegAdapted seg=new SphereSegAdapted();
@@ -351,7 +283,6 @@ public class evolutionary_algorithm {
 					seg.setF_pressure(ind.getFp());
 					seg.setZ_scale(ZS);
 					seg.setRange_in_d0_units(ind.getRange_d0());
-					
 					
 					seg.run();//empieza a ejecutarse run
 					
@@ -380,16 +311,14 @@ public class evolutionary_algorithm {
 				
 					System.out.println("Ha salido del while");
 					ind.setDir(new File(newres.toString()+String.valueOf(i)+String.valueOf(iter)));
-			       	//dirNuevo.mkdir();
 					ind.getDir().mkdir();//it creates the directory for that individual
 			       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
 			       	LimeSeg.clear3DDisplay();
 			       	LimeSeg.clearAllCells();
 			       	
 			       	poblacion.add(ind);
-				}
+			       	i++;
 			}
-		
 	}
 	
 	

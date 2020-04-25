@@ -9,8 +9,7 @@ import java.util.stream.IntStream;
 
 public class generationalChange {
 	
-	private ArrayList<Individuo> previousPopulation;// list of individuals which participate in the selection
-	private ArrayList<Individuo> nextGeneration;//list of individuals which will generate the new population after mutation methods...etc-
+	public ArrayList<Individuo> nextGeneration;//list of individuals which will generate the new population after mutation methods...etc-
 	
 	public generationalChange(ArrayList<Individuo> population, int nextPopulationSize) {
 		super();
@@ -129,7 +128,7 @@ public class generationalChange {
 	
 	
 	public void main() {
-		
+		/*
 		int numCandidates = Math.round(this.previousPopulation.size()/2);
 		int i;
 		ArrayList<Individuo> rouletteIndividuals=new ArrayList<Individuo>();
@@ -148,7 +147,7 @@ public class generationalChange {
 				
 			}
 		}
-		
+		*/
 		//this.rouletteWheelSelection(rouletteIndividuals,)
 		
 		
@@ -159,7 +158,6 @@ public class generationalChange {
 	
 	public Individuo rouletteWheelSelection(ArrayList<Individuo> pob,int maxRange){//maxRange is a parameter to determine the range of numbers of the wheel selection
 		Individuo selectedIndividual = null;
-		
 		
 		int [] numbers=new int[maxRange];//an array will be created with the size of maxRange, whose values will go from 0 to maxRange.
 		int z;
@@ -493,7 +491,7 @@ public class generationalChange {
 		
 	}
 	
-	
+	/*
 	public ArrayList<Individuo> getPreviousPopulation() {
 		return previousPopulation;
 	}
@@ -501,6 +499,11 @@ public class generationalChange {
 	
 	public void setPreviousPopulation(ArrayList<Individuo> previousPopulation) {
 		this.previousPopulation = previousPopulation;
+	}
+	*/
+	
+	public ArrayList<Individuo> getNextPopulation(){
+		return this.nextGeneration;
 	}
 	
 	
