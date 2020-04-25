@@ -26,6 +26,7 @@ import AutomaticSegmentation.gui.MainWindow;
 import AutomaticSegmentation.limeSeg.Individuo;
 import AutomaticSegmentation.limeSeg.SphereSegAdapted;
 import AutomaticSegmentation.limeSeg.evolutionary_algorithm;
+import AutomaticSegmentation.limeSeg.generationalChange;
 import eu.kiaru.limeseg.LimeSeg;
 import ij.IJ;
 import ij.ImageJ;
@@ -122,14 +123,32 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		int selectedMethod3=1 + (int)(Math.random() * ((3 - 1) + 1));
 		System.out.println(selectedMethod3);
 		
+		int i=0;
+		ArrayList<Individuo> tests= new ArrayList<Individuo>(10);
+		
+		for(i=0;i<10;i++) {
+			
+			Individuo guineaPig= new Individuo();
+			float randomF_pressure= -0.03f + (float)(Math.random() * ((0.06f+ 0.03f) + 1));
+			float randomD0= 1 + (float)(Math.random() *((18-1) + 1));
+			float randomRange_D0=0.5f+(float)(Math.random() * ((8.5f-0.5f) + 1));
+			double score=0+(double)(Math.random() *((100-0) + 1));
+			guineaPig.setD0(randomD0);
+			guineaPig.setF_pressure(randomF_pressure);
+			guineaPig.setRange_d0(randomRange_D0);
+			guineaPig.setScore(score);
+			tests.add(guineaPig);
+		}
+		
+		generationalChange testing=new generationalChange(tests,10);
+
+		
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
 		
 		//Primera poblacion
-		ev.InitialPopulationGenerator(100,0);
-		ev.FitnessCalculation();
+		ev.main();
 
-	
-		int i;
+		//int i;
 		//empezamos en 1 porque la poblacion inicial no contaría como una iteración del algoritmo
 		
 		for(i=1;i<=200;i++) {
