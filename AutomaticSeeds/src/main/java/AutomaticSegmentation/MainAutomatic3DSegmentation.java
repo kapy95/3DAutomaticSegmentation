@@ -141,7 +141,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		}
 		
 		generationalChange testing=new generationalChange(tests,10);
-
+		Individuo i1=testing.rouletteWheelSelection(tests, 100);
 		
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
 		

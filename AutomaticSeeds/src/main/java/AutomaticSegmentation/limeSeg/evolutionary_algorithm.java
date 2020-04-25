@@ -51,15 +51,18 @@ public class evolutionary_algorithm {
 		this.FitnessCalculation();
 		int i=0;
 		generationalChange change=new generationalChange(this.poblacion,10);
+		change.main(poblacion, 10);
 		this.deletePopulation();
-		this.poblacion=change.nextGeneration;
+		this.poblacion=change.getNextPopulation();
 			
 		for(i=0;i<200;i++){
 			
 			this.NewPopulationGenerator(i);
 			this.FitnessCalculation();
 			generationalChange iterativeChange=new generationalChange(this.poblacion,10);
+			iterativeChange.main(poblacion, 10);
 			this.deletePopulation();
+			
 			this.poblacion=iterativeChange.getNextPopulation();
 			
 		}

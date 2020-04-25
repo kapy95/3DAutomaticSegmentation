@@ -13,7 +13,7 @@ public class generationalChange {
 	
 	public generationalChange(ArrayList<Individuo> population, int nextPopulationSize) {
 		super();
-		
+		this.nextGeneration =new ArrayList<Individuo>(nextPopulationSize);
 		//First we get the two individuals with maximum score, they will pass directly to the next generation:
 		Individuo bestIndividual = Collections.max(population, Comparator.comparingDouble(Individuo::getScore));
 		this.nextGeneration.add(bestIndividual);
@@ -24,13 +24,17 @@ public class generationalChange {
 		this.nextGeneration.add(bestIndividual2);
 		population.add(bestIndividual);//we add the bestIndividual again
 		
+		
+	}
+	
+	
+	public void main(ArrayList<Individuo> population, int nextPopulationSize) {
 		int counterMutated=0;
 		int maxMutated=(int) Math.round(0.85f*nextPopulationSize);
 		
 		int counterCrossover=0;
 		int maxCrossover=(int) Math.round(0.85f*nextPopulationSize);
 		
-		this.nextGeneration =new ArrayList<Individuo>(nextPopulationSize);
 		while(this.nextGeneration.size()<nextPopulationSize) {
 		int selectedMethod1 =	1 + (int)(Math.random() * ((2 - 1) + 1));//it selects whether mutation or crossover is going to be used:
 		
@@ -123,33 +127,6 @@ public class generationalChange {
 			}
 			
 		}
-		
-	}
-	
-	
-	public void main() {
-		/*
-		int numCandidates = Math.round(this.previousPopulation.size()/2);
-		int i;
-		ArrayList<Individuo> rouletteIndividuals=new ArrayList<Individuo>();
-		ArrayList<Individuo> tournamentIndividuals=new ArrayList<Individuo>();
-		
-		//we will apply one of the selection method to the first half of the population and the other method to the other half:
-		for(i=0;i<numCandidates;i++) {
-			
-			if(i < Math.round(numCandidates/2)){
-				
-				rouletteIndividuals.add(this.previousPopulation.get(i));
-				
-			}else {
-				
-				tournamentIndividuals.add(this.previousPopulation.get(i));
-				
-			}
-		}
-		*/
-		//this.rouletteWheelSelection(rouletteIndividuals,)
-		
 		
 		
 	}
