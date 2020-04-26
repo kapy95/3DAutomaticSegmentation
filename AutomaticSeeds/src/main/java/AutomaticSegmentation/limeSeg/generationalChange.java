@@ -215,12 +215,12 @@ public class generationalChange {
 		int i=1;
 		int j=0;
 		int z=0;
-		ArrayList<ArrayList<Individuo>> winners =  new ArrayList<ArrayList<Individuo>>(numOfTournaments+1); 
-		winners.get(0).addAll(pob);//the first arraylist of winners will be the whole population
+		ArrayList<ArrayList<Individuo>> winners =  new ArrayList<ArrayList<Individuo>>(); 
+		winners.add(pob);//the first arraylist of winners will be the whole population
 		
 		for(z=0;z<winners.size();z++) {
 			
-		
+		ArrayList<Individuo> tournamentWinners = new ArrayList<Individuo>();//individuals which only win a tournament:
 			for(i=0;i<winners.get(z).size();i=i+1){
 					
 					//tournamentIndividuals represents the individuals which will participate in the tournament:
@@ -232,7 +232,7 @@ public class generationalChange {
 					//tournament 3(starts in individual 5 and finishes the selection in the individual 9):5,6,7,8,9
 					//etc
 				
-					for(j=i*numIndividuals; j<(j+numIndividuals);j++) {//the individuals 
+					for(j=i*numIndividuals; j<((i*2)+numIndividuals);j++) {//the individuals ,which are going to participate, are selected
 						tournamentIndividuals.add(winners.get(z).get(j));
 					}
 					
@@ -240,12 +240,12 @@ public class generationalChange {
 					if(rng<0.75) {//if rng is not greater than 0.75 the best Individual is selected
 						
 						Individuo fittestIndividual = Collections.max(tournamentIndividuals, Comparator.comparingDouble(Individuo::getScore));//it calculates the maximum of the array
-						winners.get(z+1).add(fittestIndividual);
+						tournamentWinners.add(fittestIndividual);
 					
 					}else {//else the worst individual is selected
 							
 						Individuo worstIndividual = Collections.min(tournamentIndividuals, Comparator.comparingDouble(Individuo::getScore));//it calculates the minimum of the array
-						winners.get(z+1).add(worstIndividual);
+						tournamentWinners.add(worstIndividual);
 					}
 					
 					/*
@@ -277,6 +277,10 @@ public class generationalChange {
 					}
 					*/
 			}
+			
+			winners.add(tournamentWinners);
+			
+			
 		}
 		
 		

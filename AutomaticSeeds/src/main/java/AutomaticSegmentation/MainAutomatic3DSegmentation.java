@@ -147,8 +147,10 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 			tests.add(guineaPig);
 		}
 		
+		
 		generationalChange testing=new generationalChange(tests,10);
-		Individuo i1=testing.rouletteWheelSelection(tests, 100);
+		Individuo i1=testing.tournamentSelection(tests, 2);
+		//Individuo i1=testing.rouletteWheelSelection(tests, 100);
 		
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
 		
