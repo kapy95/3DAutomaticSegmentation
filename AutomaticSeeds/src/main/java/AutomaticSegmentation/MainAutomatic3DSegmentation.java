@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.TreeMap;
 
@@ -126,13 +127,19 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		int i=0;
 		ArrayList<Individuo> tests= new ArrayList<Individuo>(10);
 		
+		Random rand = new Random();
+
+		// nextInt as provided by Random is exclusive of the top value so you need to add 1 
+
+		//int randomNum = rand.nextInt((max - min) + 1) + min;
+		
 		for(i=0;i<10;i++) {
-			
+			//float random = min + r.nextFloat() * (max - min);
 			Individuo guineaPig= new Individuo();
-			float randomF_pressure= -0.03f + (float)(Math.random() * ((0.06f+ 0.03f) + 1));
-			float randomD0= 1 + (float)(Math.random() *((18-1) + 1));
-			float randomRange_D0=0.5f+(float)(Math.random() * ((8.5f-0.5f) + 1));
-			double score=0+(double)(Math.random() *((100-0) + 1));
+			float randomF_pressure=-0.03f + rand.nextFloat() * (0.025f+0.03f);
+			float randomD0=1.0f + rand.nextFloat() * (18.0f-1.0f);
+			float randomRange_D0=0.5f + rand.nextFloat() * (8.5f-0.5f) ;
+			double score=1 + Math.random() * (100 - 1);
 			guineaPig.setD0(randomD0);
 			guineaPig.setF_pressure(randomF_pressure);
 			guineaPig.setRange_d0(randomRange_D0);
