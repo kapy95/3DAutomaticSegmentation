@@ -204,24 +204,21 @@ public class generationalChange {
 	public Individuo tournamentSelection(ArrayList<Individuo> pob, int numIndividuals){
 		//numIndividuals is the variable to represent the number of individuals which participate in a tournament
 		
-		//The fittest individuals of the tournaments will be stored in this variable:
-		ArrayList<Individuo> fittestIndividuals = new ArrayList<Individuo>();
-		
 		//the lower numIndividuals is, the lower it is the likelihood of an individual to pass to the next population since they have to compete against more individuals to be selected
 		
 		//the comparison will be done bearing in mind tournamentSize, which establishes how many individuals will be involved in one tournament;
 		int numOfTournaments= Math.round(pob.size()/numIndividuals);
 		
-		int i=1;
-		int j=0;
+		int i=0;
 		int z=0;
 		ArrayList<ArrayList<Individuo>> winners =  new ArrayList<ArrayList<Individuo>>(); 
 		winners.add(pob);//the first arraylist of winners will be the whole population
 		
-		for(z=0;z<winners.size();z++) {
-			
+		for(z=0;z<numOfTournaments-1;z++) {
+		int j=0;
 		ArrayList<Individuo> tournamentWinners = new ArrayList<Individuo>();//individuals which only win a tournament:
-			for(i=0;i<winners.get(z).size();i=i+1){
+
+			for(i=0;j<winners.get(z).size()-1;i=i+1){
 					
 					//tournamentIndividuals represents the individuals which will participate in the tournament:
 					ArrayList<Individuo> tournamentIndividuals = new ArrayList<Individuo>();
@@ -231,12 +228,21 @@ public class generationalChange {
 					//tournament 1(starts in individual 0 and finishes the selection in the individual 4):0,1,2,3,4
 					//tournament 3(starts in individual 5 and finishes the selection in the individual 9):5,6,7,8,9
 					//etc
-				
-					for(j=i*numIndividuals; j<((i*2)+numIndividuals);j++) {//the individuals ,which are going to participate, are selected
+					j=i*numIndividuals;
+					
+					while( j<( (i*2)+numIndividuals)  && j<winners.get(z).size()) {
+						tournamentIndividuals.add(winners.get(z).get(j));
+						j++;
+					}
+
+					
+					if(j==winners.get(z).size()-1 && winners.get(z).size()%2!=0) {
 						tournamentIndividuals.add(winners.get(z).get(j));
 					}
+						
 					
-					double rng = Math.random()*(((1-0)+1))+0;
+					Random rand = new Random();
+					double rng = 0 + rand.nextFloat()*1;
 					if(rng<0.75) {//if rng is not greater than 0.75 the best Individual is selected
 						
 						Individuo fittestIndividual = Collections.max(tournamentIndividuals, Comparator.comparingDouble(Individuo::getScore));//it calculates the maximum of the array

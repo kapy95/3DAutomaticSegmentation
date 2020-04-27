@@ -133,7 +133,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 
 		//int randomNum = rand.nextInt((max - min) + 1) + min;
 		
-		for(i=0;i<10;i++) {
+		for(i=0;i<5;i++) {
 			//float random = min + r.nextFloat() * (max - min);
 			Individuo guineaPig= new Individuo();
 			float randomF_pressure=-0.03f + rand.nextFloat() * (0.025f+0.03f);
