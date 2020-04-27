@@ -443,10 +443,11 @@ public class generationalChange {
 		}
 		
 		//then we calculate the value for D0:
-		float D0 = lowerBoundD0 + (float) (Math.random() * ( (upperBoundD0 - lowerBoundD0) + 1) );
+		Random rand = new Random();
+		float D0 = lowerBoundD0 + (float) (rand.nextFloat() * (upperBoundD0 - lowerBoundD0) );
 		
 		
-		float rng = 0 + (float) (Math.random() * ( (1 - 0) + 1) );//it generates a number between 0 and 1
+		float rng = 0+1*rand.nextFloat();//it generates a number between 0 and 1
 		
 		if(rng>0.8) {// if rng is greater than 0.8 the other genes are also mutated
 			
@@ -478,8 +479,8 @@ public class generationalChange {
 			}
 			//finally the values for the individual are calculated:
 			
-			float range_D0= lowerBoundD0 + (float) (Math.random() * ( (upperBoundRangeD0 - lowerBoundRangeD0) + 1) );
-			float f_pressure= lowerBoundF_pressure_values + (float) (Math.random() * ( (upperBoundF_pressure_values- lowerBoundF_pressure_values) + 1) );
+			float range_D0= lowerBoundD0 + (float) (rand.nextFloat()* ( upperBoundRangeD0 - lowerBoundRangeD0) );
+			float f_pressure= lowerBoundF_pressure_values + (float) (rand.nextFloat() * (upperBoundF_pressure_values- lowerBoundF_pressure_values) );
 			
 			indMutated.setF_pressure(f_pressure);
 			indMutated.setRange_d0(range_D0);
