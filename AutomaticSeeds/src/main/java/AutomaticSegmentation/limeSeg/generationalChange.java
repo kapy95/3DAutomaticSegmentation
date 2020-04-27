@@ -408,9 +408,11 @@ public class generationalChange {
 		//Min + (int)(Math.random() * ((Max - Min) + 1))
 		
 		//finally the values for the individual are calculated:
-		float D0 = lowerBoundD0 + (float) (Math.random() * ( (upperBoundD0 - lowerBoundD0) + 1) );
-		float range_D0= lowerBoundRangeD0 + (float) (Math.random() * ( (upperBoundRangeD0 - lowerBoundRangeD0) + 1) );
-		float f_pressure= lowerBoundF_pressure_values + (float) (Math.random() * ( (upperBoundF_pressure_values- lowerBoundF_pressure_values) + 1) );
+		Random rand = new Random();
+		
+		float D0 = lowerBoundD0 + (float) (rand.nextFloat() * (upperBoundD0 - lowerBoundD0))  ;
+		float range_D0= lowerBoundRangeD0 + (float) (rand.nextFloat() * (upperBoundRangeD0 - lowerBoundRangeD0) );
+		float f_pressure= lowerBoundF_pressure_values + (float) (rand.nextFloat()  * ( upperBoundF_pressure_values- lowerBoundF_pressure_values) );
 		
 		indGenerated.setD0(D0);
 		indGenerated.setRange_d0(range_D0);

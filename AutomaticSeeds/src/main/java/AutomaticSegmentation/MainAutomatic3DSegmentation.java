@@ -133,7 +133,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 
 		//int randomNum = rand.nextInt((max - min) + 1) + min;
 		
-		for(i=0;i<5;i++) {
+		for(i=0;i<3;i++) {
 			//float random = min + r.nextFloat() * (max - min);
 			Individuo guineaPig= new Individuo();
 			float randomF_pressure=-0.03f + rand.nextFloat() * (0.025f+0.03f);
@@ -149,7 +149,8 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		
 		
 		generationalChange testing=new generationalChange(tests,10);
-		Individuo i1=testing.tournamentSelection(tests, 2);
+		Individuo blend=testing.blendCrossOver(tests.get(0),tests.get(1));
+		//Individuo i1=testing.tournamentSelection(tests, 2);
 		//Individuo i1=testing.rouletteWheelSelection(tests, 100);
 		
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
