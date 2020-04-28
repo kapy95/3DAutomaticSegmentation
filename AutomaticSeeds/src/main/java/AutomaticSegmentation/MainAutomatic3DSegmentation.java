@@ -150,7 +150,8 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		
 		
 		generationalChange testing=new generationalChange(tests,10);
-		Individuo i1=testing.mutation(tests.get(0));
+		testing.main(tests, 10);
+		
 		//Individuo blend=testing.SinglePointCrossOver(tests.get(0),tests.get(1));
 		//Individuo i1=testing.tournamentSelection(tests, 2);
 		//Individuo i1=testing.rouletteWheelSelection(tests, 100);
