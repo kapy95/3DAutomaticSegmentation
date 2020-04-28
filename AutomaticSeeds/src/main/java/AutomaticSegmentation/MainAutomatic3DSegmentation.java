@@ -95,26 +95,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		//establezco el directorio de trabajo con las imágenes y roi
 		//File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
 		File dir = new File("E:\\TFM");
-		/*
-		Individuo i1=new Individuo();
-		i1.setScore(15.0d);
-		
-		Individuo i2=new Individuo();
-		i2.setScore(16.0d);
-		
-		Individuo i3=new Individuo();
-		i3.setScore(17.0d);
-		
-		ArrayList<Individuo> prueba=new ArrayList<Individuo>(Arrays.asList(i1,i2, i3));
-		Object[] prueba2= prueba.stream().filter(ind-> ind.getScore()>15).toArray();
-		ArrayList<Individuo>prueba3= new ArrayList<Individuo>();
-		
-		for(Object o:prueba2) {
-			
-			prueba3.add(Individuo.class.cast(o));
-		}
-		*/
-		
+
 		int selectedMethod=1 + (int)(Math.random() * ((3 - 1) + 1));
 		System.out.println(selectedMethod);
 		
@@ -132,7 +113,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		// nextInt as provided by Random is exclusive of the top value so you need to add 1 
 
 		//int randomNum = rand.nextInt((max - min) + 1) + min;
-		
+		/*
 		for(i=0;i<3;i++) {
 
 			//float random = min + r.nextFloat() * (max - min);
@@ -150,7 +131,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		
 		
 		generationalChange testing=new generationalChange(tests,10);
-		testing.main(tests, 10);
+		*/
 		
 		//Individuo blend=testing.SinglePointCrossOver(tests.get(0),tests.get(1));
 		//Individuo i1=testing.tournamentSelection(tests, 2);
@@ -160,17 +141,6 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		
 		//Primera poblacion
 		ev.main();
-
-		//int i;
-		//empezamos en 1 porque la poblacion inicial no contaría como una iteración del algoritmo
-		
-		for(i=1;i<=200;i++) {
-			
-			//ev.NewPopulationGenerator(i,bestIndividuals);
-			//ev.FitnessCalculation();
-			//bestIndividuals=ev.MutationFunction();
-			
-		}
 		
 		/*
 		//llamo a la clase que va a llamar limeseg:
