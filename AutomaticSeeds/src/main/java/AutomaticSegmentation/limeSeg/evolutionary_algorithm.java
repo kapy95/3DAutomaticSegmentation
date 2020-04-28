@@ -47,23 +47,23 @@ public class evolutionary_algorithm {
 	
 	public void main() {
 		
-		this.InitialPopulationGenerator(10,0);
+		this.InitialPopulationGenerator(5,0);
 		this.FitnessCalculation();
 		int i=0;
 		generationalChange change=new generationalChange(this.poblacion,10);
 		change.main();
 		this.deletePopulation();
-		this.poblacion=change.getNextPopulation();
+		ArrayList<Individuo> newPopulation=change.getNextPopulation();
 			
 		for(i=0;i<200;i++){
 			
-			this.NewPopulationGenerator(i);
+			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
 			generationalChange iterativeChange=new generationalChange(this.poblacion,10);
 			iterativeChange.main();
 			this.deletePopulation();
 			
-			this.poblacion=iterativeChange.getNextPopulation();
+			newPopulation=iterativeChange.getNextPopulation();
 			
 		}
 	
@@ -210,8 +210,6 @@ public class evolutionary_algorithm {
 				
 		       	}
 		       	
-		       	
-		       	System.out.println("a");
 		       	mean=(double) (listOfElements.stream().mapToInt(Integer::intValue).sum()/listOfElements.size());
 		       	res.setMeanVertex(mean);
 		       	globalMeanCellObjects.add(mean);
@@ -270,17 +268,19 @@ public class evolutionary_algorithm {
 	
 	
 	
-	public void NewPopulationGenerator(int iter) {
+	public void NewPopulationGenerator(ArrayList<Individuo> newPopulation,int iter) {
 		
 			//the folder for the new individuals is created
 			File newres=new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(iter));
 			newres.mkdir();
 			
+			this.poblacion=new ArrayList<Individuo>();
+			
 			//only Zscale has the same value for the new generations:
 			float ZS=4.06f;// variable con el valor del z_scale
 			int i=0;
 			
-				for(Individuo ind:this.poblacion) {
+				for(Individuo ind:newPopulation) {
 					
 					//llamo a la clase que va a llamar limeseg:
 					SphereSegAdapted seg=new SphereSegAdapted();
@@ -330,7 +330,7 @@ public class evolutionary_algorithm {
 	
 	public Double calculaSTD (ArrayList<Integer> elementosSegmentacion) {
 
-		System.out.println(elementosSegmentacion.contains(null));
+		//System.out.println(elementosSegmentacion.contains(null));
 		Double std=0d;
 		Double media=0d;
 		Double sum = elementosSegmentacion.stream().mapToDouble(a -> a).sum();
