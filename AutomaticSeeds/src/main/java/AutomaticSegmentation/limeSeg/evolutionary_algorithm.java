@@ -4,6 +4,7 @@ import java.awt.List;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
@@ -52,15 +53,17 @@ public class evolutionary_algorithm {
 		int i=0;
 		generationalChange change=new generationalChange(this.poblacion,10);
 		change.main();
+		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generación 0\\resultadoPob0.csv");
 		this.deletePopulation();
 		ArrayList<Individuo> newPopulation=change.getNextPopulation();
 			
-		for(i=0;i<200;i++){
+		for(i=1;i<200;i++){
 			
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
 			generationalChange iterativeChange=new generationalChange(this.poblacion,10);
 			iterativeChange.main();
+			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generación "+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
 			this.deletePopulation();
 			
 			newPopulation=iterativeChange.getNextPopulation();
@@ -96,17 +99,17 @@ public class evolutionary_algorithm {
 			//IntStream.iterate(start, i -> i + 1).limit(limit).boxed().collect(Collectors.toList());
 			
 			int i;
-		
+			File dirPob=new File(dir.toString()+"\\resultados\\resultado generación 0");
+			dirPob.mkdir();
+			
 			for(i=0;i<=(nPoblacion-1);i++) {
 				
 				SphereSegAdapted seg=new SphereSegAdapted();
 				seg.set_path(dir.toString());
-
-				
-					System.out.println(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter));
+					
+					//System.out.println(resultado"+String.valueOf(i)+String.valueOf(iter));
 					
 					Individuo ind=new Individuo();
-					//stopLimeSeg sls= new stopLimeSeg();
 					
 					ind.setF_pressure((float)(min_fp+(factor_fp*i)) );
 					ind.setD0((float)(min_d0+(factor_d0*i)));
@@ -149,8 +152,8 @@ public class evolutionary_algorithm {
 			}catch(Exception e) {
 				System.out.println("Excepcion");
 			}
-				ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
-		       	//dirNuevo.mkdir();
+				//ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
+				ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 				ind.getDir().mkdir();//it creates the directory for that individual
 		       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
 		       	
@@ -271,8 +274,9 @@ public class evolutionary_algorithm {
 	public void NewPopulationGenerator(ArrayList<Individuo> newPopulation,int iter) {
 		
 			//the folder for the new individuals is created
-			File newres=new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(iter));
-			newres.mkdir();
+
+			File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter));
+			dirPob.mkdir();
 			
 			this.poblacion=new ArrayList<Individuo>();
 			
@@ -316,7 +320,7 @@ public class evolutionary_algorithm {
 					}
 				
 					System.out.println("Ha salido del while");
-					ind.setDir(new File(newres.toString()+String.valueOf(i)+String.valueOf(iter)));
+					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 					ind.getDir().mkdir();//it creates the directory for that individual
 			       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
 			       	LimeSeg.clear3DDisplay();
@@ -369,6 +373,47 @@ public class evolutionary_algorithm {
 		return this.poblacion;
 	
 	}
+	
+	public void writeResultsCSV(String fileName) {
+		
+		ArrayList<Individuo> data=this.poblacion;
+		
+		try
+        {
+			File file = new File(fileName);
+            FileWriter writer = new FileWriter(file);
+
+             writer.append("Directory");
+             writer.append(',');
+             writer.append("D_0");
+             writer.append(',');
+             writer.append("Range_D0");
+             writer.append(',');
+             writer.append("f_pressure");
+             writer.append(',');
+             writer.append("Score");
+             writer.append('\n');
+
+             for (Individuo ind:data) {
+                  writer.append(ind.getDir().toString());
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getD0()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getRange_d0()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getFp()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getScore()));
+                  writer.append('\n');
+             }
+
+             writer.flush();
+             writer.close();
+        } catch(IOException e) {
+              e.printStackTrace();
+        } 
+   }
+		
 	
 	public void deletePopulation() {
 		
