@@ -10,6 +10,7 @@ import java.util.stream.IntStream;
 public class generationalChange {
 	
 	public ArrayList<Individuo> nextGeneration;//list of individuals which will generate the new population after mutation methods...etc-
+	public ArrayList<Individuo> previousGeneration;
 	
 	public generationalChange(ArrayList<Individuo> population, int nextPopulationSize) {
 		super();
@@ -24,19 +25,23 @@ public class generationalChange {
 		this.nextGeneration.add(bestIndividual2);
 		population.add(bestIndividual);//we add the bestIndividual again
 		
+		this.previousGeneration=population;
+		
+		
 		
 	}
 	
 	
-	public void main(ArrayList<Individuo> population, int nextPopulationSize) {
+	public void main() {
 		
+		ArrayList<Individuo> population=this.previousGeneration;
 		int counterMutated=0;
 		int counterCrossover=0;
 		
-		int maxCrossover=(int) Math.round(0.85f*(nextPopulationSize-2));
-		int maxMutated=(nextPopulationSize-2)-maxCrossover;
+		int maxCrossover=(int) Math.round(0.85f*(this.nextGeneration.size()-2));//minus 3 because two individuals have been already selected and java starts in 0 so -3
+		int maxMutated=(this.nextGeneration.size()-3)-maxCrossover;
 		
-		while(this.nextGeneration.size()<nextPopulationSize-1) {
+		while(this.nextGeneration.size()<this.nextGeneration.size()-3) {
 			int selectedMethod1=0;//it selects whether mutation or crossover is going to be used:
 			//1-> crossover is selected, 2->mutation is selected
 			

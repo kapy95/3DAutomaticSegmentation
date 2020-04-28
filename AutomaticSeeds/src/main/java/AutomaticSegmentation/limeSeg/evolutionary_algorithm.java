@@ -51,7 +51,7 @@ public class evolutionary_algorithm {
 		this.FitnessCalculation();
 		int i=0;
 		generationalChange change=new generationalChange(this.poblacion,10);
-		change.main(poblacion, 10);
+		change.main();
 		this.deletePopulation();
 		this.poblacion=change.getNextPopulation();
 			
@@ -60,13 +60,13 @@ public class evolutionary_algorithm {
 			this.NewPopulationGenerator(i);
 			this.FitnessCalculation();
 			generationalChange iterativeChange=new generationalChange(this.poblacion,10);
-			iterativeChange.main(poblacion, 10);
+			iterativeChange.main();
 			this.deletePopulation();
 			
 			this.poblacion=iterativeChange.getNextPopulation();
 			
 		}
-		
+	
 		Individuo bestIndividual = Collections.max(this.poblacion, Comparator.comparingDouble(Individuo::getScore));
 		System.out.println(bestIndividual.getDir());
 		
