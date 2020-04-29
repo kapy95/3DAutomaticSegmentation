@@ -1,9 +1,11 @@
 package AutomaticSegmentation.limeSeg;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.concurrent.TimeUnit;
 
 import org.scijava.command.Command;
@@ -88,13 +90,15 @@ public class SphereSegAdapted extends Thread implements Command {
 	@Parameter(persist=true)
 	protected boolean stallDotsPreviouslyInOptimizer=false;
 	
-	protected LimeSeg lms;
+	private LimeSeg lms;
+	
 	
 	@Override
 	public void run() {
 		
+
 		this.setImp2();
-		setLimeSeg();
+		this.setLimeSeg();
 		//RoiManager roiManager = RoiManager.getRoiManager();
 		
 		//roiManager
@@ -135,8 +139,9 @@ public class SphereSegAdapted extends Thread implements Command {
         	imp = IJ.openImage();
         */	
 		
-		
+		//System.out.println(imp.getChannel());
         LimeSeg.currentChannel = imp.getChannel();
+        
         if (sameCell) {
         	LimeSeg.newCell();
         }
@@ -201,23 +206,21 @@ public class SphereSegAdapted extends Thread implements Command {
     	if (show3D) {
 
     		LimeSeg.make3DViewVisible();
-    		LimeSeg.putAllCellsTo3DDisplay();//es aqui donde peta
+    		LimeSeg.putAllCellsTo3DDisplay();
     		LimeSeg.set3DViewCenter(avgX/NCells,avgY/NCells,avgZ/NCells);
     		
     	}
-    	/*
-		long start = System.nanoTime();    
-	    methodToTime();
-	    	long elapsedTime = System.nanoTime() - start;
-	    	System.out.println(elapsedTime);
-	    	/*if(elapsedTime) {
-	    	LimeSeg.stopOptimisation();
-	    	}*/
+    	
  	    float k_grad=(float) LimeSeg.opt.getOptParam("k_grad");
         LimeSeg.opt.setOptParam("k_grad",0.0f);
         LimeSeg.opt.setOptParam("normalForce",0);        
        	//LimeSeg.opt.setCUDAContext();
-       	LimeSeg.runOptimisation(500);// el comando runOptimisation determina los pasos que se dan hasta que se pare la segmentacion, antes lo pusiste a 100 y salian cosas raras
+       	try{
+       		LimeSeg.runOptimisation(200);// el comando runOptimisation determina los pasos que se dan hasta que se pare la segmentacion, antes lo pusiste a 100 y salian cosas raras
+       	}catch(NullPointerException n) {
+       		LimeSeg.requestStopOptimisation=true;
+       		LimeSeg.stopOptimisation();
+       	}
        	//LimeSeg.stopOptimisation();
         LimeSeg.opt.requestResetDotsConvergence=true;
         LimeSeg.opt.setOptParam("k_grad",k_grad);
@@ -228,8 +231,14 @@ public class SphereSegAdapted extends Thread implements Command {
         	LimeSeg.opt.setOptParam("radiusDelta", d_0/2);
         }
         
-        
+        try {
         LimeSeg.runOptimisation(numberOfIntegrationStep);
+        }catch(NullPointerException n) {
+        	LimeSeg.requestStopOptimisation=true;
+       		LimeSeg.stopOptimisation();
+        	
+        }
+        
         if (RadiusDeltaChanged) {
         	LimeSeg.opt.setOptParam("radiusDelta", 0);
         }
@@ -250,7 +259,7 @@ public class SphereSegAdapted extends Thread implements Command {
        	   	for (CellT ct : currentlyOptimizedCellTs) {
        	   		LimeSeg.addToOverlay(ct);
        	   	}
-       	   	LimeSeg.updateOverlay();
+       	   	LimeSeg.updateOverlay(); //error aqui de concurrentmodificationException
        	}
        	
 //       	if (appendMeasures) {
@@ -439,7 +448,7 @@ public class SphereSegAdapted extends Thread implements Command {
 	
 	public void setImp2() {
 		
-		this.imp=FolderOpener.open(path.toString()+"\\datos\\ImageSequence");
+		this.imp=FolderOpener.open(path.toString()+"\\Datos\\ImageSequence");
 	}
 
 	/**
