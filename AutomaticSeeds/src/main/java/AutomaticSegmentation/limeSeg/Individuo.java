@@ -10,6 +10,7 @@ public class Individuo {
 	private Double stdVertex; //standard deviation of the objects of the cells 
 	private Double meanVertex; //mean of the objects of the cells
 	public Double score;
+	public long time;
 	
 	/**
 	 * 
@@ -91,6 +92,13 @@ public class Individuo {
 
 	public void setScore(Double score) {
 		this.score = score;
+	}
+	public void setTime(long eaTime) {//it initializes the variable with the time that the evolutionary algorithm lasts to generate the individual.
+		this.time=eaTime;
+	}
+	
+	public long getTime() {
+		return time;
 	}
 	
 	//It copies an individual to another working directory, which will be the new directory of the new generation

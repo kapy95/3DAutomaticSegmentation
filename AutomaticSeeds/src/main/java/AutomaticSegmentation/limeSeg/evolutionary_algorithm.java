@@ -116,7 +116,6 @@ public class evolutionary_algorithm {
 					ind.setRange_d0( (float)(min_range_d0+(factor_rangeD0*i)));
 					
 					//llamo a la clase que va a llamar limeseg:
-					try {
 					seg.setD_0(ind.getD0());
 					seg.setF_pressure(ind.getFp());
 					seg.setZ_scale(ZS);
@@ -130,7 +129,7 @@ public class evolutionary_algorithm {
 					
 					while (seg.isAlive()) {
 						endTime= System.currentTimeMillis();
-						//System.out.println((endTime-startTime) /1000);
+						System.out.println((endTime-startTime) /1000);
 						
 						if( ((endTime-startTime) /1000) >30) { //si el tiempo de ejecucion es mayor que 100 segundos
 							LimeSeg.requestStopOptimisation=true;
@@ -149,9 +148,7 @@ public class evolutionary_algorithm {
 						System.out.println("No funciona");
 					}
 					
-			}catch(Exception e) {
-				System.out.println("Excepcion");
-			}
+				ind.setTime((endTime-startTime) /1000);
 				//ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 				ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 				ind.getDir().mkdir();//it creates the directory for that individual
@@ -308,7 +305,7 @@ public class evolutionary_algorithm {
 							LimeSeg.stopOptimisation();
 							}
 						}
-
+					
 					System.out.println("Ha salido del while");
 					
 					//Evolutionary Algorithm is going to wait for sphere seg adapted to finish
@@ -319,7 +316,8 @@ public class evolutionary_algorithm {
 						System.out.println("No funciona");
 					}
 				
-					System.out.println("Ha salido del while");
+					System.out.println("Ha salido del Join()");
+					ind.setTime((endTime-startTime) /1000);
 					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 					ind.getDir().mkdir();//it creates the directory for that individual
 			       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
@@ -392,6 +390,8 @@ public class evolutionary_algorithm {
              writer.append("f_pressure");
              writer.append(',');
              writer.append("Score");
+             writer.append(',');
+             writer.append("Time");
              writer.append('\n');
 
              for (Individuo ind:data) {
@@ -404,6 +404,8 @@ public class evolutionary_algorithm {
                   writer.append(String.valueOf(ind.getFp()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getScore()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getTime()));
                   writer.append('\n');
              }
 
@@ -416,7 +418,6 @@ public class evolutionary_algorithm {
 		
 	
 	public void deletePopulation() {
-		
 		this.poblacion=null;
 	}
 }
