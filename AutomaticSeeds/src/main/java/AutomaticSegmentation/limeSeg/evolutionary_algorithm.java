@@ -48,7 +48,7 @@ public class evolutionary_algorithm {
 	
 	public void main() {
 		
-		this.InitialPopulationGenerator(5,0);
+		this.InitialPopulationGenerator(30,0);
 		this.FitnessCalculation();
 		int i=0;
 		generationalChange change=new generationalChange(this.poblacion,10);
@@ -61,7 +61,7 @@ public class evolutionary_algorithm {
 			
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
-			generationalChange iterativeChange=new generationalChange(this.poblacion,10);
+			generationalChange iterativeChange=new generationalChange(this.poblacion,30);
 			iterativeChange.main();
 			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generación "+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
 			this.deletePopulation();
@@ -94,7 +94,7 @@ public class evolutionary_algorithm {
 			
 			//factores por lo que se van multiplicando y sumando los valores d_0 y demás de cada poblacion
 			float factor_fp=(float) (0.05/(nPoblacion-1));
-			float factor_d0=(float) (18.0f/(nPoblacion-1));//poner 19.0f
+			float factor_d0=(float) (17.0f/(nPoblacion-1));//poner 19.0f
 			float factor_rangeD0= (float) (8.5f/(nPoblacion-1));
 			//IntStream.iterate(start, i -> i + 1).limit(limit).boxed().collect(Collectors.toList());
 			
@@ -131,12 +131,11 @@ public class evolutionary_algorithm {
 						endTime= System.currentTimeMillis();
 						System.out.println((endTime-startTime) /1000);
 						
-						if( ((endTime-startTime) /1000) >30) { //si el tiempo de ejecucion es mayor que 100 segundos
-							LimeSeg.requestStopOptimisation=true;
+						if( ( (endTime-startTime) /1000) >30) { //si el tiempo de ejecucion es mayor que 100 segundos
 							LimeSeg.stopOptimisation();
 
 							}
-						}
+					}
 	
 					System.out.println("Ha salido del while");
 					
@@ -228,39 +227,7 @@ public class evolutionary_algorithm {
        	
        	for(Individuo res: individuals) {
        		
-       		//if the standard deviation of the elements is less than the 25% of the global, it punishes the solution, with 50 points less
-       		if(res.getStdVertex()<(0.25*globalStd)){
-       			res.setScore(res.getScore()-50.0);
-       			
-       		//if the standard deviation of the elements is greater than the 25% of the global and less than the 50%, there is no punish
-       		}else if((0.25*globalStd)<res.getStdVertex() && res.getStdVertex()<(0.5*globalStd)){
-       			res.setScore(res.getScore()-0);
-       			
-       		//if the standard deviation of the elements is greater than the 50% of the global and less than the 75%, there is a punish with 25 points less
-       		}else if((0.5*globalStd)<res.getStdVertex() && res.getStdVertex()<(0.75*globalStd)) {
-       			res.setScore(res.getScore()-25);
-       			
-       		}else {//if the standard deviation of the elements is greater than the 75%,it is punished with 50 points less
-       			
-       			res.setScore(res.getScore()-50);
-       		}
-       		
-       		//if the mean of the elements is less than the 25% of the global, it punishes the solution, with 50 points less
-       		if(res.getMeanVertex()<(0.25*globalMean)){
-       			res.setScore(res.getScore()-50.0);
-       			
-       		//if the mean of the elements is greater than the 25% of the global and less than the 50%, there is no punish
-       		}else if((0.25*globalMean)<res.getMeanVertex() && res.getMeanVertex()<(0.5*globalMean)){
-       			res.setScore(res.getScore()-0);
-       			
-       		//if the mean of the elements is greater than the 50% of the global and less than the 75%, there is a punish with 25 points less
-       		}else if((0.5*globalMean)<res.getStdVertex() && res.getStdVertex()<(0.75*globalMean)) {
-       			res.setScore(res.getScore()-25);
-       			
-       		}else {//if the mean of the elements is greater than the 75%,it is punished with 50 points less
-       			
-       			res.setScore(res.getScore()-50);
-       		}
+       		res.setScore( (globalStd/res.getStdVertex())+(res.getMeanVertex()/globalMean) );
        	}
       
        
