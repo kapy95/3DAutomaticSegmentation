@@ -51,7 +51,7 @@ public class evolutionary_algorithm {
 		this.InitialPopulationGenerator(30,0);
 		this.FitnessCalculation();
 		int i=0;
-		generationalChange change=new generationalChange(this.poblacion,10);
+		generationalChange change=new generationalChange(this.poblacion,30);
 		change.main();
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generación 0\\resultadoPob0.csv");
 		this.deletePopulation();
@@ -93,14 +93,15 @@ public class evolutionary_algorithm {
 			//0.2/5=0.004 asi aumento la diferencia por cada iteracion
 			
 			//factores por lo que se van multiplicando y sumando los valores d_0 y demás de cada poblacion
-			float factor_fp=(float) (0.05/(nPoblacion-1));
-			float factor_d0=(float) (17.0f/(nPoblacion-1));//poner 19.0f
-			float factor_rangeD0= (float) (8.5f/(nPoblacion-1));
+			//float factor_fp=(float) (0.05/(nPoblacion-1));
+			//float factor_d0=(float) (17.0f/(nPoblacion-1));//poner 19.0f
+			//float factor_rangeD0= (float) (8.5f/(nPoblacion-1));
 			//IntStream.iterate(start, i -> i + 1).limit(limit).boxed().collect(Collectors.toList());
 			
 			int i;
 			File dirPob=new File(dir.toString()+"\\resultados\\resultado generación 0");
 			dirPob.mkdir();
+			Random rand= new Random();
 			
 			for(i=0;i<=(nPoblacion-1);i++) {
 				
@@ -110,10 +111,18 @@ public class evolutionary_algorithm {
 					//System.out.println(resultado"+String.valueOf(i)+String.valueOf(iter));
 					
 					Individuo ind=new Individuo();
-					
+					/*
 					ind.setF_pressure((float)(min_fp+(factor_fp*i)) );
 					ind.setD0((float)(min_d0+(factor_d0*i)));
 					ind.setRange_d0( (float)(min_range_d0+(factor_rangeD0*i)));
+					*/
+					float randomF_pressure=-0.03f + rand.nextFloat() * (0.025f+0.03f);
+					float randomD0=1.0f + rand.nextFloat() * (18.0f-1.0f);
+					float randomRange_D0=0.5f + rand.nextFloat() * (8.5f-0.5f) ;
+					
+					ind.setF_pressure(randomF_pressure);
+					ind.setD0(randomD0);
+					ind.setRange_d0(randomRange_D0);
 					
 					//llamo a la clase que va a llamar limeseg:
 					seg.setD_0(ind.getD0());
