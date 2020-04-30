@@ -11,9 +11,11 @@ public class generationalChange {
 	
 	public ArrayList<Individuo> nextGeneration;//list of individuals which will generate the new population after mutation methods...etc-
 	public ArrayList<Individuo> previousGeneration;
+	public int nextGenerationSize;
 	
 	public generationalChange(ArrayList<Individuo> population, int nextPopulationSize) {
 		super();
+		this.nextGenerationSize=nextPopulationSize;
 		this.nextGeneration =new ArrayList<Individuo>(nextPopulationSize);
 		//First we get the two individuals with maximum score, they will pass directly to the next generation:
 		Individuo bestIndividual = Collections.max(population, Comparator.comparingDouble(Individuo::getScore));
@@ -42,7 +44,7 @@ public class generationalChange {
 		//int maxMutated=(this.nextGeneration.size()-3)-maxCrossover;
 		Random rand= new Random();
 		int contador=1;
-		while(contador<this.nextGeneration.size()-3) {
+		while(contador<this.nextGenerationSize-3) {
 			//int selectedMethod1=0;//it selects whether mutation or crossover is going to be used:
 			//1-> crossover is selected, 2->mutation is selected
 			
