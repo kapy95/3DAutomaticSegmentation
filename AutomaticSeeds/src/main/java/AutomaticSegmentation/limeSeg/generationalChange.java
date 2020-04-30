@@ -24,8 +24,8 @@ public class generationalChange {
 		Individuo bestIndividual2 = Collections.max(population, Comparator.comparingDouble(Individuo::getScore));
 		this.nextGeneration.add(bestIndividual2);
 		population.add(bestIndividual);//we add the bestIndividual again
-		
-		this.previousGeneration=population;
+		this.previousGeneration = new ArrayList<Individuo>();
+		this.previousGeneration.addAll(population);
 		
 		
 		
@@ -33,17 +33,16 @@ public class generationalChange {
 	
 	
 	public void main() {
-		
-		ArrayList<Individuo> population=this.previousGeneration;
+		ArrayList<Individuo> population= new ArrayList<Individuo>();
+	    population.addAll(this.previousGeneration);
 		int counterMutated=0;
 		int counterCrossover=0;
 		
 		//int maxCrossover=(int) Math.round(0.85f*(this.nextGeneration.size()-2));//minus 3 because two individuals have been already selected and java starts in 0 so -3
 		//int maxMutated=(this.nextGeneration.size()-3)-maxCrossover;
 		Random rand= new Random();
-		float probMethod = 1*rand.nextFloat();//it generates a number between 0 and 1
-		
-		while(this.nextGeneration.size()<this.nextGeneration.size()-3) {
+		int contador=1;
+		while(contador<this.nextGeneration.size()-3) {
 			//int selectedMethod1=0;//it selects whether mutation or crossover is going to be used:
 			//1-> crossover is selected, 2->mutation is selected
 			
@@ -60,7 +59,7 @@ public class generationalChange {
 				selectedMethod1 =	1 + (int)(Math.random() * ((2 - 1) + 1));
 			}*/
 			
-		
+			float probMethod = 1*rand.nextFloat();
 		//if selectedMethod1 is equal to 1 and if the maximum amount of individuals created by crossover is lower than 85% of the new populationsize, the new individual will be created by crossover:
 			if(probMethod<0.85) {
 				
@@ -148,6 +147,8 @@ public class generationalChange {
 				this.nextGeneration.add(this.mutation(selectedIndividual));
 				
 			}
+			
+			contador++;
 			
 		}
 		
