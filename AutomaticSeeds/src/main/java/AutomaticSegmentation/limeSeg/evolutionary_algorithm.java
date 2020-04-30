@@ -57,7 +57,7 @@ public class evolutionary_algorithm {
 		this.deletePopulation();
 		ArrayList<Individuo> newPopulation=change.getNextPopulation();
 			
-		for(i=1;i<200;i++){
+		for(i=1;i<10;i++){//i=200
 			
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
@@ -99,7 +99,7 @@ public class evolutionary_algorithm {
 			//IntStream.iterate(start, i -> i + 1).limit(limit).boxed().collect(Collectors.toList());
 			
 			int i;
-			File dirPob=new File(dir.toString()+"\\resultados\\resultado generación 0");
+			File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion 0");
 			dirPob.mkdir();
 			Random rand= new Random();
 			
@@ -236,7 +236,14 @@ public class evolutionary_algorithm {
        	
        	for(Individuo res: individuals) {
        		
-       		res.setScore( (globalStd/res.getStdVertex())+(res.getMeanVertex()/globalMean) );
+       		if(res.getMeanVertex()==0) {
+       			res.setScore(0.0d);
+       		}else if(res.getStdVertex()==0) {
+       			res.setScore(0.0d);
+       		}else {
+           		res.setScore( (globalStd/res.getStdVertex())+(res.getMeanVertex()/globalMean) );
+       		}
+
        	}
       
        
@@ -365,12 +372,17 @@ public class evolutionary_algorithm {
              writer.append(',');
              writer.append("f_pressure");
              writer.append(',');
+             writer.append("MeanVertex");
+             writer.append(',');
+             writer.append("StdVertex");
+             writer.append(',');
              writer.append("Score");
              writer.append(',');
              writer.append("Time");
              writer.append('\n');
 
              for (Individuo ind:data) {
+            	 
                   writer.append(ind.getDir().toString());
                   writer.append(',');
                   writer.append(String.valueOf(ind.getD0()));
@@ -378,6 +390,10 @@ public class evolutionary_algorithm {
                   writer.append(String.valueOf(ind.getRange_d0()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getFp()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getMeanVertex()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getStdVertex()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getScore()));
                   writer.append(',');
