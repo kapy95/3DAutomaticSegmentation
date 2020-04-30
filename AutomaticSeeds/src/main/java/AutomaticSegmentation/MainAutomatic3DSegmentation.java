@@ -114,7 +114,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 
 		//int randomNum = rand.nextInt((max - min) + 1) + min;
 		
-		for(i=0;i<10;i++) {
+		for(i=0;i<100;i++) {
 
 			//float random = min + r.nextFloat() * (max - min);
 			Individuo guineaPig= new Individuo();
@@ -131,7 +131,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		
 		
 		generationalChange testing=new generationalChange(tests,10);
-		Individuo esp=testing.rouletteWheelSelection(tests, 100);
+		Individuo esp=testing.rouletteWheelSelection(tests);
 		testing.main();
 		ArrayList<Individuo> pruebas=testing.getNextPopulation();
 		
