@@ -51,9 +51,9 @@ public class evolutionary_algorithm {
 		this.InitialPopulationGenerator(30,0);
 		this.FitnessCalculation();
 		int i=0;
+		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion 0\\resultadoPob0.csv");
 		generationalChange change=new generationalChange(this.poblacion,30);
 		change.main();
-		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion 0\\resultadoPob0.csv");
 		this.deletePopulation();
 		ArrayList<Individuo> newPopulation=change.getNextPopulation();
 			

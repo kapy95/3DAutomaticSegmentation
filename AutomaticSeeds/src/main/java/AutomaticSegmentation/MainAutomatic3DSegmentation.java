@@ -95,7 +95,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		//establezco el directorio de trabajo con las imágenes y roi
 		//File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
 		File dir = new File("E:\\TFM");
-
+		
 		int selectedMethod=1 + (int)(Math.random() * ((3 - 1) + 1));
 		System.out.println(selectedMethod);
 		
@@ -114,7 +114,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 
 		//int randomNum = rand.nextInt((max - min) + 1) + min;
 		
-		for(i=0;i<100;i++) {
+		for(i=0;i<16;i++) {
 
 			//float random = min + r.nextFloat() * (max - min);
 			Individuo guineaPig= new Individuo();
@@ -131,7 +131,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		
 		
 		generationalChange testing=new generationalChange(tests,10);
-		Individuo esp=testing.rouletteWheelSelection(tests);
+		Individuo esp=testing.tournamentSelection(tests,2);
 		testing.main();
 		ArrayList<Individuo> pruebas=testing.getNextPopulation();
 		

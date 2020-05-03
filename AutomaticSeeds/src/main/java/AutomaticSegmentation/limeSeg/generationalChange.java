@@ -246,7 +246,7 @@ public class generationalChange {
 		ArrayList<ArrayList<Individuo>> winners =  new ArrayList<ArrayList<Individuo>>(); 
 		winners.add(pob);//the first arraylist of winners will be the whole population
 		
-		for(z=0;z<numOfTournaments-1;z++) {
+		while(winners.get(z).size()!=1) {
 		int j=0;
 		ArrayList<Individuo> tournamentWinners = new ArrayList<Individuo>();//individuals which only win a tournament:
 
@@ -317,8 +317,7 @@ public class generationalChange {
 			}
 			
 			winners.add(tournamentWinners);
-			
-			
+			z++;
 		}
 		
 		
