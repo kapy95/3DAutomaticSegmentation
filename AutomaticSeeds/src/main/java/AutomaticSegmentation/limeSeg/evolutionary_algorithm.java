@@ -48,11 +48,11 @@ public class evolutionary_algorithm {
 	
 	public void main() {
 		
-		this.InitialPopulationGenerator(30,0);
+		this.InitialPopulationGenerator(5,0);
 		this.FitnessCalculation();
 		int i=0;
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion 0\\resultadoPob0.csv");
-		generationalChange change=new generationalChange(this.poblacion,30);
+		generationalChange change=new generationalChange(this.poblacion,5);
 		change.main();
 		this.deletePopulation();
 		ArrayList<Individuo> newPopulation=change.getNextPopulation();
@@ -61,9 +61,9 @@ public class evolutionary_algorithm {
 			
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
-			generationalChange iterativeChange=new generationalChange(this.poblacion,30);
+			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
+			generationalChange iterativeChange=new generationalChange(this.poblacion,50);
 			iterativeChange.main();
-			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion "+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
 			this.deletePopulation();
 			
 			newPopulation=iterativeChange.getNextPopulation();
@@ -267,40 +267,44 @@ public class evolutionary_algorithm {
 				for(Individuo ind:newPopulation) {
 					
 					//llamo a la clase que va a llamar limeseg:
-					SphereSegAdapted seg=new SphereSegAdapted();
-					seg.set_path(dir.toString());
-					seg.setD_0(ind.getD0());
-					seg.setF_pressure(ind.getFp());
-					seg.setZ_scale(ZS);
-					seg.setRange_in_d0_units(ind.getRange_d0());
+					SphereSegAdapted seg2=new SphereSegAdapted();
+					seg2.set_path(dir.toString());
+					seg2.setD_0(ind.getD0());
+					seg2.setF_pressure(ind.getFp());
+					seg2.setZ_scale(ZS);
+					seg2.setRange_in_d0_units(ind.getRange_d0());
 					
-					seg.run();//empieza a ejecutarse run
+
 					
-					long startTime = System.currentTimeMillis();
-					long endTime=0;
+					long startTime2 = System.currentTimeMillis();
+					long endTime2=System.currentTimeMillis();
+					System.out.println((startTime2-endTime2)/1000);
 					
-					while (seg.isAlive()) {
-						endTime= System.currentTimeMillis();
-						System.out.println((endTime-startTime) /1000);
+					seg2.start();
+					
+					while (seg2.isAlive()) {
+						endTime2=System.currentTimeMillis();
 						
-						if( ((endTime-startTime) /1000) >60) { //si el tiempo de ejecucion es mayor que 100 segundos
-							System.out.println("PAM");
+						System.out.println((endTime2-startTime2) /1000);
+						
+						if( ( (endTime2-startTime2) /1000) >30) { //si el tiempo de ejecucion es mayor que 100 segundos
 							LimeSeg.stopOptimisation();
+
 							}
-						}
+					}
 					
 					System.out.println("Ha salido del while");
 					
 					//Evolutionary Algorithm is going to wait for sphere seg adapted to finish
 					try{
-						seg.join();
+						seg2.join();
 						System.out.println("Espera");
 					}catch(Exception e) {
 						System.out.println("No funciona");
 					}
 				
 					System.out.println("Ha salido del Join()");
-					ind.setTime((endTime-startTime) /1000);
+					ind.setTime((endTime2-startTime2) /1000);
 					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 					ind.getDir().mkdir();//it creates the directory for that individual
 			       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual

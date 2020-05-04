@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 public class generationalChange {
@@ -43,8 +44,8 @@ public class generationalChange {
 		//int maxCrossover=(int) Math.round(0.85f*(this.nextGeneration.size()-2));//minus 3 because two individuals have been already selected and java starts in 0 so -3
 		//int maxMutated=(this.nextGeneration.size()-3)-maxCrossover;
 		Random rand= new Random();
-		int contador=1;
-		while(contador<this.nextGenerationSize-3) {
+		int contador=2;
+		while(contador<=this.nextGenerationSize) {
 			//int selectedMethod1=0;//it selects whether mutation or crossover is going to be used:
 			//1-> crossover is selected, 2->mutation is selected
 			
@@ -80,7 +81,7 @@ public class generationalChange {
 					
 				}else {//else tournament selection will be chosen as selection method 
 					
-					selectedIndividual1=this.tournamentSelection(population, 4);
+					selectedIndividual1=this.tournamentSelection(population, 2);
 				}
 				
 				//the same process to choose the second candidate for crossover
@@ -92,7 +93,7 @@ public class generationalChange {
 					
 				}else {
 					
-					selectedIndividual2=this.tournamentSelection(population, 4);
+					selectedIndividual2=this.tournamentSelection(population, 2);
 				}
 				
 
@@ -143,7 +144,7 @@ public class generationalChange {
 					
 				}else {//else tournament selection will be chosen as selection method 
 					
-					selectedIndividual=this.tournamentSelection(population, 4);
+					selectedIndividual=this.tournamentSelection(population, 2);
 				}
 				
 				this.nextGeneration.add(this.mutation(selectedIndividual));
@@ -162,20 +163,16 @@ public class generationalChange {
 	public Individuo rouletteWheelSelection(ArrayList<Individuo> pob){//maxRange is a parameter to determine the range of numbers of the wheel selection
 		Individuo selectedIndividual = null;
 		
-		
-
-		
 		int globalIndex= 0;
 		int k=0;
-		double sum=pob.stream().mapToDouble(a -> a.getScore()).sum();//the sum of all scores is calculated to create likelihoods
+		int sum=(int) pob.stream().mapToDouble(a -> a.getScore()).sum();//the sum of all scores is calculated to create likelihoods
 		ArrayList<ArrayList<Integer>>probabilities=new ArrayList<ArrayList<Integer> >();//array with the likelihoods of all candidates;
 		//System.out.println(numbers.length);
 		
-		int [] numbers=new int[(int) sum];//an array will be created with the size of maxRange, whose values will go from 0 to maxRange.
+		ArrayList<Integer> numbers=new ArrayList<Integer>();//an array will be created with the size of maxRange, whose values will go from 0 to maxRange.
 		int z;
-		
-		for(z=0;z<sum-1;z++) {
-			numbers[z]=z;
+		for(z=0;z<sum+1;z++) {
+			numbers.add(z);
 			System.out.println(z);
 		}
 		
@@ -186,12 +183,14 @@ public class generationalChange {
 			//depending on the likelihood they will get more numbers of the array:Math.round( ( (pob.get(i).getScore()/sum) *maxRange) )
 			//For example, if there is a population with three individuals: I1 (Score:10), I2 (Score:20), I3(Score:30), the scores sum is 60
 			//therefore: P(I1)=10/60=0.16667=0.17, P(I2)=20/60=0.33333...=0.33, P(I3)=30/60=1/2=0.5, where P is the probability of an individual
-			 int range=(int) Math.round( ( (pob.get(i).getScore()/sum)*100) );
+			 int range=(int) Math.round( pob.get(i).getScore() );
 			 System.out.print("Rango:");
 			 System.out.println(range);
 			 if(range==0) {
 				 
 				 range=1;
+				 z=z+1;
+				 numbers.add(z);
 			 }
 			//Finally, if we create an array of 10 numbers representing the likelihoods [0,1,2,3...10] their corresponding numbers are:
 			//I1:10 x 0.2= 2 numbers (1,2), I2:10 X0.33=3.3=3 3 numbers (3,4,5), and I3: 10 x 0.5 = 5 numbers (6,7,8,9,10)
@@ -199,9 +198,9 @@ public class generationalChange {
 			 ArrayList<Integer> initial=new ArrayList<Integer>(range);
 			 
  			 for(k=globalIndex;k<(range+globalIndex);k++) {
-				 System.out.print(numbers[k]);
+				 System.out.print(numbers.get(k));
 				 System.out.print(",");
-				 initial.add(numbers[k]);
+				 initial.add(numbers.get(k));
 			 }
 			 System.out.println(" ");
 			 probabilities.add(initial);
@@ -210,11 +209,11 @@ public class generationalChange {
 			 //Thus, the higher is the fitness of the individuals, the more is the likelihood of being selected
 		}
 		
-		
 		int j=0;
 		//Now we create a number between 0 and 100. This number determines where the roulette will stop, the individual with that number will be selected
-		int rng =1+ (int) Math.round((Math.random()*((globalIndex-1-0)+1))); //it generates a number between 0 and sum-1,which will establish the candidate to be chosen
-		
+		//int rng =  + (int) (Math.random()*((k-1)+1)); //it generates a number between 0 and sum-1,which will establish the candidate to be chosen
+		int rng = ThreadLocalRandom.current().nextInt(0, sum + 1);
+		System.out.println(rng);
 		while(selectedIndividual == null) {
 			
 			ArrayList<Integer> a = probabilities.get(j);
