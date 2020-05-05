@@ -48,33 +48,36 @@ public class evolutionary_algorithm {
 	
 	public void main() {
 		
-		this.InitialPopulationGenerator(5,0);
+		this.InitialPopulationGenerator(100,0);
 		this.FitnessCalculation();
 		int i=0;
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion 0\\resultadoPob0.csv");
-		generationalChange change=new generationalChange(this.poblacion,5);
+		generationalChange change=new generationalChange(this.poblacion,101);
 		change.main();
-		this.deletePopulation();
 		ArrayList<Individuo> newPopulation=change.getNextPopulation();
 			
-		for(i=1;i<5;i++){//i=200
+		for(i=1;i<9;i++){//i=200
 			
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
 			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
-			generationalChange iterativeChange=new generationalChange(this.poblacion,50);
+			generationalChange iterativeChange=new generationalChange(this.poblacion,101);
 			iterativeChange.main();
-			this.deletePopulation();
-			
+
 			newPopulation=iterativeChange.getNextPopulation();
 			
 		}
-	
+		
+		this.NewPopulationGenerator(newPopulation, i);
+		this.FitnessCalculation();
+		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
+		
 		Individuo bestIndividual = Collections.max(this.poblacion, Comparator.comparingDouble(Individuo::getScore));
 		System.out.println(bestIndividual.getD0());
 		System.out.println(bestIndividual.getRange_d0());
 		System.out.println(bestIndividual.getFp());
 		System.out.println(bestIndividual.getDir());
+		
 		
 	}
 	
@@ -258,6 +261,7 @@ public class evolutionary_algorithm {
 			File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter));
 			dirPob.mkdir();
 			
+			this.deletePopulation();
 			this.poblacion=new ArrayList<Individuo>();
 			
 			//only Zscale has the same value for the new generations:

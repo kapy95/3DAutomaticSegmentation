@@ -134,10 +134,13 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		//Individuo i1=testing.tournamentSelection(tests, 2);
 		Individuo i1=testing.rouletteWheelSelection(tests);
 		*/
-		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
 		
+		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
+
 		ev.main();
 		
+		
+		System.out.println("Prueba");
 		/*
 		//llamo a la clase que va a llamar limeseg:
 		

@@ -45,7 +45,7 @@ public class generationalChange {
 		//int maxMutated=(this.nextGeneration.size()-3)-maxCrossover;
 		Random rand= new Random();
 		int contador=2;
-		while(contador<=this.nextGenerationSize) {
+		while(contador<this.nextGenerationSize-1) {
 			//int selectedMethod1=0;//it selects whether mutation or crossover is going to be used:
 			//1-> crossover is selected, 2->mutation is selected
 			
@@ -171,7 +171,7 @@ public class generationalChange {
 		
 		ArrayList<Integer> numbers=new ArrayList<Integer>();//an array will be created with the size of maxRange, whose values will go from 0 to maxRange.
 		int z;
-		for(z=0;z<sum+1;z++) {
+		for(z=0;z<=sum;z++) {
 			numbers.add(z);
 			System.out.println(z);
 		}
@@ -196,8 +196,9 @@ public class generationalChange {
 			//I1:10 x 0.2= 2 numbers (1,2), I2:10 X0.33=3.3=3 3 numbers (3,4,5), and I3: 10 x 0.5 = 5 numbers (6,7,8,9,10)
 			 //probabilities[i]=Arrays.copyOfRange(numbers, globalIndex, range);//calculus of the corresponding numbers of an individual
 			 ArrayList<Integer> initial=new ArrayList<Integer>(range);
+			 k=globalIndex;
 			 
- 			 for(k=globalIndex;k<(range+globalIndex);k++) {
+ 			 for(k=globalIndex;k<=(range+globalIndex)-1;k++) {
 				 System.out.print(numbers.get(k));
 				 System.out.print(",");
 				 initial.add(numbers.get(k));
@@ -212,7 +213,7 @@ public class generationalChange {
 		int j=0;
 		//Now we create a number between 0 and 100. This number determines where the roulette will stop, the individual with that number will be selected
 		//int rng =  + (int) (Math.random()*((k-1)+1)); //it generates a number between 0 and sum-1,which will establish the candidate to be chosen
-		int rng = ThreadLocalRandom.current().nextInt(0, sum + 1);
+		int rng = ThreadLocalRandom.current().nextInt(0,k);
 		System.out.println(rng);
 		while(selectedIndividual == null) {
 			
