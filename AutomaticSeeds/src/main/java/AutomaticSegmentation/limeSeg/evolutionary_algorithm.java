@@ -21,6 +21,7 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.stream.Stream;
+import java.lang.management.MemoryMXBean;
 
 import org.bridj.cpp.std.list;
 import org.python.modules.math;
@@ -55,6 +56,7 @@ public class evolutionary_algorithm {
 		generationalChange change=new generationalChange(this.poblacion,101);
 		change.main();
 		ArrayList<Individuo> newPopulation=change.getNextPopulation();
+		//getObjectPendingFinalizationCount 
 			
 		for(i=1;i<9;i++){//i=200
 			

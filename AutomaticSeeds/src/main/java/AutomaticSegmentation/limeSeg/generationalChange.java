@@ -173,7 +173,7 @@ public class generationalChange {
 		int z;
 		for(z=0;z<=sum;z++) {
 			numbers.add(z);
-			System.out.println(z);
+			//System.out.println(z);
 		}
 		
 		int i;
@@ -198,7 +198,7 @@ public class generationalChange {
 			 ArrayList<Integer> initial=new ArrayList<Integer>(range);
 			 k=globalIndex;
 			 
- 			 for(k=globalIndex;k<=(range+globalIndex)-1;k++) {
+ 			 for(k=globalIndex;k<(range+globalIndex);k++) {
 				 System.out.print(numbers.get(k));
 				 System.out.print(",");
 				 initial.add(numbers.get(k));
@@ -213,7 +213,8 @@ public class generationalChange {
 		int j=0;
 		//Now we create a number between 0 and 100. This number determines where the roulette will stop, the individual with that number will be selected
 		//int rng =  + (int) (Math.random()*((k-1)+1)); //it generates a number between 0 and sum-1,which will establish the candidate to be chosen
-		int rng = ThreadLocalRandom.current().nextInt(0,k);
+		System.out.println(k);
+		int rng = ThreadLocalRandom.current().nextInt(0,k-1);
 		System.out.println(rng);
 		while(selectedIndividual == null) {
 			
