@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,7 +54,7 @@ public class evolutionary_algorithm {
 		this.FitnessCalculation();
 		int i=0;
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion 0\\resultadoPob0.csv");
-		generationalChange change=new generationalChange(this.poblacion,51);
+		generationalChange change=new generationalChange(this.poblacion,5,0);
 		change.main();
 		ArrayList<Individuo> newPopulation=change.getNextPopulation();
 		//getObjectPendingFinalizationCount 
@@ -63,7 +64,7 @@ public class evolutionary_algorithm {
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
 			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
-			generationalChange iterativeChange=new generationalChange(this.poblacion,51);
+			generationalChange iterativeChange=new generationalChange(this.poblacion,51,i);
 			iterativeChange.main();
 
 			newPopulation=iterativeChange.getNextPopulation();
@@ -269,9 +270,28 @@ public class evolutionary_algorithm {
 			//only Zscale has the same value for the new generations:
 			float ZS=4.06f;// variable con el valor del z_scale
 			int i=0;
+			//PrintWriter experiments= new PrintWriter(new File())
+			try {
+				FileWriter writer = new FileWriter(dirPob);
 			
-				for(Individuo ind:newPopulation) {
+             writer.append("Directory");
+             writer.append(',');
+             writer.append("D_0");
+             writer.append(',');
+             writer.append("Range_D0");
+             writer.append(',');
+             writer.append("f_pressure");
+             writer.append(',');
+             writer.append("CurrentTime");
+             writer.append(',');
+             writer.append("MaxUsageRam");
+             writer.append('\n');
+             
+				for(i=3;i<newPopulation.size();i++) {
 					
+					Individuo ind= newPopulation.get(i);
+					
+					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 					//llamo a la clase que va a llamar limeseg:
 					SphereSegAdapted seg2=new SphereSegAdapted();
 					seg2.set_path(dir.toString());
@@ -280,6 +300,18 @@ public class evolutionary_algorithm {
 					seg2.setZ_scale(ZS);
 					seg2.setRange_in_d0_units(ind.getRange_d0());
 					
+					 writer.append(ind.getDir().toString());
+		             writer.append(',');
+		             writer.append(String.valueOf(ind.getD0()));
+		             writer.append(',');
+		             writer.append(String.valueOf(ind.getRange_d0()));
+		             writer.append(',');
+		             writer.append(String.valueOf(ind.getFp()));
+		             writer.append(',');
+		             writer.append(String.valueOf(System.currentTimeMillis()));
+		             writer.append(',');
+		             
+
 
 					
 					long startTime2 = System.currentTimeMillis();
@@ -288,8 +320,12 @@ public class evolutionary_algorithm {
 					
 					seg2.start();
 					
+					ArrayList<Long> memoryRegisters=new ArrayList<Long>();
+					
+					
 					while (seg2.isAlive()) {
 						endTime2=System.currentTimeMillis();
+						memoryRegisters.add(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
 						
 						System.out.println((endTime2-startTime2) /1000);
 						
@@ -298,6 +334,10 @@ public class evolutionary_algorithm {
 
 							}
 					}
+					
+					writer.append(String.valueOf(Collections.max(memoryRegisters)));	
+		            writer.append('\n');
+		            writer.flush();
 					
 					System.out.println("Ha salido del while");
 					
@@ -311,7 +351,7 @@ public class evolutionary_algorithm {
 				
 					System.out.println("Ha salido del Join()");
 					ind.setTime((endTime2-startTime2) /1000);
-					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
+					
 					ind.getDir().mkdir();//it creates the directory for that individual
 			       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
 			       	LimeSeg.clear3DDisplay();
@@ -319,7 +359,15 @@ public class evolutionary_algorithm {
 			       	
 			       	poblacion.add(ind);
 			       	i++;
-			}
+				}
+				
+				writer.close();
+				
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 	}
 	
 	

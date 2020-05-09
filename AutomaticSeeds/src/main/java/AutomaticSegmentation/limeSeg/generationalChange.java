@@ -1,5 +1,7 @@
 package AutomaticSegmentation.limeSeg;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,29 +10,53 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
+import org.apache.commons.io.FileUtils;
+
 public class generationalChange {
 	
 	public ArrayList<Individuo> nextGeneration;//list of individuals which will generate the new population after mutation methods...etc-
 	public ArrayList<Individuo> previousGeneration;
 	public int nextGenerationSize;
 	
-	public generationalChange(ArrayList<Individuo> population, int nextPopulationSize) {
+	public generationalChange(ArrayList<Individuo> population, int nextPopulationSize,int iter) {
 		super();
+		int res=1;
 		this.nextGenerationSize=nextPopulationSize;
 		this.nextGeneration =new ArrayList<Individuo>(nextPopulationSize);
 		//First we get the two individuals with maximum score, they will pass directly to the next generation:
 		Individuo bestIndividual = Collections.max(population, Comparator.comparingDouble(Individuo::getScore));
+
+		File srcDir =  bestIndividual.getDir();
+		
+		File destDir=new File(srcDir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter+1));
+		bestIndividual.setDir(new File(destDir.toString()+"\\resultado"+String.valueOf(iter+1)+String.valueOf(res)));
+		
+		try {
+   		 FileUtils.copyDirectory(srcDir, destDir);
+		} catch (IOException e) {
+   		 e.printStackTrace();
+		}
+		
 		this.nextGeneration.add(bestIndividual);
 		population.remove(bestIndividual);//the best individual is removed temporarily in order to find the second maximum value
 
 		//we do the same for the second best individual:
 		Individuo bestIndividual2 = Collections.max(population, Comparator.comparingDouble(Individuo::getScore));
+		
+		File srcDir2 =  bestIndividual.getDir();
+		bestIndividual2.setDir(new File(destDir.toString()+"\\resultado"+String.valueOf(iter+1)+String.valueOf(res+1)));
+		
 		this.nextGeneration.add(bestIndividual2);
+		
+		try {
+	   		 FileUtils.copyDirectory(srcDir2, destDir);
+			} catch (IOException e) {
+	   		 e.printStackTrace();
+		}
+		
 		population.add(bestIndividual);//we add the bestIndividual again
 		this.previousGeneration = new ArrayList<Individuo>();
 		this.previousGeneration.addAll(population);
-		
-		
 		
 	}
 	
