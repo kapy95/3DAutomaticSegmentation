@@ -49,11 +49,11 @@ public class evolutionary_algorithm {
 	
 	public void main() {
 		
-		this.InitialPopulationGenerator(100,0);
+		this.InitialPopulationGenerator(50,0);
 		this.FitnessCalculation();
 		int i=0;
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion 0\\resultadoPob0.csv");
-		generationalChange change=new generationalChange(this.poblacion,101);
+		generationalChange change=new generationalChange(this.poblacion,51);
 		change.main();
 		ArrayList<Individuo> newPopulation=change.getNextPopulation();
 		//getObjectPendingFinalizationCount 
@@ -63,7 +63,7 @@ public class evolutionary_algorithm {
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
 			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
-			generationalChange iterativeChange=new generationalChange(this.poblacion,101);
+			generationalChange iterativeChange=new generationalChange(this.poblacion,51);
 			iterativeChange.main();
 
 			newPopulation=iterativeChange.getNextPopulation();

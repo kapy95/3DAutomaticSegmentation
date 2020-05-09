@@ -95,7 +95,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		//establezco el directorio de trabajo con las imágenes y roi
 		//File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
 		File dir = new File("E:\\TFM");
-		/*
+		
 		int selectedMethod=1 + (int)(Math.random() * ((3 - 1) + 1));
 		System.out.println(selectedMethod);
 		
@@ -121,7 +121,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 			float randomF_pressure=-0.03f + rand.nextFloat() * (0.025f+0.03f);
 			float randomD0=1.0f + rand.nextFloat() * (18.0f-1.0f);
 			float randomRange_D0=0.5f + rand.nextFloat() * (8.5f-0.5f) ;
-			double score=1 + Math.random() * (100 - 1);
+			double score=0 + Math.random() * (4 - 1);
 			guineaPig.setD0(randomD0);
 			guineaPig.setF_pressure(randomF_pressure);
 			guineaPig.setRange_d0(randomRange_D0);
@@ -133,7 +133,6 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		//Individuo blend=testing.SinglePointCrossOver(tests.get(0),tests.get(1));
 		//Individuo i1=testing.tournamentSelection(tests, 2);
 		Individuo i1=testing.rouletteWheelSelection(tests);
-		*/
 		
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
 

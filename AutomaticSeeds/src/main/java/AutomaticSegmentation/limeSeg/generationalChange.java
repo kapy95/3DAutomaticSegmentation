@@ -189,8 +189,8 @@ public class generationalChange {
 			 if(range==0) {
 				 
 				 range=1;
-				 z=z+1;
 				 numbers.add(z);
+				 z=z+1;
 			 }
 			//Finally, if we create an array of 10 numbers representing the likelihoods [0,1,2,3...10] their corresponding numbers are:
 			//I1:10 x 0.2= 2 numbers (1,2), I2:10 X0.33=3.3=3 3 numbers (3,4,5), and I3: 10 x 0.5 = 5 numbers (6,7,8,9,10)
