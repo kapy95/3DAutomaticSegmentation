@@ -11,11 +11,15 @@ import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -54,7 +58,7 @@ public class evolutionary_algorithm {
 		this.FitnessCalculation();
 		int i=0;
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion 0\\resultadoPob0.csv");
-		generationalChange change=new generationalChange(this.poblacion,5,0);
+		generationalChange change=new generationalChange(this.poblacion,51,0,this.dir.toString());
 		change.main();
 		ArrayList<Individuo> newPopulation=change.getNextPopulation();
 		//getObjectPendingFinalizationCount 
@@ -64,7 +68,7 @@ public class evolutionary_algorithm {
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
 			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
-			generationalChange iterativeChange=new generationalChange(this.poblacion,51,i);
+			generationalChange iterativeChange=new generationalChange(this.poblacion,51,i,this.dir.toString());
 			iterativeChange.main();
 
 			newPopulation=iterativeChange.getNextPopulation();
@@ -262,7 +266,7 @@ public class evolutionary_algorithm {
 			//the folder for the new individuals is created
 
 			File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter));
-			dirPob.mkdir();
+			//dirPob.mkdir();
 			
 			this.deletePopulation();
 			this.poblacion=new ArrayList<Individuo>();
@@ -270,9 +274,15 @@ public class evolutionary_algorithm {
 			//only Zscale has the same value for the new generations:
 			float ZS=4.06f;// variable con el valor del z_scale
 			int i=0;
-			//PrintWriter experiments= new PrintWriter(new File())
+			
+			Date date = new Date();   // given date
+			Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
+			calendar.setTime(date);   // assigns calendar to given date 
+			calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
+			calendar.get(Calendar.HOUR);        // gets hour in 12h format
+			calendar.get(Calendar.MONTH);       // gets month number, NOTE this is zero based!
 			try {
-				FileWriter writer = new FileWriter(dirPob);
+				FileWriter writer = new FileWriter(dirPob.toString()+"\\Experimentos.csv");
 			
              writer.append("Directory");
              writer.append(',');
@@ -287,7 +297,9 @@ public class evolutionary_algorithm {
              writer.append("MaxUsageRam");
              writer.append('\n');
              
-				for(i=3;i<newPopulation.size();i++) {
+             writer.flush();
+             
+				for(i=3;i<=newPopulation.size()-1;i++) {
 					
 					Individuo ind= newPopulation.get(i);
 					
@@ -308,7 +320,7 @@ public class evolutionary_algorithm {
 		             writer.append(',');
 		             writer.append(String.valueOf(ind.getFp()));
 		             writer.append(',');
-		             writer.append(String.valueOf(System.currentTimeMillis()));
+		             writer.append(String.valueOf(LocalDateTime.now().getHour())+":"+String.valueOf(LocalDateTime.now().getMinute()));
 		             writer.append(',');
 		             
 
@@ -320,12 +332,12 @@ public class evolutionary_algorithm {
 					
 					seg2.start();
 					
-					ArrayList<Long> memoryRegisters=new ArrayList<Long>();
+					ArrayList<Double> memoryRegisters=new ArrayList<Double>();
 					
 					
 					while (seg2.isAlive()) {
 						endTime2=System.currentTimeMillis();
-						memoryRegisters.add(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
+						memoryRegisters.add((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024.0 * 1024.0 * 1024.0));
 						
 						System.out.println((endTime2-startTime2) /1000);
 						
@@ -358,7 +370,6 @@ public class evolutionary_algorithm {
 			       	LimeSeg.clearAllCells();
 			       	
 			       	poblacion.add(ind);
-			       	i++;
 				}
 				
 				writer.close();

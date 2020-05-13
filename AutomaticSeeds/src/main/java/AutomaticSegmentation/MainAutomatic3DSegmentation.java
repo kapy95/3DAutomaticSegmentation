@@ -10,8 +10,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
@@ -95,7 +99,8 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		//establezco el directorio de trabajo con las imágenes y roi
 		//File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
 		File dir = new File("E:\\TFM");
-		/*
+		
+		
 		int selectedMethod=1 + (int)(Math.random() * ((3 - 1) + 1));
 		System.out.println(selectedMethod);
 		
@@ -129,11 +134,12 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 			tests.add(guineaPig);
 		}
 		
-		generationalChange testing=new generationalChange(tests,5);
+		generationalChange testing=new generationalChange(tests,20,0,dir.toString());
+		testing.main();
 		//Individuo blend=testing.SinglePointCrossOver(tests.get(0),tests.get(1));
 		//Individuo i1=testing.tournamentSelection(tests, 2);
 		Individuo i1=testing.rouletteWheelSelection(tests);
-		*/
+		
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
 
 		ev.main();

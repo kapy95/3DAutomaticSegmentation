@@ -18,7 +18,7 @@ public class generationalChange {
 	public ArrayList<Individuo> previousGeneration;
 	public int nextGenerationSize;
 	
-	public generationalChange(ArrayList<Individuo> population, int nextPopulationSize,int iter) {
+	public generationalChange(ArrayList<Individuo> population, int nextPopulationSize,int iter,String dir) {
 		super();
 		int res=1;
 		this.nextGenerationSize=nextPopulationSize;
@@ -28,14 +28,17 @@ public class generationalChange {
 
 		File srcDir =  bestIndividual.getDir();
 		
-		File destDir=new File(srcDir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter+1));
-		bestIndividual.setDir(new File(destDir.toString()+"\\resultado"+String.valueOf(iter+1)+String.valueOf(res)));
+		File destDir=new File(dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter+1));
+		destDir.mkdir();
 		
+		File destDirInd1=new File(destDir.toString()+"\\resultado"+ String.valueOf(res)+String.valueOf(iter+1));
+		bestIndividual.setDir(destDirInd1);
+		/*
 		try {
-   		 FileUtils.copyDirectory(srcDir, destDir);
+   		 FileUtils.copyDirectory(srcDir, destDirInd1);
 		} catch (IOException e) {
    		 e.printStackTrace();
-		}
+		}*/
 		
 		this.nextGeneration.add(bestIndividual);
 		population.remove(bestIndividual);//the best individual is removed temporarily in order to find the second maximum value
@@ -43,16 +46,18 @@ public class generationalChange {
 		//we do the same for the second best individual:
 		Individuo bestIndividual2 = Collections.max(population, Comparator.comparingDouble(Individuo::getScore));
 		
-		File srcDir2 =  bestIndividual.getDir();
-		bestIndividual2.setDir(new File(destDir.toString()+"\\resultado"+String.valueOf(iter+1)+String.valueOf(res+1)));
+		File destDirInd2=new File(destDir.toString()+"\\resultado"+ String.valueOf(res)+String.valueOf(iter+1));
+		File srcDir2 =  bestIndividual2.getDir();
+		
+		bestIndividual2.setDir(new File(destDir.toString()+"\\resultado"+String.valueOf(res+1)+String.valueOf(iter+1)));
 		
 		this.nextGeneration.add(bestIndividual2);
 		
-		try {
-	   		 FileUtils.copyDirectory(srcDir2, destDir);
+		/*try {
+	   		 FileUtils.copyDirectory(srcDir2, destDirInd2);
 			} catch (IOException e) {
 	   		 e.printStackTrace();
-		}
+		}*/
 		
 		population.add(bestIndividual);//we add the bestIndividual again
 		this.previousGeneration = new ArrayList<Individuo>();
@@ -460,8 +465,8 @@ public class generationalChange {
 			upperBoundD0=0.025f;
 		}
 		
-		if(lowerBoundRangeD0<-0.03f) {
-			lowerBoundD0=-0.03f;
+		if(lowerBoundRangeD0<-0.025f) {
+			lowerBoundD0=-0.025f;
 		}
 		//Min + (int)(Math.random() * ((Max - Min) + 1))
 		
@@ -507,7 +512,7 @@ public class generationalChange {
 		
 		float rng = 0+1*rand.nextFloat();//it generates a number between 0 and 1
 		
-		if(rng>0.8) {// if rng is greater than 0.8 the other genes are also mutated
+		if(rng>0.8) {// if rng is greater than 0.8  other genes are also mutated
 			
 			//the same process is applied to the other genes
 			
