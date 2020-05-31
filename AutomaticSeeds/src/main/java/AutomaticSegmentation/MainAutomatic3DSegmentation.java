@@ -99,8 +99,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		//establezco el directorio de trabajo con las imágenes y roi
 		//File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
 		File dir = new File("E:\\TFM");
-		
-		
+		/*
 		int selectedMethod=1 + (int)(Math.random() * ((3 - 1) + 1));
 		System.out.println(selectedMethod);
 		
@@ -133,13 +132,13 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 			guineaPig.setScore(score);
 			tests.add(guineaPig);
 		}
-		
 		generationalChange testing=new generationalChange(tests,20,0,dir.toString());
-		testing.main();
+		testing.mutation(tests.get(0));
+		//testing.main();
 		//Individuo blend=testing.SinglePointCrossOver(tests.get(0),tests.get(1));
 		//Individuo i1=testing.tournamentSelection(tests, 2);
 		Individuo i1=testing.rouletteWheelSelection(tests);
-		
+		*/
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
 
 		ev.main();

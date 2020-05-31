@@ -54,12 +54,12 @@ public class evolutionary_algorithm {
 	
 	public void main() {
 		
-		this.InitialPopulationGenerator(50,0);
+		this.InitialPopulationGenerator(30,0);
 		this.FitnessCalculation();
 		int i=0;
-		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion 0\\resultadoPob0.csv");
-		generationalChange change=new generationalChange(this.poblacion,51,0,this.dir.toString());
-		change.main();
+		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion0\\resultadoPob0.csv");
+		generationalChange change=new generationalChange(this.poblacion,30,0,this.dir.toString());
+		change.main(i,this.dir.toString());
 		ArrayList<Individuo> newPopulation=change.getNextPopulation();
 		//getObjectPendingFinalizationCount 
 			
@@ -68,8 +68,8 @@ public class evolutionary_algorithm {
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
 			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
-			generationalChange iterativeChange=new generationalChange(this.poblacion,51,i,this.dir.toString());
-			iterativeChange.main();
+			generationalChange iterativeChange=new generationalChange(this.poblacion,30,i,this.dir.toString());
+			iterativeChange.main(i,this.dir.toString());
 
 			newPopulation=iterativeChange.getNextPopulation();
 			
@@ -109,7 +109,7 @@ public class evolutionary_algorithm {
 			//IntStream.iterate(start, i -> i + 1).limit(limit).boxed().collect(Collectors.toList());
 			
 			int i;
-			File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion 0");
+			File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion0");
 			dirPob.mkdir();
 			Random rand= new Random();
 			
@@ -243,13 +243,13 @@ public class evolutionary_algorithm {
        	Double globalStd=globalMeanStdObjects.stream().mapToDouble(Double::doubleValue).sum()/globalMeanStdObjects.size();
        	Double globalMean=globalMeanCellObjects.stream().mapToDouble(Double::doubleValue).sum()/globalMeanCellObjects.size();
        	
-       	
-       	for(Individuo res: individuals) {
-       		
+       	int i=0;
+       	for(i=0;i<individuals.size();i++) {
+       		Individuo res=individuals.get(i);
        		if(res.getMeanVertex()==0) {
-       			res.setScore(0.0d);
+       			individuals.remove(i);
        		}else if(res.getStdVertex()==0) {
-       			res.setScore(0.0d);
+       			individuals.remove(i);
        		}else {
            		res.setScore( (globalStd/res.getStdVertex())+(res.getMeanVertex()/globalMean) );
        		}
@@ -299,7 +299,7 @@ public class evolutionary_algorithm {
              
              writer.flush();
              
-				for(i=3;i<=newPopulation.size()-1;i++) {
+				for(i=2;i<=newPopulation.size()-1;i++) {
 					
 					Individuo ind= newPopulation.get(i);
 					

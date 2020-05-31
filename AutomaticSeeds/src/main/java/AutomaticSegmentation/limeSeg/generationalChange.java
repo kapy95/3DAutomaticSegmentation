@@ -1,6 +1,7 @@
 package AutomaticSegmentation.limeSeg;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,14 +32,14 @@ public class generationalChange {
 		File destDir=new File(dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter+1));
 		destDir.mkdir();
 		
-		File destDirInd1=new File(destDir.toString()+"\\resultado"+ String.valueOf(res)+String.valueOf(iter+1));
+		File destDirInd1=new File(destDir.toString()+"\\mejor individuo gen"+ String.valueOf(iter)); //incluir mejor resultado aqui en el titulo para identificarlo y no volver a calcularlo
 		bestIndividual.setDir(destDirInd1);
-		/*
+		
 		try {
    		 FileUtils.copyDirectory(srcDir, destDirInd1);
 		} catch (IOException e) {
    		 e.printStackTrace();
-		}*/
+		}
 		
 		this.nextGeneration.add(bestIndividual);
 		population.remove(bestIndividual);//the best individual is removed temporarily in order to find the second maximum value
@@ -46,18 +47,18 @@ public class generationalChange {
 		//we do the same for the second best individual:
 		Individuo bestIndividual2 = Collections.max(population, Comparator.comparingDouble(Individuo::getScore));
 		
-		File destDirInd2=new File(destDir.toString()+"\\resultado"+ String.valueOf(res)+String.valueOf(iter+1));
+		File destDirInd2=new File(destDir.toString()+"\\segundo mejor individuo gen"+ String.valueOf(iter));
 		File srcDir2 =  bestIndividual2.getDir();
 		
-		bestIndividual2.setDir(new File(destDir.toString()+"\\resultado"+String.valueOf(res+1)+String.valueOf(iter+1)));
-		
+		//bestIndividual2.setDir(new File(destDir.toString()+"\\resultado"+String.valueOf(res+1)+String.valueOf(iter+1)));
+		bestIndividual2.setDir(destDirInd2);
 		this.nextGeneration.add(bestIndividual2);
 		
-		/*try {
+		try {
 	   		 FileUtils.copyDirectory(srcDir2, destDirInd2);
 			} catch (IOException e) {
 	   		 e.printStackTrace();
-		}*/
+		}
 		
 		population.add(bestIndividual);//we add the bestIndividual again
 		this.previousGeneration = new ArrayList<Individuo>();
@@ -66,17 +67,46 @@ public class generationalChange {
 	}
 	
 	
-	public void main() {
+	public void main(int iter,String dir) {
 		ArrayList<Individuo> population= new ArrayList<Individuo>();
 	    population.addAll(this.previousGeneration);
 		int counterMutated=0;
 		int counterCrossover=0;
-		
+		File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter));
 		//int maxCrossover=(int) Math.round(0.85f*(this.nextGeneration.size()-2));//minus 3 because two individuals have been already selected and java starts in 0 so -3
 		//int maxMutated=(this.nextGeneration.size()-3)-maxCrossover;
 		Random rand= new Random();
 		int contador=2;
-		while(contador<this.nextGenerationSize-1) {
+		try {
+			FileWriter writer = new FileWriter(dirPob+"\\RecambioGeneracional"+String.valueOf(iter)+".csv");
+			
+	        writer.append("MetodoSeleccionado");
+            writer.append(',');
+            writer.append("Individuo1 D_0");
+            writer.append(',');
+            writer.append("Individuo1 Range_D0");
+            writer.append(',');
+            writer.append("Individuo1 f_pressure");
+            writer.append(',');
+            writer.append("Individuo2 D_0");
+            writer.append(',');
+            writer.append("Individuo2 Range_D0");
+            writer.append(',');
+            writer.append("Individuo2 f_pressure");
+            writer.append(',');
+			writer.append("IndividuoGenerado");
+            writer.append(',');
+            writer.append("IndividuoGenerado D_0");
+            writer.append(',');
+            writer.append("IndividuoGenerado Range_D0");
+            writer.append(',');
+            writer.append("IndividuoGenerado f_pressure");
+            writer.append('\n');
+            
+            writer.flush();
+            
+		while(contador<=this.nextGenerationSize-1) {
+			String metodo=null;
 			//int selectedMethod1=0;//it selects whether mutation or crossover is going to be used:
 			//1-> crossover is selected, 2->mutation is selected
 			
@@ -92,45 +122,42 @@ public class generationalChange {
 				
 				selectedMethod1 =	1 + (int)(Math.random() * ((2 - 1) + 1));
 			}*/
+			Individuo selectedIndividual1=null;
+			Individuo selectedIndividual2=null;
+			//now two individuals are selected for crossover by either roulette or tournament:
 			
+			//first a number between 2 and 1 is calculated:
+			int selectedMethodI1=1 + (int)(Math.random() * ((2 - 1) + 1));
+			if(selectedMethodI1==1) {//if it is equal to 1, rouletteWheelSelection will be chosen as selection method 
+				
+				selectedIndividual1=this.rouletteWheelSelection(population);
+				
+			}else {//else tournament selection will be chosen as selection method 
+				
+				selectedIndividual1=this.tournamentSelection(population, 2);
+			}
+			
+			//the same process to choose the second candidate for crossover
+			int selectedMethodI2=1 + (int)(Math.random() * ((2 - 1) + 1));
+			
+			if(selectedMethodI2==1) {
+				
+				selectedIndividual2=this.rouletteWheelSelection(population);
+				
+			}else {
+				
+				selectedIndividual2=this.tournamentSelection(population, 2);
+			}
 			float probMethod = 1*rand.nextFloat();
 		//if selectedMethod1 is equal to 1 and if the maximum amount of individuals created by crossover is lower than 85% of the new populationsize, the new individual will be created by crossover:
 			if(probMethod<0.85) {
 				
 				counterCrossover=counterCrossover+1;// we increase the counter
-				Individuo selectedIndividual1=null;
-				Individuo selectedIndividual2=null;
 				
-				//now two individuals are selected for crossover by either roulette or tournament:
-				
-				//first a number between 2 and 1 is calculated:
-				int selectedMethodI1=1 + (int)(Math.random() * ((2 - 1) + 1));
-				
-				if(selectedMethodI1==1) {//if it is equal to 1, rouletteWheelSelection will be chosen as selection method 
-					
-					selectedIndividual1=this.rouletteWheelSelection(population);
-					
-				}else {//else tournament selection will be chosen as selection method 
-					
-					selectedIndividual1=this.tournamentSelection(population, 2);
-				}
-				
-				//the same process to choose the second candidate for crossover
-				int selectedMethodI2=1 + (int)(Math.random() * ((2 - 1) + 1));
-				
-				if(selectedMethodI2==1) {
-					
-					selectedIndividual2=this.rouletteWheelSelection(population);
-					
-				}else {
-					
-					selectedIndividual2=this.tournamentSelection(population, 2);
-				}
-				
-
 				int selectedMethod2 =	1 + (int)(Math.random() * ((3 - 1) + 1));//it selects which crossover method is going to be selected:
 			
 				if(selectedMethod2==1) {//only crossover
+					metodo="OnlyCrossover";
 					int selectedMethodPureCrossover =	1 + (int)(Math.random() * ((2 - 1) + 1));//it selects which crossover method is going to be selected:
 					
 					if(selectedMethodPureCrossover==1) {//if it is equal to 1 it will be selected double point crossover
@@ -142,7 +169,7 @@ public class generationalChange {
 					
 					
 				}else if(selectedMethod2==2) {//crossover+mutation:
-					
+					metodo="crossover+mutation";
 					Individuo i1mutated=this.mutation(selectedIndividual1);
 					Individuo i2mutated=this.mutation(selectedIndividual2);
 					
@@ -157,33 +184,62 @@ public class generationalChange {
 					
 					
 				}else { //blend algorithm will be selected for crossover
-					
+					metodo="blendcrossover";
 					this.nextGeneration.add(this.blendCrossOver(selectedIndividual1, selectedIndividual2));
 				}
 				
 				
 			}else if (probMethod>0.85){//if the maximum amout of individuals generated by mutation has not been reached, the individual will be generated only by mutation:
-				
+				metodo="mutation";
 				counterMutated=counterMutated+1;
-				int selectedMethod2 =	1 + (int)(Math.random() * ((2 - 1) + 1));//it selects whether roulette or tournament is going to be used to select the individual for mutation
-				
-				Individuo selectedIndividual=null;
+				/*int selectedMethod2 =	1 + (int)(Math.random() * ((2 - 1) + 1));//it selects whether roulette or tournament is going to be used to select the individual for mutation
 				
 				if(selectedMethod2==1) {//it is equal to 1 rouletteWheelSelection will be chosen as selection method 
 					
-					selectedIndividual=this.rouletteWheelSelection(population);
+					selectedIndividual1=this.rouletteWheelSelection(population);
 					
 				}else {//else tournament selection will be chosen as selection method 
 					
-					selectedIndividual=this.tournamentSelection(population, 2);
-				}
+					selectedIndividual1=this.tournamentSelection(population, 2);
+				}*/
 				
-				this.nextGeneration.add(this.mutation(selectedIndividual));
+				this.nextGeneration.add(this.mutation(selectedIndividual1));
 				
 			}
 			
+			 	writer.append(metodo);
+	            writer.append(',');
+	            writer.append(String.valueOf(selectedIndividual1.getD0()));
+	            writer.append(',');
+	            writer.append(String.valueOf(selectedIndividual1.getRange_d0()));
+	            writer.append(',');
+	            writer.append(String.valueOf(selectedIndividual1.getFp()));
+	            writer.append(',');
+	            writer.append(String.valueOf(selectedIndividual2.getD0()));
+	            writer.append(',');
+	            writer.append(String.valueOf(selectedIndividual2.getRange_d0()));
+	            writer.append(',');
+	            writer.append(String.valueOf(selectedIndividual2.getFp()));
+	            writer.append(',');
+				writer.append(String.valueOf(contador));
+	            writer.append(',');
+	            writer.append(String.valueOf(nextGeneration.get(contador).getD0()));
+	            writer.append(',');
+	            writer.append(String.valueOf(nextGeneration.get(contador).getRange_d0()));
+	            writer.append(',');
+	            writer.append(String.valueOf(nextGeneration.get(contador).getFp()));
+	            writer.append('\n');
+	            
+	            writer.flush();
+			
 			contador++;
 			
+			}
+		
+		writer.close();
+		}catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 		
 		
@@ -449,11 +505,11 @@ public class generationalChange {
 		float lowerBoundRangeD0=minRange_D0_values+(alfa*(maxRange_D0_values-minRange_D0_values));
 		
 		if(upperBoundRangeD0>8.5f) {
-			upperBoundD0=8.5f;
+			upperBoundRangeD0=8.5f;
 		}
 		
 		if(lowerBoundRangeD0<0.5f) {
-			lowerBoundD0=0.5f;
+			lowerBoundRangeD0=0.5f;
 		}
 		
 		
@@ -462,11 +518,11 @@ public class generationalChange {
 		float lowerBoundF_pressure_values=minF_pressure_values+(alfa*(maxF_pressure_values-minF_pressure_values));
 		
 		if(upperBoundF_pressure_values>0.025f) {
-			upperBoundD0=0.025f;
+			upperBoundF_pressure_values=0.025f;
 		}
 		
-		if(lowerBoundRangeD0<-0.025f) {
-			lowerBoundD0=-0.025f;
+		if(lowerBoundF_pressure_values<-0.025f) {
+			lowerBoundF_pressure_values=-0.025f;
 		}
 		//Min + (int)(Math.random() * ((Max - Min) + 1))
 		
@@ -510,7 +566,7 @@ public class generationalChange {
 		float D0 = lowerBoundD0 + (float) (rand.nextFloat() * (upperBoundD0 - lowerBoundD0) );
 		
 		
-		float rng = 0+1*rand.nextFloat();//it generates a number between 0 and 1
+		float rng = 0.7f;//*rand.nextFloat();//it generates a number between 0 and 1
 		
 		if(rng>0.8) {// if rng is greater than 0.8  other genes are also mutated
 			
@@ -521,11 +577,11 @@ public class generationalChange {
 			float lowerBoundRangeD0=i1.getRange_d0()-0.25f;
 			
 			if(upperBoundRangeD0>8.5f) {
-				upperBoundD0=8.5f;
+				upperBoundRangeD0=8.5f;
 			}
 			
 			if(lowerBoundRangeD0<0.5f) {
-				lowerBoundD0=0.5f;
+				lowerBoundRangeD0=0.5f;
 			}
 			
 			
@@ -534,23 +590,27 @@ public class generationalChange {
 			float lowerBoundF_pressure_values=i1.getFp()-0.05f;
 			
 			if(upperBoundF_pressure_values>0.025f) {
-				upperBoundD0=0.025f;
+				upperBoundF_pressure_values=0.025f;
 			}
 			
-			if(lowerBoundRangeD0<-0.03f) {
-				lowerBoundD0=-0.03f;
+			if(lowerBoundF_pressure_values<-0.03f) {
+				lowerBoundF_pressure_values=-0.03f;
 			}
 			//finally the values for the individual are calculated:
 			
-			float range_D0= lowerBoundD0 + (float) (rand.nextFloat()* ( upperBoundRangeD0 - lowerBoundRangeD0) );
+			float range_D0= lowerBoundRangeD0 +  (rand.nextFloat() * ( upperBoundRangeD0 - lowerBoundRangeD0) );
 			float f_pressure= lowerBoundF_pressure_values + (float) (rand.nextFloat() * (upperBoundF_pressure_values- lowerBoundF_pressure_values) );
 			
 			indMutated.setF_pressure(f_pressure);
 			indMutated.setRange_d0(range_D0);
+			
+		}else {
+			
+			indMutated.setF_pressure(i1.getFp());
+			indMutated.setRange_d0(i1.getRange_d0());
 		}
 		
 		indMutated.setD0(D0);
-		
 		return indMutated ;
 		
 		
