@@ -33,7 +33,7 @@ public class generationalChange {
 		destDir.mkdir();
 		
 		File destDirInd1=new File(destDir.toString()+"\\mejor individuo gen"+ String.valueOf(iter)); //incluir mejor resultado aqui en el titulo para identificarlo y no volver a calcularlo
-		bestIndividual.setDir(destDirInd1);
+		//bestIndividual.setDir(destDirInd1);
 		
 		try {
    		 FileUtils.copyDirectory(srcDir, destDirInd1);
@@ -51,7 +51,7 @@ public class generationalChange {
 		File srcDir2 =  bestIndividual2.getDir();
 		
 		//bestIndividual2.setDir(new File(destDir.toString()+"\\resultado"+String.valueOf(res+1)+String.valueOf(iter+1)));
-		bestIndividual2.setDir(destDirInd2);
+		//bestIndividual2.setDir(destDirInd2);
 		this.nextGeneration.add(bestIndividual2);
 		
 		try {
@@ -258,7 +258,7 @@ public class generationalChange {
 		
 		ArrayList<Integer> numbers=new ArrayList<Integer>();//an array will be created with the size of maxRange, whose values will go from 0 to maxRange.
 		int z;
-		for(z=0;z<=sum;z++) {
+		for(z=0;z<=sum+3;z++) {
 			numbers.add(z);
 			//System.out.println(z);
 		}

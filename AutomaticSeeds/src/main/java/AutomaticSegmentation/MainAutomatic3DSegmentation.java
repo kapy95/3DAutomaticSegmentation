@@ -138,10 +138,25 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		//Individuo blend=testing.SinglePointCrossOver(tests.get(0),tests.get(1));
 		//Individuo i1=testing.tournamentSelection(tests, 2);
 		Individuo i1=testing.rouletteWheelSelection(tests);
+		
 		*/
+		/*
+		Individuo ind = new Individuo();
+		File dir2 = new File("E:\\3a\\Cells\\OutputLimeSeg");
+		ind.setDir(dir2);
+		*/
+		
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
-
 		ev.main();
+		
+		/*ev.addIndividual(ind);
+		ev.FitnessCalculation();
+		ArrayList<Individuo> inds=ev.getPopulation();
+		
+		System.out.println(inds.get(0).getScore());*/
+		
+
+		//ev.main();
 		
 		
 		System.out.println("Prueba");

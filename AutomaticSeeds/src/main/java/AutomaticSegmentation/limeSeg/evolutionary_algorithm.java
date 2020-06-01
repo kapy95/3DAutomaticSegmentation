@@ -41,6 +41,8 @@ public class evolutionary_algorithm {
 	public File dir;
 	private ArrayList<Individuo> poblacion;
 	//private limeseg 
+	private String bestDir; 
+	private String secondbestDir; 
 	/**
 	 * 
 	 */
@@ -481,4 +483,9 @@ public class evolutionary_algorithm {
 	public void deletePopulation() {
 		this.poblacion=null;
 	}
+	
+	public void addIndividual(Individuo i) {
+		this.poblacion.add(i);
+	}
+	
 }
