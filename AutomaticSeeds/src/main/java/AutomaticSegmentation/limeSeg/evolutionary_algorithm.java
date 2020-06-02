@@ -54,23 +54,23 @@ public class evolutionary_algorithm {
 	}
 	
 	
-	public void main() {
-		
-		this.InitialPopulationGenerator(30,0);
+	public void main(int numIndividuals,int iters) {
+		String initialhour=String.valueOf(LocalDateTime.now().getHour())+"."+String.valueOf(LocalDateTime.now().getMinute());
+		this.InitialPopulationGenerator(numIndividuals,0);
 		this.FitnessCalculation();
 		int i=0;
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion0\\resultadoPob0.csv");
-		generationalChange change=new generationalChange(this.poblacion,30,0,this.dir.toString());
+		generationalChange change=new generationalChange(this.poblacion,numIndividuals,0,this.dir.toString());
 		change.main(i,this.dir.toString());
 		ArrayList<Individuo> newPopulation=change.getNextPopulation();
 		//getObjectPendingFinalizationCount 
 			
-		for(i=1;i<9;i++){//i=200
+		for(i=1;i<iters;i++){//i=200
 			
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
 			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
-			generationalChange iterativeChange=new generationalChange(this.poblacion,30,i,this.dir.toString());
+			generationalChange iterativeChange=new generationalChange(this.poblacion,numIndividuals,i,this.dir.toString());
 			iterativeChange.main(i,this.dir.toString());
 
 			newPopulation=iterativeChange.getNextPopulation();
@@ -82,10 +82,65 @@ public class evolutionary_algorithm {
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
 		
 		Individuo bestIndividual = Collections.max(this.poblacion, Comparator.comparingDouble(Individuo::getScore));
-		System.out.println(bestIndividual.getD0());
-		System.out.println(bestIndividual.getRange_d0());
-		System.out.println(bestIndividual.getFp());
-		System.out.println(bestIndividual.getDir());
+		try
+        {
+			File file = new File(this.dir.toString()+"\\resultados"+"\\mejorResultado"+".csv");
+            FileWriter writer = new FileWriter(file);
+
+            writer.append("Directory");
+            writer.append(',');
+            writer.append("D_0");
+            writer.append(',');
+            writer.append("Range_D0");
+            writer.append(',');
+            writer.append("f_pressure");
+            writer.append(',');
+            writer.append("MeanVertex");
+            writer.append(',');
+            writer.append("StdVertex");
+            writer.append(',');
+            writer.append("Score");
+            writer.append(',');
+            writer.append("TotalTime");
+            writer.append(',');
+            writer.append("NumIndividuals");
+            writer.append(',');
+            writer.append("Iterations");
+            writer.append('\n');
+            
+            writer.append(bestIndividual.getDir().toString());
+            writer.append(',');
+            writer.append(String.valueOf(bestIndividual.getD0()));
+            writer.append(',');
+            writer.append(String.valueOf(bestIndividual.getRange_d0()));
+            writer.append(',');
+            writer.append(String.valueOf(bestIndividual.getFp()));
+            writer.append(',');
+            writer.append(String.valueOf(bestIndividual.getMeanVertex()));
+            writer.append(',');
+            writer.append(String.valueOf(bestIndividual.getStdVertex()));
+            writer.append(',');
+            writer.append(String.valueOf(bestIndividual.getScore()));
+            writer.append(',');
+            String finalhour=String.valueOf(LocalDateTime.now().getHour())+"."+String.valueOf(LocalDateTime.now().getMinute());
+            writer.append(String.valueOf(finalhour+"-"+initialhour));
+            writer.append(',');
+            writer.append(String.valueOf(numIndividuals)); 
+            writer.append(',');
+            writer.append(String.valueOf(i)); 
+            writer.append('\n');
+            
+            System.out.println(bestIndividual.getD0());
+            System.out.println(bestIndividual.getRange_d0());
+            System.out.println(bestIndividual.getFp());
+            System.out.println(bestIndividual.getDir());
+            
+            writer.flush();
+	        writer.close();
+	        
+   } catch(IOException e) {
+         e.printStackTrace();
+   } 
 		
 		
 	}
@@ -128,7 +183,7 @@ public class evolutionary_algorithm {
 					ind.setD0((float)(min_d0+(factor_d0*i)));
 					ind.setRange_d0( (float)(min_range_d0+(factor_rangeD0*i)));
 					*/
-					float randomF_pressure=-0.03f + rand.nextFloat() * (0.025f+0.03f);
+					float randomF_pressure=-0.025f + rand.nextFloat() * (0.025f+0.025f);
 					float randomD0=1.0f + rand.nextFloat() * (18.0f-1.0f);
 					float randomRange_D0=0.5f + rand.nextFloat() * (8.5f-0.5f) ;
 					
