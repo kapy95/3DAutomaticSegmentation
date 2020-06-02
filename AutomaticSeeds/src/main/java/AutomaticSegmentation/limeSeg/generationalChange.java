@@ -21,7 +21,6 @@ public class generationalChange {
 	
 	public generationalChange(ArrayList<Individuo> population, int nextPopulationSize,int iter,String dir) {
 		super();
-		int res=1;
 		this.nextGenerationSize=nextPopulationSize;
 		this.nextGeneration =new ArrayList<Individuo>(nextPopulationSize);
 		//First we get the two individuals with maximum score, they will pass directly to the next generation:
