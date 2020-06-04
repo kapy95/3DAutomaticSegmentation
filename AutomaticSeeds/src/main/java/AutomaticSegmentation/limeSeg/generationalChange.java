@@ -106,6 +106,7 @@ public class generationalChange {
             
 		while(contador<=this.nextGenerationSize-1) {
 			String metodo=null;
+			Individuo newIndividual=null;
 			//int selectedMethod1=0;//it selects whether mutation or crossover is going to be used:
 			//1-> crossover is selected, 2->mutation is selected
 			
@@ -121,35 +122,41 @@ public class generationalChange {
 				
 				selectedMethod1 =	1 + (int)(Math.random() * ((2 - 1) + 1));
 			}*/
-			Individuo selectedIndividual1=null;
-			Individuo selectedIndividual2=null;
-			//now two individuals are selected for crossover by either roulette or tournament:
 			
+			Individuo selectedIndividual1= new Individuo();
+			Individuo selectedIndividual2=new Individuo();
+			//now two individuals are selected for crossover by either roulette or tournament:
+		
 			//first a number between 2 and 1 is calculated:
 			int selectedMethodI1=1 + (int)(Math.random() * ((2 - 1) + 1));
 			if(selectedMethodI1==1) {//if it is equal to 1, rouletteWheelSelection will be chosen as selection method 
-				
+
 				selectedIndividual1=this.rouletteWheelSelection(population);
+				selectedIndividual1.setSelectionMethod("Ruleta");
 				
 			}else {//else tournament selection will be chosen as selection method 
-				
+
 				selectedIndividual1=this.tournamentSelection(population, 2);
+				selectedIndividual1.setSelectionMethod("Torneo");
 			}
 			
-			//the same process to choose the second candidate for crossover
-			int selectedMethodI2=1 + (int)(Math.random() * ((2 - 1) + 1));
 			
-			if(selectedMethodI2==1) {
-				
-				selectedIndividual2=this.rouletteWheelSelection(population);
-				
-			}else {
-				
-				selectedIndividual2=this.tournamentSelection(population, 2);
-			}
 			float probMethod = 1*rand.nextFloat();
 		//if selectedMethod1 is equal to 1 and if the maximum amount of individuals created by crossover is lower than 85% of the new populationsize, the new individual will be created by crossover:
 			if(probMethod<0.85) {
+				//the same process to choose the second candidate for crossover
+				int selectedMethodI2=1 + (int)(Math.random() * ((2 - 1) + 1));
+				
+				if(selectedMethodI2==1) {
+
+					selectedIndividual2=this.rouletteWheelSelection(population);
+					selectedIndividual2.setSelectionMethod("Ruleta");
+					
+				}else {
+					
+					selectedIndividual2=this.tournamentSelection(population, 2);
+					selectedIndividual2.setSelectionMethod("Ruleta");
+				}
 				
 				counterCrossover=counterCrossover+1;// we increase the counter
 				
@@ -160,10 +167,10 @@ public class generationalChange {
 					int selectedMethodPureCrossover =	1 + (int)(Math.random() * ((2 - 1) + 1));//it selects which crossover method is going to be selected:
 					
 					if(selectedMethodPureCrossover==1) {//if it is equal to 1 it will be selected double point crossover
-						this.nextGeneration.add(this.DoublePointCrossOver(selectedIndividual1, selectedIndividual2));
+						newIndividual=this.DoublePointCrossOver(selectedIndividual1, selectedIndividual2);
 						
 					}else {//else it will be selected single point crossover
-						this.nextGeneration.add(this.SinglePointCrossOver(selectedIndividual1, selectedIndividual2));
+						newIndividual=this.SinglePointCrossOver(selectedIndividual1, selectedIndividual2);
 					}
 					
 					
@@ -175,16 +182,16 @@ public class generationalChange {
 					int selectedMethodCrossover =	1 + (int)(Math.random() * ((2 - 1) + 1));//it selects which crossover method is going to be selected:
 					
 					if(selectedMethodCrossover==1) {//if it is equal to 1 it will be selected double point crossover
-						this.nextGeneration.add(this.DoublePointCrossOver(i1mutated, i2mutated));
+						newIndividual=this.DoublePointCrossOver(i1mutated, i2mutated);
 						
 					}else {//else it will be selected single point crossover
-						this.nextGeneration.add(this.SinglePointCrossOver(i1mutated, i2mutated));
+						newIndividual=this.SinglePointCrossOver(i1mutated, i2mutated);
 					}
 					
 					
 				}else { //blend algorithm will be selected for crossover
 					metodo="blendcrossover";
-					this.nextGeneration.add(this.blendCrossOver(selectedIndividual1, selectedIndividual2));
+					newIndividual=this.blendCrossOver(selectedIndividual1, selectedIndividual2);
 				}
 				
 				
@@ -202,34 +209,37 @@ public class generationalChange {
 					selectedIndividual1=this.tournamentSelection(population, 2);
 				}*/
 				
-				this.nextGeneration.add(this.mutation(selectedIndividual1));
+				newIndividual=this.mutation(selectedIndividual1);
 				
 			}
+			newIndividual.setSelectionMethod(selectedIndividual1.getSelectionMethod()+selectedIndividual2.getSelectionMethod());
+			newIndividual.setOffspringMethod(metodo);
+			this.nextGeneration.add(newIndividual);
 			
-			 	writer.append(metodo);
-	            writer.append(',');
-	            writer.append(String.valueOf(selectedIndividual1.getD0()));
-	            writer.append(',');
-	            writer.append(String.valueOf(selectedIndividual1.getRange_d0()));
-	            writer.append(',');
-	            writer.append(String.valueOf(selectedIndividual1.getFp()));
-	            writer.append(',');
-	            writer.append(String.valueOf(selectedIndividual2.getD0()));
-	            writer.append(',');
-	            writer.append(String.valueOf(selectedIndividual2.getRange_d0()));
-	            writer.append(',');
-	            writer.append(String.valueOf(selectedIndividual2.getFp()));
-	            writer.append(',');
-				writer.append(String.valueOf(contador));
-	            writer.append(',');
-	            writer.append(String.valueOf(nextGeneration.get(contador).getD0()));
-	            writer.append(',');
-	            writer.append(String.valueOf(nextGeneration.get(contador).getRange_d0()));
-	            writer.append(',');
-	            writer.append(String.valueOf(nextGeneration.get(contador).getFp()));
-	            writer.append('\n');
+			writer.append(metodo);
+	        writer.append(',');
+	        writer.append(String.valueOf(selectedIndividual1.getD0()));
+	        writer.append(',');
+	        writer.append(String.valueOf(selectedIndividual1.getRange_d0()));
+	        writer.append(',');
+	        writer.append(String.valueOf(selectedIndividual1.getFp()));
+	        writer.append(',');
+	        writer.append(String.valueOf(selectedIndividual2.getD0()));
+	        writer.append(',');
+	        writer.append(String.valueOf(selectedIndividual2.getRange_d0()));
+	        writer.append(',');
+	        writer.append(String.valueOf(selectedIndividual2.getFp()));
+	        writer.append(',');
+	        writer.append(String.valueOf(contador));
+	        writer.append(',');
+	        writer.append(String.valueOf(nextGeneration.get(contador).getD0()));
+	        writer.append(',');
+	        writer.append(String.valueOf(nextGeneration.get(contador).getRange_d0()));
+	        writer.append(',');
+	        writer.append(String.valueOf(nextGeneration.get(contador).getFp()));
+	        writer.append('\n');
 	            
-	            writer.flush();
+	        writer.flush();
 			
 			contador++;
 			
@@ -251,13 +261,26 @@ public class generationalChange {
 		
 		int globalIndex= 0;
 		int k=0;
-		int sum=(int) pob.stream().mapToDouble(a -> a.getScore()).sum();//the sum of all scores is calculated to create likelihoods
+		//int sum=(int) pob.stream().mapToDouble(a -> a.getScore()).sum();//the sum of all scores is calculated to create likelihoods
+		int sum=0;
+		
+		for(Individuo ind: pob) {
+
+			 int score=(int) Math.round(ind.getScore());
+			 
+			 if(score==0) {
+				 score=1;
+			 }
+			 
+			 sum=sum+score;
+		}
+		
 		ArrayList<ArrayList<Integer>>probabilities=new ArrayList<ArrayList<Integer> >();//array with the likelihoods of all candidates;
 		//System.out.println(numbers.length);
 		
 		ArrayList<Integer> numbers=new ArrayList<Integer>();//an array will be created with the size of maxRange, whose values will go from 0 to maxRange.
 		int z;
-		for(z=0;z<=sum+3;z++) {
+		for(z=0;z<=sum+1;z++) {
 			numbers.add(z);
 			//System.out.println(z);
 		}
@@ -275,8 +298,7 @@ public class generationalChange {
 			 if(range==0) {
 				 
 				 range=1;
-				 numbers.add(z);
-				 z=z+1;
+
 			 }
 			//Finally, if we create an array of 10 numbers representing the likelihoods [0,1,2,3...10] their corresponding numbers are:
 			//I1:10 x 0.2= 2 numbers (1,2), I2:10 X0.33=3.3=3 3 numbers (3,4,5), and I3: 10 x 0.5 = 5 numbers (6,7,8,9,10)

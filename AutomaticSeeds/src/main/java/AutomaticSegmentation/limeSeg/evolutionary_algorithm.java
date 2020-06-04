@@ -160,10 +160,10 @@ public class evolutionary_algorithm {
 			//0.2/5=0.004 asi aumento la diferencia por cada iteracion
 			
 			//factores por lo que se van multiplicando y sumando los valores d_0 y demás de cada poblacion
-			//float factor_fp=(float) (0.05/(nPoblacion-1));
-			//float factor_d0=(float) (17.0f/(nPoblacion-1));//poner 19.0f
-			//float factor_rangeD0= (float) (8.5f/(nPoblacion-1));
-			//IntStream.iterate(start, i -> i + 1).limit(limit).boxed().collect(Collectors.toList());
+			float factor_fp=(float) (0.05/(nPoblacion-1));
+			float factor_d0=(float) (17.0f/(nPoblacion-1));//poner 19.0f
+			float factor_rangeD0= (float) (8.5f/(nPoblacion-1));
+			
 			
 			int i;
 			File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion0");
@@ -178,19 +178,19 @@ public class evolutionary_algorithm {
 					//System.out.println(resultado"+String.valueOf(i)+String.valueOf(iter));
 					
 					Individuo ind=new Individuo();
-					/*
+					
 					ind.setF_pressure((float)(min_fp+(factor_fp*i)) );
 					ind.setD0((float)(min_d0+(factor_d0*i)));
 					ind.setRange_d0( (float)(min_range_d0+(factor_rangeD0*i)));
-					*/
+					/*
 					float randomF_pressure=-0.025f + rand.nextFloat() * (0.025f+0.025f);
 					float randomD0=1.0f + rand.nextFloat() * (18.0f-1.0f);
 					float randomRange_D0=0.5f + rand.nextFloat() * (8.5f-0.5f) ;
-					
+			
 					ind.setF_pressure(randomF_pressure);
 					ind.setD0(randomD0);
 					ind.setRange_d0(randomRange_D0);
-					
+					*/
 					//llamo a la clase que va a llamar limeseg:
 					seg.setD_0(ind.getD0());
 					seg.setF_pressure(ind.getFp());
@@ -504,6 +504,10 @@ public class evolutionary_algorithm {
              writer.append(',');
              writer.append("Score");
              writer.append(',');
+             writer.append("SelectionMethod");
+             writer.append(',');
+             writer.append("offSpringMethod");
+             writer.append(',');
              writer.append("Time");
              writer.append('\n');
 
@@ -522,6 +526,10 @@ public class evolutionary_algorithm {
                   writer.append(String.valueOf(ind.getStdVertex()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getScore()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getSelectionMethod()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getOffspringMethod()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getTime()));
                   writer.append('\n');

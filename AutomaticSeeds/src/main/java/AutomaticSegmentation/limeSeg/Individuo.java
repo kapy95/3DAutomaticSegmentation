@@ -11,6 +11,8 @@ public class Individuo {
 	private Double meanVertex; //mean of the objects of the cells
 	public Double score;
 	public long time;
+	private String selectionMethod;
+	private String offspringMethod;
 	
 	/**
 	 * 
@@ -18,6 +20,8 @@ public class Individuo {
 	public Individuo() {
 		super();
 		setScore(100.0d);
+		setOffspringMethod("");
+		setSelectionMethod("");
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -101,6 +105,21 @@ public class Individuo {
 		return time;
 	}
 	
+	public String getSelectionMethod() {
+		return this.selectionMethod;
+	}
+	
+	public void setSelectionMethod(String selectionMethod) {
+		this.selectionMethod=selectionMethod;
+	}
+	
+	public String getOffspringMethod() {
+		return this.offspringMethod;
+	}
+	
+	public void setOffspringMethod(String selectionMethod) {
+		this.offspringMethod=selectionMethod;
+	}
 	//It copies an individual to another working directory, which will be the new directory of the new generation
 	
 	
