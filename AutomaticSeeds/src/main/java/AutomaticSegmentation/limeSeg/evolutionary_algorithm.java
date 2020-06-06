@@ -55,11 +55,41 @@ public class evolutionary_algorithm {
 	
 	
 	public void main(int numIndividuals,int iters) {
+		
 		String initialhour=String.valueOf(LocalDateTime.now().getHour())+"."+String.valueOf(LocalDateTime.now().getMinute());
+		int i=0;
+		
+		try{
+			
+		File file1 = new File(this.dir.toString()+"\\resultados\\resultadosGlobales.csv");
+        FileWriter writer1 = new FileWriter(file1);
+        
+        writer1.append("Identifier");
+        writer1.append(',');
+        writer1.append("D_0");
+        writer1.append(',');
+        writer1.append("Range_D0");
+        writer1.append(',');
+        writer1.append("f_pressure");
+        writer1.append(',');
+        writer1.append("MeanVertex");
+        writer1.append(',');
+        writer1.append("StdVertex");
+        writer1.append(',');
+        writer1.append("Score");
+        writer1.append(',');
+        writer1.append("SelectionMethod");
+        writer1.append(',');
+        writer1.append("offSpringMethod");
+        writer1.append(',');
+        writer1.append("Time");
+        writer1.append('\n');
+        
+		
 		this.InitialPopulationGenerator(numIndividuals,0);
 		this.FitnessCalculation();
-		int i=0;
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion0\\resultadoPob0.csv");
+		this.writeGlobalResultsCSV(writer1);
 		generationalChange change=new generationalChange(this.poblacion,numIndividuals,0,this.dir.toString());
 		change.main(i,this.dir.toString());
 		ArrayList<Individuo> newPopulation=change.getNextPopulation();
@@ -70,6 +100,7 @@ public class evolutionary_algorithm {
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
 			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
+			this.writeGlobalResultsCSV(writer1);
 			generationalChange iterativeChange=new generationalChange(this.poblacion,numIndividuals,i,this.dir.toString());
 			iterativeChange.main(i,this.dir.toString());
 
@@ -81,7 +112,14 @@ public class evolutionary_algorithm {
 		this.FitnessCalculation();
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
 		
+		writer1.close();
+		}catch(IOException e) {
+            e.printStackTrace();
+        } 
+		
+		
 		Individuo bestIndividual = Collections.max(this.poblacion, Comparator.comparingDouble(Individuo::getScore));
+		
 		try
         {
 			File file = new File(this.dir.toString()+"\\resultados"+"\\mejorResultado"+".csv");
@@ -168,7 +206,9 @@ public class evolutionary_algorithm {
 			int i;
 			File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion0");
 			dirPob.mkdir();
-			Random rand= new Random();
+			
+			
+			//Random rand= new Random();
 			
 			for(i=0;i<=(nPoblacion-1);i++) {
 				
@@ -226,6 +266,7 @@ public class evolutionary_algorithm {
 				ind.setTime((endTime-startTime) /1000);
 				//ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 				ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
+				ind.setIdentifier("resultado"+String.valueOf(i)+String.valueOf(iter));
 				ind.getDir().mkdir();//it creates the directory for that individual
 		       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
 		       	
@@ -296,23 +337,54 @@ public class evolutionary_algorithm {
        	}
 	
        	
-	
+       	/*
        	Double globalStd=globalMeanStdObjects.stream().mapToDouble(Double::doubleValue).sum()/globalMeanStdObjects.size();
        	Double globalMean=globalMeanCellObjects.stream().mapToDouble(Double::doubleValue).sum()/globalMeanCellObjects.size();
+       	*/
+       	Collections.sort(globalMeanStdObjects);
+       	Double minStd=globalMeanStdObjects.get(0);
+       	Double maxStd=globalMeanStdObjects.get(globalMeanStdObjects.size()-1);
+       	
+       	Collections.sort(globalMeanCellObjects);
+       	Double minMean=globalMeanCellObjects.get(0);
+       	Double maxMean=globalMeanCellObjects.get(globalMeanCellObjects.size()-1);
+       	ArrayList<Individuo> elementsToBeDeleted= new ArrayList<Individuo>();
+       	
        	
        	int i=0;
        	for(i=0;i<individuals.size();i++) {
        		Individuo res=individuals.get(i);
        		if(res.getMeanVertex()==0) {
-       			individuals.remove(i);
+       			//individuals.remove(i);
+           		elementsToBeDeleted.add(res);
        		}else if(res.getStdVertex()==0) {
-       			individuals.remove(i);
+       			//individuals.remove(i);
+           		elementsToBeDeleted.add(res);
        		}else {
-           		res.setScore( (globalStd/res.getStdVertex())+(res.getMeanVertex()/globalMean) );
+       			/*
+       			System.out.print("Std:");
+       			System.out.println((globalStd/res.getStdVertex()));
+       			
+       			System.out.print("Mean:");
+       			System.out.println(res.getMeanVertex()/globalMean);
+       			
+       			System.out.println((globalStd/res.getStdVertex())*(res.getMeanVertex()/globalMean));
+           		res.setScore( (globalStd/res.getStdVertex())*(res.getMeanVertex()/globalMean) );
+           		*/
+       			Double normalizedMeanVertex=(res.getMeanVertex()-minMean)/(maxMean-minMean);
+       			Double normalizedStdVertex=1-(res.getStdVertex()-minStd)/(maxStd-minStd);
+           		res.setScore(normalizedMeanVertex*normalizedStdVertex);
+           		this.poblacion.set(i,res);
        		}
-
+       	
        	}
-      
+       	
+       	if(elementsToBeDeleted.isEmpty()==false) {
+       		
+	       	for(Individuo pos: elementsToBeDeleted) {
+	       		this.poblacion.remove(pos);
+	       	}
+       	}
        
 	}
 	
@@ -327,6 +399,8 @@ public class evolutionary_algorithm {
 			
 			this.deletePopulation();
 			this.poblacion=new ArrayList<Individuo>();
+			this.poblacion.add(newPopulation.get(0));
+			this.poblacion.add(newPopulation.get(1));
 			
 			//only Zscale has the same value for the new generations:
 			float ZS=4.06f;// variable con el valor del z_scale
@@ -369,7 +443,7 @@ public class evolutionary_algorithm {
 					seg2.setZ_scale(ZS);
 					seg2.setRange_in_d0_units(ind.getRange_d0());
 					
-					 writer.append(ind.getDir().toString());
+					 writer.append("resultado"+String.valueOf(i)+String.valueOf(iter));
 		             writer.append(',');
 		             writer.append(String.valueOf(ind.getD0()));
 		             writer.append(',');
@@ -380,9 +454,6 @@ public class evolutionary_algorithm {
 		             writer.append(String.valueOf(LocalDateTime.now().getHour())+":"+String.valueOf(LocalDateTime.now().getMinute()));
 		             writer.append(',');
 		             
-
-
-					
 					long startTime2 = System.currentTimeMillis();
 					long endTime2=System.currentTimeMillis();
 					System.out.println((startTime2-endTime2)/1000);
@@ -420,7 +491,7 @@ public class evolutionary_algorithm {
 				
 					System.out.println("Ha salido del Join()");
 					ind.setTime((endTime2-startTime2) /1000);
-					
+					ind.setIdentifier("resultado"+String.valueOf(i)+String.valueOf(iter));
 					ind.getDir().mkdir();//it creates the directory for that individual
 			       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
 			       	LimeSeg.clear3DDisplay();
@@ -484,13 +555,12 @@ public class evolutionary_algorithm {
 	public void writeResultsCSV(String fileName) {
 		
 		ArrayList<Individuo> data=this.poblacion;
-		
 		try
         {
 			File file = new File(fileName);
             FileWriter writer = new FileWriter(file);
 
-             writer.append("Directory");
+             writer.append("Identifier");
              writer.append(',');
              writer.append("D_0");
              writer.append(',');
@@ -512,8 +582,8 @@ public class evolutionary_algorithm {
              writer.append('\n');
 
              for (Individuo ind:data) {
-            	 
-                  writer.append(ind.getDir().toString());
+            	  
+                  writer.append(ind.getIdentifier());
                   writer.append(',');
                   writer.append(String.valueOf(ind.getD0()));
                   writer.append(',');
@@ -537,6 +607,43 @@ public class evolutionary_algorithm {
 
              writer.flush();
              writer.close();
+        } catch(IOException e) {
+              e.printStackTrace();
+        } 
+   }
+	
+	
+	public void writeGlobalResultsCSV(FileWriter writer) {
+		
+		ArrayList<Individuo> data=this.poblacion;
+		try
+        {
+             for (Individuo ind:data) {
+            	  
+                  writer.append(ind.getIdentifier());
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getD0()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getRange_d0()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getFp()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getMeanVertex()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getStdVertex()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getScore()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getSelectionMethod()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getOffspringMethod()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getTime()));
+                  writer.append('\n');
+             }
+
+             writer.flush();
+             
         } catch(IOException e) {
               e.printStackTrace();
         } 

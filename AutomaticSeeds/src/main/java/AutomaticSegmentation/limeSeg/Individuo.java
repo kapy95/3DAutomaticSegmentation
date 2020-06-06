@@ -13,13 +13,13 @@ public class Individuo {
 	public long time;
 	private String selectionMethod;
 	private String offspringMethod;
+	private String Identifier;
 	
 	/**
 	 * 
 	 */
 	public Individuo() {
 		super();
-		setScore(100.0d);
 		setOffspringMethod("");
 		setSelectionMethod("");
 		// TODO Auto-generated constructor stub
@@ -119,6 +119,14 @@ public class Individuo {
 	
 	public void setOffspringMethod(String selectionMethod) {
 		this.offspringMethod=selectionMethod;
+	}
+	
+	public String getIdentifier() {
+		return this.Identifier;
+	}
+	
+	public void setIdentifier(String ident) {
+		 this.Identifier=ident;
 	}
 	//It copies an individual to another working directory, which will be the new directory of the new generation
 	
