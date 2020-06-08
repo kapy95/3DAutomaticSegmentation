@@ -69,11 +69,12 @@ public class generationalChange {
 	public void main(int iter,String dir) {
 		ArrayList<Individuo> population= new ArrayList<Individuo>();
 	    population.addAll(this.previousGeneration);
+	    ArrayList<ArrayList<Integer>> probabilities=likelyhoodsCalculation(population);
 		int counterMutated=0;
 		int counterCrossover=0;
 		File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter));
-		int maxCrossover=(int) Math.round(0.85f*(this.nextGeneration.size()-2));//minus 3 because two individuals have been already selected and java starts in 0 so -3
-		int maxMutated=(this.nextGeneration.size()-3)-maxCrossover;
+		int maxCrossover=(int) Math.round(0.75f*(this.previousGeneration.size()-2));//minus 3 because two individuals have been already selected and java starts in 0 so -3
+		int maxMutated=(this.previousGeneration.size()-2)-maxCrossover;
 		Random rand= new Random();
 		int contador=2;
 		try {
@@ -118,7 +119,7 @@ public class generationalChange {
 			int selectedMethodI1=1 + (int)(Math.random() * ((2 - 1) + 1));
 			if(selectedMethodI1==1) {//if it is equal to 1, rouletteWheelSelection will be chosen as selection method 
 
-				selectedIndividual1=this.rouletteWheelSelection(population);
+				selectedIndividual1=this.rouletteWheelSelection(probabilities);
 				selectedIndividual1.setSelectionMethod("Ruleta");
 				
 			}else {//else tournament selection will be chosen as selection method 
@@ -151,13 +152,13 @@ public class generationalChange {
 				
 				if(selectedMethodI2==1) {
 
-					selectedIndividual2=this.rouletteWheelSelection(population);
+					selectedIndividual2=this.rouletteWheelSelection(probabilities);
 					selectedIndividual2.setSelectionMethod("Ruleta");
 					
 				}else {
 					
 					selectedIndividual2=this.tournamentSelection(population, 2);
-					selectedIndividual2.setSelectionMethod("Ruleta");
+					selectedIndividual2.setSelectionMethod("Torneo");
 				}
 				
 				counterCrossover=counterCrossover+1;// we increase the counter
@@ -248,8 +249,34 @@ public class generationalChange {
 	
 	
 	
-	public Individuo rouletteWheelSelection(ArrayList<Individuo> pob){//maxRange is a parameter to determine the range of numbers of the wheel selection
+	public Individuo rouletteWheelSelection(ArrayList<ArrayList<Integer>> probabilities){//maxRange is a parameter to determine the range of numbers of the wheel selection
 		Individuo selectedIndividual = null;
+		
+		int j=0;
+		//the last element of the last array is the sum of all the scores
+		int sum=probabilities.get(probabilities.size()-1).get(probabilities.get(probabilities.size()-1).size()-1);
+		//Now we create a number between 0 and 100. This number determines where the roulette will stop, the individual with that number will be selected
+		//int rng =  + (int) (Math.random()*((k-1)+1)); //it generates a number between 0 and sum-1,which will establish the candidate to be chosen
+		int rng = ThreadLocalRandom.current().nextInt(0,sum-1);
+		System.out.println(rng);
+		while(selectedIndividual == null) {
+			
+			ArrayList<Integer> a = probabilities.get(j);
+			//boolean contains = IntStream.of(a).anyMatch(x -> x == rng);
+			
+			if(a.contains(rng) == true) {
+				selectedIndividual=this.previousGeneration.get(j);
+			}
+			
+			
+			j=j+1;
+		}
+		
+	
+		return selectedIndividual;
+	}
+	
+	public ArrayList<ArrayList<Integer>> likelyhoodsCalculation(ArrayList<Individuo> pob){
 		
 		int globalIndex= 0;
 		int k=0;
@@ -310,29 +337,9 @@ public class generationalChange {
 			 //Thus, the higher is the fitness of the individuals, the more is the likelihood of being selected
 		}
 		
-		int j=0;
-		//Now we create a number between 0 and 100. This number determines where the roulette will stop, the individual with that number will be selected
-		//int rng =  + (int) (Math.random()*((k-1)+1)); //it generates a number between 0 and sum-1,which will establish the candidate to be chosen
-		System.out.println(k);
-		int rng = ThreadLocalRandom.current().nextInt(0,k-1);
-		System.out.println(rng);
-		while(selectedIndividual == null) {
-			
-			ArrayList<Integer> a = probabilities.get(j);
-			//boolean contains = IntStream.of(a).anyMatch(x -> x == rng);
-			
-			if(a.contains(rng) == true) {
-				selectedIndividual=pob.get(j);
-			}
-			
-			
-			j=j+1;
-		}
+		return probabilities;
 		
-	
-		return selectedIndividual;
 	}
-	
 	
 	public Individuo tournamentSelection(ArrayList<Individuo> pob, int numIndividuals){
 		//numIndividuals is the variable to represent the number of individuals which participate in a tournament

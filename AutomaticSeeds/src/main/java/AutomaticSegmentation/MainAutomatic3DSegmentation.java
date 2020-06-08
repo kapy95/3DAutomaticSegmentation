@@ -147,7 +147,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		*/
 		
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
-		ev.main(10,10);
+		ev.main(10,25);
 		
 		/*ev.addIndividual(ind);
 		ev.FitnessCalculation();
@@ -170,7 +170,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		seg.setZ_scale((float) 4.06);
 		seg.setRange_in_d0_units(2.4f);
 		seg.start();//empieza a ejecutarse run del hilo de limeseg
-
+ 
 		long startTime = System.currentTimeMillis();
 		long endTime=0;
 		

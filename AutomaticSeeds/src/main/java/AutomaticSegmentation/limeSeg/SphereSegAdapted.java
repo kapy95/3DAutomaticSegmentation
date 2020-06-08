@@ -272,6 +272,8 @@ public class SphereSegAdapted extends Thread implements Command {
        	File dir = new File("nameoffolder");
        	dir.mkdir();
        	*/
+       	lms=null;
+       	System.gc();
        	System.out.println("SphereSegAdapted ha terminado");
        	//LimeSeg.saveStateToXmlPly((path.toString()+"\\resultados"));
 	}
@@ -541,6 +543,9 @@ public class SphereSegAdapted extends Thread implements Command {
 	
 	public void stopLimeSeg() {
 		LimeSeg.stopOptimisation();
+	}
+	public void deleteLimeSeg() {
+		this.lms=null;
 	}
 
 	

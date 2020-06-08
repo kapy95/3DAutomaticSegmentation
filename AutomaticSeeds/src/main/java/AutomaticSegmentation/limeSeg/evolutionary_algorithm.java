@@ -87,6 +87,7 @@ public class evolutionary_algorithm {
         
 		
 		this.InitialPopulationGenerator(numIndividuals,0);
+		System.gc();	
 		this.FitnessCalculation();
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion0\\resultadoPob0.csv");
 		this.writeGlobalResultsCSV(writer1);
@@ -94,15 +95,19 @@ public class evolutionary_algorithm {
 		change.main(i,this.dir.toString());
 		ArrayList<Individuo> newPopulation=change.getNextPopulation();
 		//getObjectPendingFinalizationCount 
-			
+		System.gc();	
 		for(i=1;i<iters;i++){//i=200
 			
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
+			System.gc();	
 			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
+			System.gc();	
 			this.writeGlobalResultsCSV(writer1);
 			generationalChange iterativeChange=new generationalChange(this.poblacion,numIndividuals,i,this.dir.toString());
+			System.gc();	
 			iterativeChange.main(i,this.dir.toString());
+			System.gc();	
 
 			newPopulation=iterativeChange.getNextPopulation();
 			
@@ -206,7 +211,7 @@ public class evolutionary_algorithm {
 			int i;
 			File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion0");
 			dirPob.mkdir();
-			
+			Random rand=new Random();
 			
 			//Random rand= new Random();
 			
@@ -218,11 +223,11 @@ public class evolutionary_algorithm {
 					//System.out.println(resultado"+String.valueOf(i)+String.valueOf(iter));
 					
 					Individuo ind=new Individuo();
-					
+					/*
 					ind.setF_pressure((float)(min_fp+(factor_fp*i)) );
 					ind.setD0((float)(min_d0+(factor_d0*i)));
 					ind.setRange_d0( (float)(min_range_d0+(factor_rangeD0*i)));
-					/*
+					*/
 					float randomF_pressure=-0.025f + rand.nextFloat() * (0.025f+0.025f);
 					float randomD0=1.0f + rand.nextFloat() * (18.0f-1.0f);
 					float randomRange_D0=0.5f + rand.nextFloat() * (8.5f-0.5f) ;
@@ -230,7 +235,7 @@ public class evolutionary_algorithm {
 					ind.setF_pressure(randomF_pressure);
 					ind.setD0(randomD0);
 					ind.setRange_d0(randomRange_D0);
-					*/
+					
 					//llamo a la clase que va a llamar limeseg:
 					seg.setD_0(ind.getD0());
 					seg.setF_pressure(ind.getFp());
@@ -263,6 +268,7 @@ public class evolutionary_algorithm {
 						System.out.println("No funciona");
 					}
 					
+
 				ind.setTime((endTime-startTime) /1000);
 				//ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 				ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
@@ -272,9 +278,9 @@ public class evolutionary_algorithm {
 		       	
 		       	LimeSeg.clear3DDisplay();
 		       	LimeSeg.clearAllCells();
-		       	
+				seg	= null;
 		       	System.out.println("Ha terminado una iteración del for");
-		       	
+		       	System.gc();
 		       	//seg.interrupt();
 		       	poblacion.add(ind);
 			}
@@ -342,12 +348,12 @@ public class evolutionary_algorithm {
        	Double globalMean=globalMeanCellObjects.stream().mapToDouble(Double::doubleValue).sum()/globalMeanCellObjects.size();
        	*/
        	Collections.sort(globalMeanStdObjects);
-       	Double minStd=globalMeanStdObjects.get(0);
-       	Double maxStd=globalMeanStdObjects.get(globalMeanStdObjects.size()-1);
+       	//Double minStd=globalMeanStdObjects.get(0);
+       	//Double maxStd=globalMeanStdObjects.get(globalMeanStdObjects.size()-1);
        	
        	Collections.sort(globalMeanCellObjects);
-       	Double minMean=globalMeanCellObjects.get(0);
-       	Double maxMean=globalMeanCellObjects.get(globalMeanCellObjects.size()-1);
+       	//Double minMean=globalMeanCellObjects.get(0);
+       	//Double maxMean=globalMeanCellObjects.get(globalMeanCellObjects.size()-1);
        	ArrayList<Individuo> elementsToBeDeleted= new ArrayList<Individuo>();
        	
        	
@@ -371,9 +377,14 @@ public class evolutionary_algorithm {
        			System.out.println((globalStd/res.getStdVertex())*(res.getMeanVertex()/globalMean));
            		res.setScore( (globalStd/res.getStdVertex())*(res.getMeanVertex()/globalMean) );
            		*/
+       			
+       			/*
        			Double normalizedMeanVertex=(res.getMeanVertex()-minMean)/(maxMean-minMean);
        			Double normalizedStdVertex=1-(res.getStdVertex()-minStd)/(maxStd-minStd);
            		res.setScore(normalizedMeanVertex*normalizedStdVertex);
+           		*/
+       			
+       			res.setScore(res.getMeanVertex());
            		this.poblacion.set(i,res);
        		}
        	
@@ -497,6 +508,9 @@ public class evolutionary_algorithm {
 			       	LimeSeg.clear3DDisplay();
 			       	LimeSeg.clearAllCells();
 			       	
+			       	seg2=null;
+			       	System.gc();
+			       	
 			       	poblacion.add(ind);
 				}
 				
@@ -531,7 +545,7 @@ public class evolutionary_algorithm {
 			std+=Math.pow((elementosCelulaSegmentada-media),2);
 			
 		}
-		
+		System.gc();
 		std=math.sqrt( (std/elementosSegmentacion.size()) );
 		return std;
 		
@@ -652,6 +666,7 @@ public class evolutionary_algorithm {
 	
 	public void deletePopulation() {
 		this.poblacion=null;
+		System.gc();
 	}
 	
 	public void addIndividual(Individuo i) {
