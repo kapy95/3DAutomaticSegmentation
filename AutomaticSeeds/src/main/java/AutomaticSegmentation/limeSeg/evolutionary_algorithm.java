@@ -1,6 +1,7 @@
 package AutomaticSegmentation.limeSeg;
 
 import java.awt.List;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -505,10 +506,10 @@ public class evolutionary_algorithm {
 	public void NewPopulationGenerator(ArrayList<Individuo> newPopulation,int iter) {
 		
 			//the folder for the new individuals is created
-
+		
 			File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter));
 			//dirPob.mkdir();
-			
+			float maximumTime=20+(iter-1)*50;
 			this.deletePopulation();
 			this.poblacion=new ArrayList<Individuo>();
 			this.poblacion.add(newPopulation.get(0));
@@ -586,7 +587,8 @@ public class evolutionary_algorithm {
 					ind.getFinalcellsdir().mkdir();
 					
 					boolean previousResultsSaved=false;
-					
+
+							
 					while (seg2.isAlive()) {
 						endTime2=System.currentTimeMillis();
 						memoryRegisters.add((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024.0 * 1024.0 * 1024.0));
@@ -600,7 +602,7 @@ public class evolutionary_algorithm {
 						
 						System.out.println((endTime2-startTime2) /1000);
 						
-						if( ( (endTime2-startTime2) /1000) >20) { //si el tiempo de ejecucion es mayor que 100 segundos
+						if( ( (endTime2-startTime2) /1000)>maximumTime) { //si el tiempo de ejecucion es mayor que 100 segundos
 							LimeSeg.stopOptimisation();
 
 							}
@@ -773,6 +775,8 @@ public class evolutionary_algorithm {
                   writer.append(String.valueOf(ind.getOffspringMethod()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getTime()));
+                  writer.append(',');
+                  writer.append(ind.getDir().toString());
                   writer.append('\n');
              }
 
@@ -782,6 +786,38 @@ public class evolutionary_algorithm {
               e.printStackTrace();
         } 
    }
+	
+	
+    public void startAgain(String directoryRoute) {
+    	
+    	 String line = "";
+         String cvsSplitBy = ",";
+
+         try (BufferedReader br = new BufferedReader(new FileReader(directoryRoute))) {
+
+             while ((line = br.readLine()) != null) {
+            	 Individuo ind= new Individuo();
+            	 
+                 // use comma as separator
+                 String[] individuoString = line.split(cvsSplitBy);
+                 
+                 ind.setD0(Float.parseFloat(individuoString[1]));
+                 ind.setRange_d0(Float.parseFloat(individuoString[2]));
+                 ind.setF_pressure(Float.parseFloat(individuoString[3]));
+                 ind.setScore(Double.parseDouble(individuoString[6]));
+                 ind.setSelectionMethod(individuoString[7]);
+                 ind.setOffspringMethod(individuoString[8]);
+                 
+                 this.poblacion.add(ind);
+                 
+             }
+
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+
+   }
+    	
 		
 	
 	public void deletePopulation() {
