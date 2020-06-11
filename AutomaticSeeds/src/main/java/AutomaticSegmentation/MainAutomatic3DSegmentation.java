@@ -10,8 +10,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
@@ -95,7 +99,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		//establezco el directorio de trabajo con las imágenes y roi
 		//File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
 		File dir = new File("E:\\TFM");
-
+		/*
 		int selectedMethod=1 + (int)(Math.random() * ((3 - 1) + 1));
 		System.out.println(selectedMethod);
 		
@@ -113,35 +117,49 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		// nextInt as provided by Random is exclusive of the top value so you need to add 1 
 
 		//int randomNum = rand.nextInt((max - min) + 1) + min;
-		/*
-		for(i=0;i<3;i++) {
+		
+		for(i=0;i<10;i++) {
 
 			//float random = min + r.nextFloat() * (max - min);
 			Individuo guineaPig= new Individuo();
 			float randomF_pressure=-0.03f + rand.nextFloat() * (0.025f+0.03f);
 			float randomD0=1.0f + rand.nextFloat() * (18.0f-1.0f);
 			float randomRange_D0=0.5f + rand.nextFloat() * (8.5f-0.5f) ;
-			double score=1 + Math.random() * (100 - 1);
+			double score=0 + Math.random() * (4 - 1);
 			guineaPig.setD0(randomD0);
 			guineaPig.setF_pressure(randomF_pressure);
 			guineaPig.setRange_d0(randomRange_D0);
 			guineaPig.setScore(score);
 			tests.add(guineaPig);
 		}
-		
-		
-		generationalChange testing=new generationalChange(tests,10);
-		*/
-		
+		generationalChange testing=new generationalChange(tests,20,0,dir.toString());
+		testing.mutation(tests.get(0));
+		//testing.main();
 		//Individuo blend=testing.SinglePointCrossOver(tests.get(0),tests.get(1));
 		//Individuo i1=testing.tournamentSelection(tests, 2);
-		//Individuo i1=testing.rouletteWheelSelection(tests, 100);
+		Individuo i1=testing.rouletteWheelSelection(tests);
+		
+		*/
+		/*
+		Individuo ind = new Individuo();
+		File dir2 = new File("E:\\3a\\Cells\\OutputLimeSeg");
+		ind.setDir(dir2);
+		*/
 		
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
+		ev.main(100,25);
 		
-		//Primera poblacion
-		ev.main();
+		/*ev.addIndividual(ind);
+		ev.FitnessCalculation();
+		ArrayList<Individuo> inds=ev.getPopulation();
 		
+		System.out.println(inds.get(0).getScore());*/
+		
+
+		//ev.main();
+		
+		
+		System.out.println("Prueba");
 		/*
 		//llamo a la clase que va a llamar limeseg:
 		
@@ -152,7 +170,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		seg.setZ_scale((float) 4.06);
 		seg.setRange_in_d0_units(2.4f);
 		seg.start();//empieza a ejecutarse run del hilo de limeseg
-
+ 
 		long startTime = System.currentTimeMillis();
 		long endTime=0;
 		

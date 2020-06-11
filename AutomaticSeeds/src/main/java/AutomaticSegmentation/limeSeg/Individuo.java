@@ -7,17 +7,22 @@ public class Individuo {
 	private float d0;//d_0: 1 and >20 pixels.
 	private float range_d0;//from 0.5 to >10
 	private File dir;
+	private File finalcellsdir;
 	private Double stdVertex; //standard deviation of the objects of the cells 
 	private Double meanVertex; //mean of the objects of the cells
 	public Double score;
 	public long time;
+	private String selectionMethod;
+	private String offspringMethod;
+	private String Identifier;
 	
 	/**
 	 * 
 	 */
 	public Individuo() {
 		super();
-		setScore(100.0d);
+		setOffspringMethod("");
+		setSelectionMethod("");
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -101,7 +106,38 @@ public class Individuo {
 		return time;
 	}
 	
+	public String getSelectionMethod() {
+		return this.selectionMethod;
+	}
+	
+	public void setSelectionMethod(String selectionMethod) {
+		this.selectionMethod=selectionMethod;
+	}
+	
+	public String getOffspringMethod() {
+		return this.offspringMethod;
+	}
+	
+	public void setOffspringMethod(String selectionMethod) {
+		this.offspringMethod=selectionMethod;
+	}
+	
+	public String getIdentifier() {
+		return this.Identifier;
+	}
+	
+	public void setIdentifier(String ident) {
+		 this.Identifier=ident;
+	}
 	//It copies an individual to another working directory, which will be the new directory of the new generation
+
+	public File getFinalcellsdir() {
+		return finalcellsdir;
+	}
+
+	public void setFinalcellsdir(File finalcellsdir) {
+		this.finalcellsdir = finalcellsdir;
+	}
 	
 	
 
