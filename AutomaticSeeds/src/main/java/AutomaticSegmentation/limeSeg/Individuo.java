@@ -7,6 +7,7 @@ public class Individuo {
 	private float d0;//d_0: 1 and >20 pixels.
 	private float range_d0;//from 0.5 to >10
 	private File dir;
+	private File finalcellsdir;
 	private Double stdVertex; //standard deviation of the objects of the cells 
 	private Double meanVertex; //mean of the objects of the cells
 	public Double score;
@@ -129,6 +130,14 @@ public class Individuo {
 		 this.Identifier=ident;
 	}
 	//It copies an individual to another working directory, which will be the new directory of the new generation
+
+	public File getFinalcellsdir() {
+		return finalcellsdir;
+	}
+
+	public void setFinalcellsdir(File finalcellsdir) {
+		this.finalcellsdir = finalcellsdir;
+	}
 	
 	
 

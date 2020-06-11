@@ -147,7 +147,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		*/
 		
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
-		ev.main(10,25);
+		ev.main(100,25);
 		
 		/*ev.addIndividual(ind);
 		ev.FitnessCalculation();

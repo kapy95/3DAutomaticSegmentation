@@ -214,6 +214,11 @@ public class evolutionary_algorithm {
 			Random rand=new Random();
 			
 			//Random rand= new Random();
+			File previousResult=new File(dirPob.toString()+"\\resultadoPrevio");
+			previousResult.mkdir();
+			
+			File finalResult=new File(dirPob.toString()+"\\resultadoFinal");
+			finalResult.mkdir();
 			
 			for(i=0;i<=(nPoblacion-1);i++) {
 				
@@ -243,16 +248,29 @@ public class evolutionary_algorithm {
 					seg.setRange_in_d0_units(ind.getRange_d0());
 					seg.start();
 					
-					//sls.start();//empieza a ejecutarse la función run del hilo de stopLimeSeg
+
 					long startTime = System.currentTimeMillis();
 					long endTime=0;
 					
+					ind.setDir(new File(previousResult.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
+					ind.setFinalcellsdir(new File(finalResult.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
+					
+					ind.getDir().mkdir();//it creates the directory for that individual
+					ind.getFinalcellsdir().mkdir();
+					
+					boolean previousResultsSaved=false;
 					
 					while (seg.isAlive()) {
 						endTime= System.currentTimeMillis();
 						System.out.println((endTime-startTime) /1000);
 						
-						if( ( (endTime-startTime) /1000) >30) { //si el tiempo de ejecucion es mayor que 100 segundos
+						if(( (endTime-startTime) /1000)==5 && previousResultsSaved==false) {
+							previousResultsSaved=true;
+					       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
+							
+						}
+						
+						if( ( (endTime-startTime) /1000) >15) { //si el tiempo de ejecucion es mayor que 100 segundos
 							LimeSeg.stopOptimisation();
 
 							}
@@ -271,10 +289,10 @@ public class evolutionary_algorithm {
 
 				ind.setTime((endTime-startTime) /1000);
 				//ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
-				ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
+				//ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 				ind.setIdentifier("resultado"+String.valueOf(i)+String.valueOf(iter));
-				ind.getDir().mkdir();//it creates the directory for that individual
-		       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
+
+		       	LimeSeg.saveStateToXmlPly(ind.getFinalcellsdir().toString());//it saves the solution of the individual
 		       	
 		       	LimeSeg.clear3DDisplay();
 		       	LimeSeg.clearAllCells();
@@ -292,8 +310,14 @@ public class evolutionary_algorithm {
 	
 			
 		//ArrayList<Double> stds = new ArrayList<Double>();//standard deviations
-		ArrayList<Double> globalMeanCellObjects= new ArrayList<Double>();
-		ArrayList<Double> globalMeanStdObjects= new ArrayList<Double>();
+		ArrayList<Double> previousMeanCellObjects= new ArrayList<Double>();
+		ArrayList<Double> previousStdObjects= new ArrayList<Double>();
+		
+		ArrayList<Double> finalMeanCellObjects= new ArrayList<Double>();
+		ArrayList<Double> finalStdObjects= new ArrayList<Double>();
+		
+		//ArrayList<Double> globalMeanCellObjects= new ArrayList<Double>();
+		//ArrayList<Double> globalMeanStdObjects= new ArrayList<Double>();
 		
 		Double mean;
        	Integer j=0;
@@ -301,6 +325,68 @@ public class evolutionary_algorithm {
        	for(Individuo res: individuals ) {
        	
        		File[] listOfCells=res.getDir().listFiles();
+       	
+       		ArrayList<Integer> listOfElements = new ArrayList<Integer>();
+       	
+	       	int i;
+	       	
+		       	//la máxima iteracion es length-1 porque el ultimo elemento es el limesegparams que no nos interesa
+		       	for(i=0;i<(listOfCells.length-1);i++) {
+		       		
+			       		File ruta= new File(listOfCells[i].toString()+"\\T_1.ply");
+			       		System.out.println(ruta.toString());
+			       		
+			       	   try {
+						Scanner in = new Scanner(new FileReader(ruta.toString()));
+						String numberOfVertex="";
+						if(ruta.length()!=0) {
+						//el numero de elementos siempre va antes que la primera propiedad, por tanto si la siguiente linea es property no debe entrar ya que tenemos el numero
+						while(in.hasNext("property")==false) {
+						   numberOfVertex =in.next().toString();
+						   //System.out.println(numberOfVertex);
+						}
+						}else {
+							 numberOfVertex="0";
+						}
+						in.close();
+						System.out.println(Integer.parseInt(numberOfVertex));
+						listOfElements.add(Integer.parseInt(numberOfVertex));
+									
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				
+		       	}
+		       	
+		       	Double std=0.0;
+		       	if(listOfElements.isEmpty()==true) {
+		       		
+
+		       		System.out.println("Entra aqui");
+		       		mean=0.0d;
+		       		std=0.0d;
+		       	}else {
+		       	mean=(double) (listOfElements.stream().mapToInt(Integer::intValue).sum()/listOfElements.size());
+		       	std=calculaSTD(listOfElements);
+		       	}
+		       	
+		       	//res.setMeanVertex(mean);
+		       	previousMeanCellObjects.add(mean);
+
+		       	//globalMeanCellObjects.add(mean);
+		       	
+
+		       	previousStdObjects.add(std);
+		       	//res.setStdVertex(std);
+		       	//globalMeanStdObjects.add(std);
+		    	
+       	}
+       	
+       	
+       	for(Individuo res: individuals ) {
+           	
+       		File[] listOfCells=res.getFinalcellsdir().listFiles();
        	
        		ArrayList<Integer> listOfElements = new ArrayList<Integer>();
        	
@@ -334,24 +420,28 @@ public class evolutionary_algorithm {
 		       	
 		       	mean=(double) (listOfElements.stream().mapToInt(Integer::intValue).sum()/listOfElements.size());
 		       	res.setMeanVertex(mean);
-		       	globalMeanCellObjects.add(mean);
+		       	finalMeanCellObjects.add(mean);
+
+		       	//globalMeanCellObjects.add(mean);
 		       	
 		       	Double std=calculaSTD(listOfElements);
+		       	finalStdObjects.add(std);
 		       	res.setStdVertex(std);
-		       	globalMeanStdObjects.add(std);
+		       	//globalMeanStdObjects.add(std);
 		    	
        	}
-	
+       	
+       	
        	
        	/*
        	Double globalStd=globalMeanStdObjects.stream().mapToDouble(Double::doubleValue).sum()/globalMeanStdObjects.size();
        	Double globalMean=globalMeanCellObjects.stream().mapToDouble(Double::doubleValue).sum()/globalMeanCellObjects.size();
        	*/
-       	Collections.sort(globalMeanStdObjects);
+       	//Collections.sort(globalMeanStdObjects);
        	//Double minStd=globalMeanStdObjects.get(0);
        	//Double maxStd=globalMeanStdObjects.get(globalMeanStdObjects.size()-1);
        	
-       	Collections.sort(globalMeanCellObjects);
+       	//Collections.sort(globalMeanCellObjects);
        	//Double minMean=globalMeanCellObjects.get(0);
        	//Double maxMean=globalMeanCellObjects.get(globalMeanCellObjects.size()-1);
        	ArrayList<Individuo> elementsToBeDeleted= new ArrayList<Individuo>();
@@ -360,19 +450,16 @@ public class evolutionary_algorithm {
        	int i=0;
        	for(i=0;i<individuals.size();i++) {
        		Individuo res=individuals.get(i);
+  
+       		
        		if(res.getMeanVertex()==0) {
        			//individuals.remove(i);
            		elementsToBeDeleted.add(res);
        		}else if(res.getStdVertex()==0) {
        			//individuals.remove(i);
            		elementsToBeDeleted.add(res);
-       		}else {
+       		}else{
        			/*
-       			System.out.print("Std:");
-       			System.out.println((globalStd/res.getStdVertex()));
-       			
-       			System.out.print("Mean:");
-       			System.out.println(res.getMeanVertex()/globalMean);
        			
        			System.out.println((globalStd/res.getStdVertex())*(res.getMeanVertex()/globalMean));
            		res.setScore( (globalStd/res.getStdVertex())*(res.getMeanVertex()/globalMean) );
@@ -383,8 +470,22 @@ public class evolutionary_algorithm {
        			Double normalizedStdVertex=1-(res.getStdVertex()-minStd)/(maxStd-minStd);
            		res.setScore(normalizedMeanVertex*normalizedStdVertex);
            		*/
-       			
-       			res.setScore(res.getMeanVertex());
+         		Double score=0.0;
+           		if(res.time>15) {
+           			if(finalMeanCellObjects.get(i)-previousMeanCellObjects.get(i)>0) {
+           				
+       					score=finalMeanCellObjects.get(i)-previousMeanCellObjects.get(i);
+           			}else {
+           				score=0.0d;
+           			}
+
+           			 
+           			
+           		}else {
+           			
+           			score=res.getMeanVertex();
+           		}
+       			res.setScore(score);
            		this.poblacion.set(i,res);
        		}
        	
@@ -423,6 +524,12 @@ public class evolutionary_algorithm {
 			calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
 			calendar.get(Calendar.HOUR);        // gets hour in 12h format
 			calendar.get(Calendar.MONTH);       // gets month number, NOTE this is zero based!
+			
+			File previousResult=new File(dirPob.toString()+"\\resultadoPrevio");
+			previousResult.mkdir();
+			
+			File finalResult=new File(dirPob.toString()+"\\resultadoFinal");
+			finalResult.mkdir();
 			try {
 				FileWriter writer = new FileWriter(dirPob.toString()+"\\Experimentos.csv");
 			
@@ -445,7 +552,7 @@ public class evolutionary_algorithm {
 					
 					Individuo ind= newPopulation.get(i);
 					
-					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
+					ind.setDir(new File(previousResult.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 					//llamo a la clase que va a llamar limeseg:
 					SphereSegAdapted seg2=new SphereSegAdapted();
 					seg2.set_path(dir.toString());
@@ -473,14 +580,27 @@ public class evolutionary_algorithm {
 					
 					ArrayList<Double> memoryRegisters=new ArrayList<Double>();
 					
+					ind.setFinalcellsdir(new File(finalResult.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
+					
+					ind.getDir().mkdir();//it creates the directory for that individual
+					ind.getFinalcellsdir().mkdir();
+					
+					boolean previousResultsSaved=false;
 					
 					while (seg2.isAlive()) {
 						endTime2=System.currentTimeMillis();
 						memoryRegisters.add((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024.0 * 1024.0 * 1024.0));
 						
+						
+						if(( (endTime2-startTime2) /1000)==10 && previousResultsSaved==false) {
+							previousResultsSaved=true;
+					       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
+							
+						}
+						
 						System.out.println((endTime2-startTime2) /1000);
 						
-						if( ( (endTime2-startTime2) /1000) >30) { //si el tiempo de ejecucion es mayor que 100 segundos
+						if( ( (endTime2-startTime2) /1000) >20) { //si el tiempo de ejecucion es mayor que 100 segundos
 							LimeSeg.stopOptimisation();
 
 							}
@@ -504,7 +624,7 @@ public class evolutionary_algorithm {
 					ind.setTime((endTime2-startTime2) /1000);
 					ind.setIdentifier("resultado"+String.valueOf(i)+String.valueOf(iter));
 					ind.getDir().mkdir();//it creates the directory for that individual
-			       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
+			       	LimeSeg.saveStateToXmlPly(ind.getFinalcellsdir().toString());//it saves the solution of the individual
 			       	LimeSeg.clear3DDisplay();
 			       	LimeSeg.clearAllCells();
 			       	
