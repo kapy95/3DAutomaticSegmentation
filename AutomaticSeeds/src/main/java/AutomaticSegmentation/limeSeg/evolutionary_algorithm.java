@@ -232,8 +232,6 @@ public class evolutionary_algorithm {
 			dirPob.mkdir();
 			Random rand=new Random();
 			
-			//Random rand= new Random();
-			
 			for(i=0;i<=(nPoblacion-1);i++) {
 				
 				SphereSegAdapted seg=new SphereSegAdapted();
@@ -314,11 +312,8 @@ public class evolutionary_algorithm {
 	
 	public void FitnessCalculation() {
 	
-			
-		//ArrayList<Double> stds = new ArrayList<Double>();//standard deviations
-		//ArrayList<Double> globalMeanCellObjects= new ArrayList<Double>();
 		ArrayList<Double> globalMeanStdObjects= new ArrayList<Double>();
-		ArrayList<Double> globalMeanStdFaces= new ArrayList<Double>();
+		//ArrayList<Double> globalMeanStdFaces= new ArrayList<Double>();
 		
 		ArrayList<Double>globalAverageVolumes=new ArrayList<Double>();
 		
@@ -399,9 +394,8 @@ public class evolutionary_algorithm {
 		       	}
 		       	
 
-		       	//res.setStdVertex(std);
+		       	res.setStdVertex(std);
 		       	mean=(double) (listOfElements.stream().mapToInt(Integer::intValue).sum()/listOfElements.size());
-		       	res.setMeanVertex(mean);
 		       	Double averageVolume=null;
 		       	if(mean>0) {
 		       		averageVolume=getCellAverageVolumes(res.getDir().toString());
@@ -417,7 +411,6 @@ public class evolutionary_algorithm {
 		       	res.setStdFaces(stdFaces);
 		       	globalMeanStdFaces.add(stdFaces);*/
 		       	
-		       	res.setStdVertex(std);
 		       	res.setAverageVolume(averageVolume);
 		       	globalMeanStdObjects.add(std);
 		    	
@@ -456,14 +449,10 @@ public class evolutionary_algorithm {
        	for(i=0;i<individuals.size();i++) {
        		Individuo res=individuals.get(i);
   
-       		
-       		if(res.getMeanVertex()==0) {
+       		 if(res.getStdVertex()==0) {
        			//individuals.remove(i);
            		elementsToBeDeleted.add(res);
-       		}else if(res.getStdVertex()==0) {
-       			//individuals.remove(i);
-           		elementsToBeDeleted.add(res);
-       		}else{
+       		 }else{
        			/*
        			
        			System.out.println((globalStd/res.getStdVertex())*(res.getMeanVertex()/globalMean));
@@ -915,9 +904,9 @@ public class evolutionary_algorithm {
 		           writer.append(',');
 		           writer.append(String.valueOf(bestIndividual.getFp()));
 		           writer.append(',');
-		           writer.append(String.valueOf(bestIndividual.getMeanVertex()));
-		           writer.append(',');
 		           writer.append(String.valueOf(bestIndividual.getStdVertex()));
+		           writer.append(',');
+		           writer.append(String.valueOf(bestIndividual.getAverageVolume()));
 		           writer.append(',');
 		           writer.append(String.valueOf(bestIndividual.getScore()));
 		           writer.append(',');

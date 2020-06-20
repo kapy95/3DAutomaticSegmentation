@@ -8,7 +8,6 @@ public class Individuo {
 	private float range_d0;//from 0.5 to >10
 	private File dir;
 	private Double stdVertex; //standard deviation of the objects of the cells 
-	private Double meanVertex; //mean of the objects of the cells
 	private Double averageVolume;
 	public Double score;
 	public long time;
@@ -83,14 +82,6 @@ public class Individuo {
 
 	public void setStdVertex(Double stdVertex) {
 		this.stdVertex = stdVertex;
-	}
-
-	public Double getMeanVertex() {
-		return meanVertex;
-	}
-
-	public void setMeanVertex(Double meanVertex) {
-		this.meanVertex = meanVertex;
 	}
 
 	public Double getScore() {
