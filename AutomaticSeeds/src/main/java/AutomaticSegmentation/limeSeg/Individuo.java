@@ -10,6 +10,7 @@ public class Individuo {
 	private File finalcellsdir;
 	private Double stdVertex; //standard deviation of the objects of the cells 
 	private Double meanVertex; //mean of the objects of the cells
+	private Double averageVolume;
 	public Double score;
 	public long time;
 	private String selectionMethod;
@@ -147,6 +148,14 @@ public class Individuo {
 
 	public void setStdFaces(Double stdFaces) {
 		this.stdFaces = stdFaces;
+	}
+
+	public Double getAverageVolume() {
+		return averageVolume;
+	}
+
+	public void setAverageVolume(Double averageVolume) {
+		this.averageVolume = averageVolume;
 	}
 	
 	
