@@ -112,7 +112,7 @@ public class generationalChange {
 			Individuo newIndividual=null;
 
 			
-
+			ArrayList <Individuo> individualsCrossOver=new ArrayList<Individuo>();
 			Individuo selectedIndividual1= new Individuo();
 			Individuo selectedIndividual2=new Individuo();
 			//now two individuals are selected for crossover by either roulette or tournament:
@@ -163,23 +163,27 @@ public class generationalChange {
 					selectedIndividual2.setSelectionMethod("Torneo");
 				}
 				
-				counterCrossover=counterCrossover+1;// we increase the counter
+				
 				
 				int selectedMethod2 =	1 + (int)(Math.random() * ((3 - 1) + 1));//it selects which crossover method is going to be selected:
-			
+				
+				
 				if(selectedMethod2==1) {//only crossover
+					counterCrossover=counterCrossover+2;// we increase the counter
 					metodo="OnlyCrossover";
 					int selectedMethodPureCrossover =	1 + (int)(Math.random() * ((2 - 1) + 1));//it selects which crossover method is going to be selected:
 					
 					if(selectedMethodPureCrossover==1) {//if it is equal to 1 it will be selected double point crossover
-						newIndividual=this.DoublePointCrossOver(selectedIndividual1, selectedIndividual2);
+							individualsCrossOver=this.DoublePointCrossOver(selectedIndividual1, selectedIndividual2);
+							 
 						
 					}else {//else it will be selected single point crossover
-						newIndividual=this.SinglePointCrossOver(selectedIndividual1, selectedIndividual2);
+							individualsCrossOver=this.SinglePointCrossOver(selectedIndividual1, selectedIndividual2);
 					}
 					
 					
 				}else if(selectedMethod2==2) {//crossover+mutation:
+					counterCrossover=counterCrossover+2;// we increase the counter
 					metodo="crossover+mutation";
 					Individuo i1mutated=this.mutation(selectedIndividual1);
 					Individuo i2mutated=this.mutation(selectedIndividual2);
@@ -187,14 +191,15 @@ public class generationalChange {
 					int selectedMethodCrossover =	1 + (int)(Math.random() * ((2 - 1) + 1));//it selects which crossover method is going to be selected:
 					
 					if(selectedMethodCrossover==1) {//if it is equal to 1 it will be selected double point crossover
-						newIndividual=this.DoublePointCrossOver(i1mutated, i2mutated);
+						individualsCrossOver=this.DoublePointCrossOver(i1mutated, i2mutated);
 						
 					}else {//else it will be selected single point crossover
-						newIndividual=this.SinglePointCrossOver(i1mutated, i2mutated);
+						individualsCrossOver=this.SinglePointCrossOver(i1mutated, i2mutated);
 					}
 					
 					
 				}else { //blend algorithm will be selected for crossover
+					counterCrossover=counterCrossover+1;// we increase the counter
 					metodo="blendcrossover";
 					newIndividual=this.blendCrossOver(selectedIndividual1, selectedIndividual2);
 				}
@@ -207,36 +212,49 @@ public class generationalChange {
 				newIndividual=this.mutation(selectedIndividual1);
 				
 			}
-			newIndividual.setSelectionMethod(selectedIndividual1.getSelectionMethod()+selectedIndividual2.getSelectionMethod());
-			newIndividual.setOffspringMethod(metodo);
-			this.nextGeneration.add(newIndividual);
 			
-			writer.append(metodo);
-	        writer.append(',');
-	        writer.append(String.valueOf(selectedIndividual1.getD0()));
-	        writer.append(',');
-	        writer.append(String.valueOf(selectedIndividual1.getRange_d0()));
-	        writer.append(',');
-	        writer.append(String.valueOf(selectedIndividual1.getFp()));
-	        writer.append(',');
-	        writer.append(String.valueOf(selectedIndividual2.getD0()));
-	        writer.append(',');
-	        writer.append(String.valueOf(selectedIndividual2.getRange_d0()));
-	        writer.append(',');
-	        writer.append(String.valueOf(selectedIndividual2.getFp()));
-	        writer.append(',');
-	        writer.append(String.valueOf(contador));
-	        writer.append(',');
-	        writer.append(String.valueOf(nextGeneration.get(contador).getD0()));
-	        writer.append(',');
-	        writer.append(String.valueOf(nextGeneration.get(contador).getRange_d0()));
-	        writer.append(',');
-	        writer.append(String.valueOf(nextGeneration.get(contador).getFp()));
-	        writer.append('\n');
-	            
-	        writer.flush();
+			if(individualsCrossOver != null) {
+				individualsCrossOver.get(0).setSelectionMethod(selectedIndividual1.getSelectionMethod()+selectedIndividual2.getSelectionMethod());
+				individualsCrossOver.get(1).setSelectionMethod(selectedIndividual1.getSelectionMethod()+selectedIndividual2.getSelectionMethod());
+				
+				individualsCrossOver.get(0).setOffspringMethod(metodo);
+				individualsCrossOver.get(1).setOffspringMethod(metodo);
+				this.nextGeneration.addAll(individualsCrossOver);
+				contador=contador+2;
+				
+			}else {
+				newIndividual.setSelectionMethod(selectedIndividual1.getSelectionMethod()+selectedIndividual2.getSelectionMethod());
+				newIndividual.setOffspringMethod(metodo);
+				this.nextGeneration.add(newIndividual);
+				
+				writer.append(metodo);
+		        writer.append(',');
+		        writer.append(String.valueOf(selectedIndividual1.getD0()));
+		        writer.append(',');
+		        writer.append(String.valueOf(selectedIndividual1.getRange_d0()));
+		        writer.append(',');
+		        writer.append(String.valueOf(selectedIndividual1.getFp()));
+		        writer.append(',');
+		        writer.append(String.valueOf(selectedIndividual2.getD0()));
+		        writer.append(',');
+		        writer.append(String.valueOf(selectedIndividual2.getRange_d0()));
+		        writer.append(',');
+		        writer.append(String.valueOf(selectedIndividual2.getFp()));
+		        writer.append(',');
+		        writer.append(String.valueOf(contador));
+		        writer.append(',');
+		        writer.append(String.valueOf(nextGeneration.get(contador).getD0()));
+		        writer.append(',');
+		        writer.append(String.valueOf(nextGeneration.get(contador).getRange_d0()));
+		        writer.append(',');
+		        writer.append(String.valueOf(nextGeneration.get(contador).getFp()));
+		        writer.append('\n');
+		            
+		        writer.flush();
+				contador++;
+			}
 			
-			contador++;
+
 			
 			}
 		
@@ -435,46 +453,65 @@ public class generationalChange {
 		
 	}
 	
-	public Individuo SinglePointCrossOver(Individuo i1, Individuo i2) {
+	public ArrayList<Individuo> SinglePointCrossOver(Individuo i1, Individuo i2) {
+		ArrayList<Individuo> individualsCrossOver= new ArrayList<Individuo>();
 		Individuo indGeneratedSPX = new Individuo();
+		Individuo indGeneratedSPX2 = new Individuo();
+		
 		int rng = 1 + (int)(Math.random() * ((2 - 1) + 1));
 		
-		if(rng==1) {//if rng==1 the individual generated by crossover will receive the gene Fp from I1, thus the genes rangeD0 an D0 will be inherited from I2
+		if(rng==1) {//if rng==1 
 		
-		indGeneratedSPX.setF_pressure(i1.getFp()); 
-		indGeneratedSPX.setRange_d0(i2.getRange_d0());
+		//the first individual generated by crossover will receive D_0 and Range_D0 from I2, and only F_pressure from I1
 		indGeneratedSPX.setD0(i2.getD0());
+		indGeneratedSPX.setRange_d0(i2.getRange_d0());
+		indGeneratedSPX.setF_pressure(i1.getFp()); 
 
-		}else {//if rng==2 the individual generated by crossover will receive the gene Fp from I2, thus the genes rangeD0 an D0 will be inherited from I1
+		//On the other hand, //the second individual generated by crossover will receive D_0 and Range_D0 from I1, and only F_pressure from I2
+		indGeneratedSPX2.setD0(i1.getD0());
+		indGeneratedSPX2.setRange_d0(i1.getRange_d0());
+		indGeneratedSPX2.setF_pressure(i2.getFp()); 
+
+
+		}else {//if rng==2 
+			//the individual generated by crossover will receive the gene Fp from I2, thus the genes rangeD0 an D0 will be inherited from I1
 			
-			indGeneratedSPX.setF_pressure(i2.getFp()); 
+			//the first individual generated by crossover will only receive D_0 from I2.Range_D0 and F_pressure will be inherited from I1
+			indGeneratedSPX.setD0(i2.getD0());
 			indGeneratedSPX.setRange_d0(i1.getRange_d0());
-			indGeneratedSPX.setD0(i1.getD0());
+			indGeneratedSPX.setF_pressure(i1.getFp()); 
+
+			//the second individual generated by crossover will only receive D_0 from I1.Range_D0 and F_pressure will be inherited from I2
+			indGeneratedSPX2.setD0(i1.getD0());
+			indGeneratedSPX2.setRange_d0(i2.getRange_d0());
+			indGeneratedSPX2.setF_pressure(i2.getFp()); 
 		}
+		individualsCrossOver.add(indGeneratedSPX);
+		individualsCrossOver.add(indGeneratedSPX2);
 		
-		return indGeneratedSPX;
+		return individualsCrossOver;
 	}
 	
 	
-	public Individuo DoublePointCrossOver(Individuo i1, Individuo i2) {
+	public ArrayList<Individuo> DoublePointCrossOver(Individuo i1, Individuo i2) {
 		
-		Individuo indGeneratedSPX = new Individuo();
-		int rng = 1 + (int)(Math.random() * ((2 - 1) + 1));
+		ArrayList<Individuo> doublePointCrossOver= new ArrayList<Individuo>();
 		
-		if(rng==1) {//if rng==1 the individual generated by crossover will receive the genes Fp and Range_D0 from I1, and only D0 from I2
+		Individuo indGeneratedDPX = new Individuo();
+		Individuo indGeneratedDPX2 = new Individuo();
 		
-		indGeneratedSPX.setF_pressure(i1.getFp()); 
-		indGeneratedSPX.setRange_d0(i1.getRange_d0());
-		indGeneratedSPX.setD0(i2.getD0());
-
-		}else {//if rng==2 the individual generated by crossover will receive the genes Fp and Range_D0 from I2, and only D0 from I1
-			
-			indGeneratedSPX.setF_pressure(i2.getFp()); 
-			indGeneratedSPX.setRange_d0(i2.getRange_d0());
-			indGeneratedSPX.setD0(i1.getD0());
-		}
+		//the individual generated by crossover will receive D_0 and F_pressure from I2. Range_D0 from I1;
+		indGeneratedDPX.setD0(i2.getD0());
+		indGeneratedDPX.setRange_d0(i1.getRange_d0());
+		indGeneratedDPX.setF_pressure(i2.getFp()); 
 		
-		return indGeneratedSPX;
+		//the second individual generated by crossover will receive D_0 and F_pressure from I1. Range_D0 from I2;
+		indGeneratedDPX2.setF_pressure(i2.getFp()); 
+		indGeneratedDPX2.setRange_d0(i2.getRange_d0());
+		indGeneratedDPX2.setD0(i1.getD0());
+		
+		
+		return doublePointCrossOver;
 	}
 	
 	
