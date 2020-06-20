@@ -140,7 +140,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		Individuo i1=testing.rouletteWheelSelection(tests);
 		
 		*/
-		
+		/*
 		Individuo ind = new Individuo();
 		File dir1 = new File("E:\\TFM\\Resultados\\resultado generacion50\\resultadoPrevio\\mejor individuo gen49");
 		ind.setTime(5);
@@ -155,13 +155,13 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		
 		ind2.setDir(dirGen);
 		ind2.setFinalcellsdir(dirGen2);
-		
+		*/
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
-		SphereSegAdapted seg=new SphereSegAdapted();
+		/*SphereSegAdapted seg=new SphereSegAdapted();
 		seg.setLimeSeg();
 		ev.getPopulation().add(ind);
 		ev.getPopulation().add(ind2);
-		ev.FitnessCalculation();
+		ev.FitnessCalculation();*/
 		 
 		ev.main(100,50);
 		

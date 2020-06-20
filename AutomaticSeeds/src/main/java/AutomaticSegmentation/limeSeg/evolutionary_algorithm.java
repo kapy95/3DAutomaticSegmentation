@@ -91,11 +91,9 @@ public class evolutionary_algorithm {
         writer1.append(',');
         writer1.append("f_pressure");
         writer1.append(',');
-        writer1.append("MeanVertex");
-        writer1.append(',');
         writer1.append("StdVertex");
         writer1.append(',');
-        writer1.append("StdFaces");
+        writer1.append("AverageVolume");
         writer1.append(',');
         writer1.append("Score");
         writer1.append(',');
@@ -159,9 +157,9 @@ public class evolutionary_algorithm {
             writer.append(',');
             writer.append("f_pressure");
             writer.append(',');
-            writer.append("MeanVertex");
-            writer.append(',');
             writer.append("StdVertex");
+            writer.append(',');
+            writer.append("AverageVolume");
             writer.append(',');
             writer.append("Score");
             writer.append(',');
@@ -180,9 +178,9 @@ public class evolutionary_algorithm {
             writer.append(',');
             writer.append(String.valueOf(bestIndividual.getFp()));
             writer.append(',');
-            writer.append(String.valueOf(bestIndividual.getMeanVertex()));
-            writer.append(',');
             writer.append(String.valueOf(bestIndividual.getStdVertex()));
+            writer.append(',');
+            writer.append(String.valueOf(bestIndividual.getAverageVolume()));
             writer.append(',');
             writer.append(String.valueOf(bestIndividual.getScore()));
             writer.append(',');
@@ -235,11 +233,6 @@ public class evolutionary_algorithm {
 			Random rand=new Random();
 			
 			//Random rand= new Random();
-			File previousResult=new File(dirPob.toString()+"\\resultadoPrevio");
-			previousResult.mkdir();
-			
-			File finalResult=new File(dirPob.toString()+"\\resultadoFinal");
-			finalResult.mkdir();
 			
 			for(i=0;i<=(nPoblacion-1);i++) {
 				
@@ -273,24 +266,16 @@ public class evolutionary_algorithm {
 					long startTime = System.currentTimeMillis();
 					long endTime=0;
 					
-					ind.setDir(new File(previousResult.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
-					ind.setFinalcellsdir(new File(finalResult.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
-					
+					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+"- gen"+String.valueOf(iter)));
 					ind.getDir().mkdir();//it creates the directory for that individual
-					ind.getFinalcellsdir().mkdir();
-					
-					boolean previousResultsSaved=false;
+
 					
 					while (seg.isAlive()) {
+						
 						endTime= System.currentTimeMillis();
 						System.out.println((endTime-startTime) /1000);
 						
-						if(( (endTime-startTime) /1000)==5 && previousResultsSaved==false) {
-							previousResultsSaved=true;
-					       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
-							
-						}
-						
+			
 						if( ( (endTime-startTime) /1000) >10) { //si el tiempo de ejecucion es mayor que 100 segundos
 							LimeSeg.stopOptimisation();
 
@@ -311,9 +296,9 @@ public class evolutionary_algorithm {
 				ind.setTime((endTime-startTime) /1000);
 				//ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 				//ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
-				ind.setIdentifier("resultado"+String.valueOf(i)+String.valueOf(iter));
+				ind.setIdentifier("resultado"+String.valueOf(i)+"- gen"+String.valueOf(iter));
 
-		       	LimeSeg.saveStateToXmlPly(ind.getFinalcellsdir().toString());//it saves the solution of the individual
+		       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
 		       	
 		       	LimeSeg.clear3DDisplay();
 		       	LimeSeg.clearAllCells();
@@ -331,12 +316,6 @@ public class evolutionary_algorithm {
 	
 			
 		//ArrayList<Double> stds = new ArrayList<Double>();//standard deviations
-		ArrayList<Double> previousMeanCellObjects= new ArrayList<Double>();
-		ArrayList<Double> previousStdObjects= new ArrayList<Double>();
-		
-		ArrayList<Double> finalMeanCellObjects= new ArrayList<Double>();
-		ArrayList<Double> finalStdObjects= new ArrayList<Double>();
-		
 		//ArrayList<Double> globalMeanCellObjects= new ArrayList<Double>();
 		ArrayList<Double> globalMeanStdObjects= new ArrayList<Double>();
 		ArrayList<Double> globalMeanStdFaces= new ArrayList<Double>();
@@ -370,6 +349,28 @@ public class evolutionary_algorithm {
 						   numberOfVertex =in.next().toString();
 						   //System.out.println(numberOfVertex);
 						}
+
+						/*si hacen falta las caras:
+						String previo="";
+						String siguiente="";
+						String vertex="vertex";
+						String face="face";
+						
+						while(in.hasNext("list")==false) {
+							
+							if(in.hasNext("vertex")){
+								vertex=in.next().toString();
+								vertex=in.next().toString();
+								
+							}else if(in.next().contains("face")){
+								face=in.next().toString();
+							}
+							
+
+						}
+						
+						listOfElements.add(Integer.parseInt(vertex));
+						listOfFaces.add(Integer.parseInt(face));*/
 						
 						
 						}else {
@@ -390,96 +391,41 @@ public class evolutionary_algorithm {
 		       	
 		       	Double std=0.0;
 		       	if(listOfElements.isEmpty()==true) {
-		       		
-
-		       		System.out.println("Entra aqui");
-		       		mean=0.0d;
-		       		std=0.0d;
+			       		mean=0.0d;
+			       		std=0.0d;
 		       	}else {
-		       	mean=(double) (listOfElements.stream().mapToInt(Integer::intValue).sum())/listOfElements.size();
-		       	std=calculaSTD(listOfElements);
+				       	mean=(double) (listOfElements.stream().mapToInt(Integer::intValue).sum())/listOfElements.size();
+				       	std=calculaSTD(listOfElements);
 		       	}
 		       	
-		       	//res.setMeanVertex(mean);
-		       	previousMeanCellObjects.add(mean);
-		       	
-		       	previousStdObjects.add(std);
+
 		       	//res.setStdVertex(std);
-		    	
-       	}
-       	
-       	
-       	for(Individuo res: individuals ) {
-           	
-       		File[] listOfCells=res.getFinalcellsdir().listFiles();
-       		
-       		
-       		ArrayList<Integer> listOfElements = new ArrayList<Integer>();
-       		ArrayList<Integer> listOfFaces= new ArrayList<Integer>();
-       	
-	       	int i;
-	       	
-		       	//la máxima iteracion es length-1 porque el ultimo elemento es el limesegparams que no nos interesa
-		       	for(i=0;i<(listOfCells.length-1);i++) {
-		       		
-			       	  File ruta= new File(listOfCells[i].toString()+"\\T_1.ply");
-			       	  System.out.println(ruta.toString());
-
-			       	  try {
-						Scanner in = new Scanner(new FileReader(ruta.toString()));
-						
-							String previo="";
-							String siguiente="";
-							String vertex="vertex";
-							String face="face";
-							
-							while(in.hasNext("list")==false) {
-								
-								if(in.hasNext("vertex")){
-									vertex=in.next().toString();
-									vertex=in.next().toString();
-									
-								}else if(in.next().contains("face")){
-									face=in.next().toString();
-								}
-								
-
-							}
-							
-							listOfElements.add(Integer.parseInt(vertex));
-							listOfFaces.add(Integer.parseInt(face));
-							
-							
-						in.close();
-						} catch (FileNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-				
-		       	}
-		       	
 		       	mean=(double) (listOfElements.stream().mapToInt(Integer::intValue).sum()/listOfElements.size());
 		       	res.setMeanVertex(mean);
-		       	finalMeanCellObjects.add(mean);
+		       	Double averageVolume=null;
 		       	if(mean>0) {
-		       		globalAverageVolumes.add(getCellAverageVolumes(res.getFinalcellsdir().toString()) );
+		       		averageVolume=getCellAverageVolumes(res.getDir().toString());
+		       		globalAverageVolumes.add(averageVolume);
 		       	}else {
-		       		
+		       		averageVolume=0.0;
 		       		globalAverageVolumes.add(0.0);
 		       		
 		       	}
 
 		       	//globalMeanCellObjects.add(mean);
-		       	Double stdFaces=calculaSTD(listOfFaces);
+		       	/*Double stdFaces=calculaSTD(listOfFaces);
 		       	res.setStdFaces(stdFaces);
+		       	globalMeanStdFaces.add(stdFaces);*/
 		       	
-		       	Double std=calculaSTD(listOfElements);
-		       	finalStdObjects.add(std);
 		       	res.setStdVertex(std);
+		       	res.setAverageVolume(averageVolume);
 		       	globalMeanStdObjects.add(std);
-		       	globalMeanStdFaces.add(stdFaces);
+		    	
 		    	
        	}
+       	
+       	
+       	
        	
        	
        	/*
@@ -491,7 +437,8 @@ public class evolutionary_algorithm {
     	Double minAverageVolume=globalAverageVolumes.get(0);
     	Double maxAverageVolume=globalAverageVolumes.get(globalAverageVolumes.size()-1);
     	*/
-       	//sum of all  average volumes, this is done in order to normalize the values later
+       	
+       	//sum of all average volumes, this is done in order to normalize the values later
        	Double totalVolumeAverage=(double)globalAverageVolumes.stream().mapToDouble(Double::doubleValue).sum();
        	
        	Double totalStdElementAverage=globalMeanStdObjects.stream().mapToDouble(Double::doubleValue).sum();
@@ -504,7 +451,6 @@ public class evolutionary_algorithm {
        	//Double minMean=globalMeanCellObjects.get(0);
        	//Double maxMean=globalMeanCellObjects.get(globalMeanCellObjects.size()-1);
        	ArrayList<Individuo> elementsToBeDeleted= new ArrayList<Individuo>();
-       	
        	
        	int i=0;
        	for(i=0;i<individuals.size();i++) {
@@ -529,31 +475,12 @@ public class evolutionary_algorithm {
        			//Double normalizedStdFaces=1-(res.getStdFaces()-minStdFaces)/(maxStdFaces-minStdFaces);
        			Double normalizedVolume=(globalAverageVolumes.get(i)-minAverageVolume)/(maxAverageVolume-minAverageVolume);
        			*/
-       			Double normalizedStdVertex=globalAverageVolumes.get(i)/totalVolumeAverage;
-       			Double normalizedVolume=globalAverageVolumes.get(i)/totalStdElementAverage;
+       			Double normalizedStdVertex=globalMeanStdObjects.get(i)/totalStdElementAverage;
+       			Double normalizedVolume=globalAverageVolumes.get(i)/totalVolumeAverage;
            		res.setScore(normalizedVolume/normalizedStdVertex);
            		
            		this.poblacion.set(i,res);
            		
-           		/* Incremento:
-         		Double score=0.0;
-           		if(res.time>5) {
-           			if(finalMeanCellObjects.get(i)-previousMeanCellObjects.get(i)>0) {
-           				
-       					//score=(finalMeanCellObjects.get(i)-previousMeanCellObjects.get(i))/res.getStdVertex();
-           				score=res.getStdVertex();
-           				
-           			}else {
-           				score=0.0d;
-           			}
-           			
-           		}else {
-           			
-           			score=res.getStdVertex();
-           		}
-       			res.setScore(score);
-           		this.poblacion.set(i,res);
-           		*/
            		
        		}
        		
@@ -594,11 +521,6 @@ public class evolutionary_algorithm {
 			calendar.get(Calendar.HOUR);        // gets hour in 12h format
 			calendar.get(Calendar.MONTH);       // gets month number, NOTE this is zero based!
 			
-			File previousResult=new File(dirPob.toString()+"\\resultadoPrevio");
-			previousResult.mkdir();
-			
-			File finalResult=new File(dirPob.toString()+"\\resultadoFinal");
-			finalResult.mkdir();
 			try {
 				FileWriter writer = new FileWriter(dirPob.toString()+"\\Experimentos.csv");
 			
@@ -621,7 +543,7 @@ public class evolutionary_algorithm {
 					
 					Individuo ind= newPopulation.get(i);
 					
-					ind.setDir(new File(previousResult.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
+					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 					//llamo a la clase que va a llamar limeseg:
 					SphereSegAdapted seg2=new SphereSegAdapted();
 					seg2.set_path(dir.toString());
@@ -649,10 +571,8 @@ public class evolutionary_algorithm {
 					
 					ArrayList<Double> memoryRegisters=new ArrayList<Double>();
 					
-					ind.setFinalcellsdir(new File(finalResult.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
-					
 					ind.getDir().mkdir();//it creates the directory for that individual
-					ind.getFinalcellsdir().mkdir();
+
 					
 					boolean previousResultsSaved=false;
 					
@@ -662,19 +582,13 @@ public class evolutionary_algorithm {
 						endTime2=System.currentTimeMillis();
 						memoryRegisters.add((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024.0 * 1024.0 * 1024.0));
 						
-						
-						if(( (endTime2-startTime2) /1000)==5 && previousResultsSaved==false) {
-							previousResultsSaved=true;
-					       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
-							
-						}
-						
 						System.out.println((endTime2-startTime2) /1000);
 						
 						if( ( (endTime2-startTime2) /1000)>maximumTime) { //si el tiempo de ejecucion es mayor que 100 segundos
 							LimeSeg.stopOptimisation();
 
-							}
+						}
+						
 					}
 					
 					writer.append(String.valueOf(Collections.max(memoryRegisters)));	
@@ -695,7 +609,7 @@ public class evolutionary_algorithm {
 					ind.setTime((endTime2-startTime2) /1000);
 					ind.setIdentifier("resultado"+String.valueOf(i)+String.valueOf(iter));
 					ind.getDir().mkdir();//it creates the directory for that individual
-			       	LimeSeg.saveStateToXmlPly(ind.getFinalcellsdir().toString());//it saves the solution of the individual
+			       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
 			       	LimeSeg.clear3DDisplay();
 			       	LimeSeg.clearAllCells();
 			       	
@@ -773,11 +687,9 @@ public class evolutionary_algorithm {
              writer.append(',');
              writer.append("f_pressure");
              writer.append(',');
-             writer.append("MeanVertex");
-             writer.append(',');
              writer.append("StdVertex");
              writer.append(',');
-             writer.append("StdFaces");
+             writer.append("AverageVolume");
              writer.append(',');
              writer.append("Score");
              writer.append(',');
@@ -800,11 +712,9 @@ public class evolutionary_algorithm {
                   writer.append(',');
                   writer.append(String.valueOf(ind.getFp()));
                   writer.append(',');
-                  writer.append(String.valueOf(ind.getMeanVertex()));
-                  writer.append(',');
                   writer.append(String.valueOf(ind.getStdVertex()));
                   writer.append(',');
-                  writer.append(String.valueOf(ind.getStdFaces()));
+                  writer.append(String.valueOf(ind.getAverageVolume()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getScore()));
                   writer.append(',');
@@ -841,11 +751,9 @@ public class evolutionary_algorithm {
                   writer.append(',');
                   writer.append(String.valueOf(ind.getFp()));
                   writer.append(',');
-                  writer.append(String.valueOf(ind.getMeanVertex()));
-                  writer.append(',');
                   writer.append(String.valueOf(ind.getStdVertex()));
                   writer.append(',');
-                  writer.append(String.valueOf(ind.getStdFaces()));
+                  writer.append(String.valueOf(ind.getAverageVolume()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getScore()));
                   writer.append(',');

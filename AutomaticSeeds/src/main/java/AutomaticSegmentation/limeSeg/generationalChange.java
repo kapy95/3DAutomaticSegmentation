@@ -27,35 +27,18 @@ public class generationalChange {
 		Individuo bestIndividual = Collections.max(population, Comparator.comparingDouble(Individuo::getScore));
 		
 
-		
-
 		File srcDir =  bestIndividual.getDir();
 		
 		File destDir=new File(dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter+1));
 		destDir.mkdir();
 		
-		File previousResult=new File(destDir.toString()+"\\resultadoPrevio");
-		previousResult.mkdir();
-		
-		File finalResult=new File(destDir.toString()+"\\resultadoFinal");
-		finalResult.mkdir();
-
-		
-		File destDirInd1=new File(previousResult.toString()+"\\mejor individuo gen"+ String.valueOf(iter)); //incluir mejor resultado aqui en el titulo para identificarlo y no volver a calcularlo
+		File destDirInd1=new File(destDir.toString()+"\\mejor individuo gen"+ String.valueOf(iter)); //incluir mejor resultado aqui en el titulo para identificarlo y no volver a calcularlo
 		//bestIndividual.setDir(destDirInd1);
 		
 		try {
    		 FileUtils.copyDirectory(srcDir, destDirInd1);
 		} catch (IOException e) {
    		 e.printStackTrace();
-		}
-		File destDir2Ind1=new File(finalResult.toString()+"\\mejor individuo gen"+ String.valueOf(iter)); //incluir mejor resultado aqui en el titulo para identificarlo y no volver a calcularlo
-		
-		File srcInd1Dir2=bestIndividual.getFinalcellsdir();
-		try {
-	   		 FileUtils.copyDirectory(srcInd1Dir2, destDir2Ind1);
-			} catch (IOException e) {
-	   		 e.printStackTrace();
 		}
 		
 		
@@ -65,7 +48,7 @@ public class generationalChange {
 		//we do the same for the second best individual:
 		Individuo bestIndividual2 = Collections.max(population, Comparator.comparingDouble(Individuo::getScore));
 		
-		File destDirInd2=new File(previousResult.toString()+"\\segundo mejor individuo gen"+ String.valueOf(iter));
+		File destDirInd2=new File(destDir.toString()+"\\segundo mejor individuo gen"+ String.valueOf(iter));
 		File srcInd2Dir1 =  bestIndividual2.getDir();
 		
 		//bestIndividual2.setDir(new File(destDir.toString()+"\\resultado"+String.valueOf(res+1)+String.valueOf(iter+1)));
@@ -78,13 +61,6 @@ public class generationalChange {
 	   		 e.printStackTrace();
 		}
 		
-		File destDir2Ind2=new File(finalResult.toString()+"\\segundo mejor individuo gen"+ String.valueOf(iter));
-		File srcInd2Dir2 =  bestIndividual2.getFinalcellsdir();
-		try {
-	   		 FileUtils.copyDirectory(srcInd2Dir2, destDir2Ind2);
-			} catch (IOException e) {
-	   		 e.printStackTrace();
-		}
 		population.add(bestIndividual);//we add the bestIndividual again
 		this.previousGeneration = new ArrayList<Individuo>();
 		this.previousGeneration.addAll(population);
