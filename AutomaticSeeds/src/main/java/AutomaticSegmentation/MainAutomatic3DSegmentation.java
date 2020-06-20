@@ -140,14 +140,35 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		Individuo i1=testing.rouletteWheelSelection(tests);
 		
 		*/
-		/*
+		
 		Individuo ind = new Individuo();
-		File dir2 = new File("E:\\3a\\Cells\\OutputLimeSeg");
-		ind.setDir(dir2);
-		*/
+		File dir1 = new File("E:\\TFM\\Resultados\\resultado generacion50\\resultadoPrevio\\mejor individuo gen49");
+		ind.setTime(5);
+		File dir2= new File("E:\\TFM\\Resultados\\resultado generacion50\\resultadoFinal\\mejor individuo gen49");
+		ind.setDir(dir1);
+		ind.setFinalcellsdir(dir2);
+		
+		Individuo ind2 = new Individuo();
+		File dirGen = new File("E:\\TFM\\Resultados\\resultado generacion50\\resultadoPrevio\\segundo mejor individuo gen49");
+		ind.setTime(5);
+		File dirGen2= new File("E:\\TFM\\Resultados\\resultado generacion50\\resultadoFinal\\segundo mejor individuo gen49");
+		
+		ind2.setDir(dirGen);
+		ind2.setFinalcellsdir(dirGen2);
 		
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
-		ev.main(100,25);
+		SphereSegAdapted seg=new SphereSegAdapted();
+		seg.setLimeSeg();
+		ev.getPopulation().add(ind);
+		ev.getPopulation().add(ind2);
+		ev.FitnessCalculation();
+		 
+		ev.main(100,50);
+		
+		/*
+		File dirStart = new File("E:\\TFM\\Resultados\\resultado generacion8\\RecambioGeneracional8.csv");
+		ev.mainStartAgain(dirStart.toString(),100,9,50);
+		*/
 		
 		/*ev.addIndividual(ind);
 		ev.FitnessCalculation();

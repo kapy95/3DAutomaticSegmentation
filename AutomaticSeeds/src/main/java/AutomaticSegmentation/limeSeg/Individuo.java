@@ -15,12 +15,14 @@ public class Individuo {
 	private String selectionMethod;
 	private String offspringMethod;
 	private String Identifier;
+	private Double stdFaces;
 	
 	/**
 	 * 
 	 */
 	public Individuo() {
 		super();
+		setStdFaces(0.0);
 		setOffspringMethod("");
 		setSelectionMethod("");
 		// TODO Auto-generated constructor stub
@@ -137,6 +139,14 @@ public class Individuo {
 
 	public void setFinalcellsdir(File finalcellsdir) {
 		this.finalcellsdir = finalcellsdir;
+	}
+
+	public Double getStdFaces() {
+		return stdFaces;
+	}
+
+	public void setStdFaces(Double stdFaces) {
+		this.stdFaces = stdFaces;
 	}
 	
 	
