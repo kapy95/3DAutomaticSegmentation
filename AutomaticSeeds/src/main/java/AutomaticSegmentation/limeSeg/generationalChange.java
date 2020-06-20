@@ -213,7 +213,7 @@ public class generationalChange {
 				
 			}
 			
-			if(individualsCrossOver != null) {
+			if(individualsCrossOver.size()!=0) {
 				individualsCrossOver.get(0).setSelectionMethod(selectedIndividual1.getSelectionMethod()+selectedIndividual2.getSelectionMethod());
 				individualsCrossOver.get(1).setSelectionMethod(selectedIndividual1.getSelectionMethod()+selectedIndividual2.getSelectionMethod());
 				
@@ -510,7 +510,8 @@ public class generationalChange {
 		indGeneratedDPX2.setRange_d0(i2.getRange_d0());
 		indGeneratedDPX2.setD0(i1.getD0());
 		
-		
+		doublePointCrossOver.add(indGeneratedDPX);
+		doublePointCrossOver.add(indGeneratedDPX2);
 		return doublePointCrossOver;
 	}
 	

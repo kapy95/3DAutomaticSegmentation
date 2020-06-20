@@ -376,6 +376,8 @@ public class evolutionary_algorithm {
 						in.close();
 						System.out.println(Integer.parseInt(numberOfVertex));
 						listOfElements.add(Integer.parseInt(numberOfVertex));
+						
+						
 									
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
@@ -395,8 +397,10 @@ public class evolutionary_algorithm {
 		       	
 
 		       	res.setStdVertex(std);
+		       	
 		       	mean=(double) (listOfElements.stream().mapToInt(Integer::intValue).sum()/listOfElements.size());
 		       	Double averageVolume=null;
+		       	
 		       	if(mean>0) {
 		       		averageVolume=getCellAverageVolumes(res.getDir().toString());
 		       		globalAverageVolumes.add(averageVolume);
@@ -413,13 +417,11 @@ public class evolutionary_algorithm {
 		       	
 		       	res.setAverageVolume(averageVolume);
 		       	globalMeanStdObjects.add(std);
-		    	
+		       	
 		    	
        	}
        	
-       	
-       	
-       	
+       
        	
        	/*
        	Collections.sort(globalMeanStdObjects);
