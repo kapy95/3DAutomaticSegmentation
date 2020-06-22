@@ -247,7 +247,7 @@ public class evolutionary_algorithm {
 					*/
 					float randomF_pressure=-0.025f + rand.nextFloat() * (0.025f+0.025f);
 					float randomD0=1.0f + rand.nextFloat() * (18.0f-1.0f);
-					float randomRange_D0=0.5f + rand.nextFloat() * (8.5f-0.5f) ;
+					float randomRange_D0=1.0f + rand.nextFloat() * (8.5f-0.5f) ;
 			
 					ind.setF_pressure(randomF_pressure);
 					ind.setD0(randomD0);
@@ -268,7 +268,7 @@ public class evolutionary_algorithm {
 					ind.getDir().mkdir();//it creates the directory for that individual
 
 					boolean corte=false;
-					while (seg.isAlive() && corte==false) {
+					while (seg.isAlive()) {
 						
 						endTime= System.currentTimeMillis();
 						System.out.println((endTime-startTime) /1000);
@@ -277,7 +277,7 @@ public class evolutionary_algorithm {
 						if( ( (endTime-startTime) /1000) >10) { //si el tiempo de ejecucion es mayor que 100 segundos
 							LimeSeg.stopOptimisation();
 							seg.interrupt();
-							corte=true;
+							//corte=true;
 							}
 					}
 	
@@ -469,7 +469,7 @@ public class evolutionary_algorithm {
        			*/
        			Double normalizedStdVertex=globalMeanStdObjects.get(i)/totalStdElementAverage;
        			Double normalizedVolume=globalAverageVolumes.get(i)/totalVolumeAverage;
-           		res.setScore(normalizedVolume/normalizedStdVertex);
+           		res.setScore((normalizedVolume/normalizedStdVertex)*10);
            		
            		this.poblacion.set(i,res);
            		
@@ -535,7 +535,7 @@ public class evolutionary_algorithm {
 					
 					Individuo ind= newPopulation.get(i);
 					
-					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
+					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter)));
 					//llamo a la clase que va a llamar limeseg:
 					SphereSegAdapted seg2=new SphereSegAdapted();
 					seg2.set_path(dir.toString());
@@ -570,7 +570,7 @@ public class evolutionary_algorithm {
 					
 					memoryRegisters.add((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024.0 * 1024.0 * 1024.0));
 					
-					while (seg2.isAlive() && corte==false) {
+					while (seg2.isAlive()) {
 						endTime2=System.currentTimeMillis();
 						memoryRegisters.add((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024.0 * 1024.0 * 1024.0));
 						
@@ -578,11 +578,8 @@ public class evolutionary_algorithm {
 						
 						if( ( (endTime2-startTime2) /1000)>maximumTime) { //si el tiempo de ejecucion es mayor que 100 segundos
 							LimeSeg.stopOptimisation();
+							seg2.interrupt();
 
-							//seg2.interrupt();
-							seg2.stop();
-
-							corte=true;
 
 						}
 						
@@ -759,8 +756,6 @@ public class evolutionary_algorithm {
                   writer.append(String.valueOf(ind.getOffspringMethod()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getTime()));
-                  writer.append(',');
-                  writer.append(ind.getDir().toString());
                   writer.append('\n');
              }
 
