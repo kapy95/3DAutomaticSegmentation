@@ -267,8 +267,8 @@ public class evolutionary_algorithm {
 					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+"- gen"+String.valueOf(iter)));
 					ind.getDir().mkdir();//it creates the directory for that individual
 
-					
-					while (seg.isAlive()) {
+					boolean corte=false;
+					while (seg.isAlive() && corte==false) {
 						
 						endTime= System.currentTimeMillis();
 						System.out.println((endTime-startTime) /1000);
@@ -276,7 +276,8 @@ public class evolutionary_algorithm {
 			
 						if( ( (endTime-startTime) /1000) >10) { //si el tiempo de ejecucion es mayor que 100 segundos
 							LimeSeg.stopOptimisation();
-
+							seg.interrupt();
+							corte=true;
 							}
 					}
 	
@@ -565,11 +566,11 @@ public class evolutionary_algorithm {
 					ind.getDir().mkdir();//it creates the directory for that individual
 
 					
-					boolean previousResultsSaved=false;
+					boolean corte=false;
 					
 					memoryRegisters.add((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024.0 * 1024.0 * 1024.0));
 					
-					while (seg2.isAlive()) {
+					while (seg2.isAlive() && corte==false) {
 						endTime2=System.currentTimeMillis();
 						memoryRegisters.add((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024.0 * 1024.0 * 1024.0));
 						
@@ -577,6 +578,11 @@ public class evolutionary_algorithm {
 						
 						if( ( (endTime2-startTime2) /1000)>maximumTime) { //si el tiempo de ejecucion es mayor que 100 segundos
 							LimeSeg.stopOptimisation();
+
+							//seg2.interrupt();
+							seg2.stop();
+
+							corte=true;
 
 						}
 						
