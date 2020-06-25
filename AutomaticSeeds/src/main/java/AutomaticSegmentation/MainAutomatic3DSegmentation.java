@@ -75,7 +75,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 
 		// run the plugin
 		IJ.runPlugIn(clazz.getName(), "");
-		
+
 	}
 
 	/*
@@ -95,7 +95,6 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 			
 		});
 		*/
-		
 		//establezco el directorio de trabajo con las imágenes y roi
 		//File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
 		File dir = new File("E:\\TFM");
@@ -140,28 +139,26 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		Individuo i1=testing.rouletteWheelSelection(tests);
 		
 		*/
-		/*
-		Individuo ind = new Individuo();
-		File dir1 = new File("E:\\TFM\\Resultados\\resultado generacion50\\resultadoPrevio\\mejor individuo gen49");
-		ind.setTime(5);
-		File dir2= new File("E:\\TFM\\Resultados\\resultado generacion50\\resultadoFinal\\mejor individuo gen49");
-		ind.setDir(dir1);
-		ind.setFinalcellsdir(dir2);
 		
+		/*Individuo ind = new Individuo();
+		//File dir1 = new File("E:\\TFM\\Resultados\\resultado generacion50\\mejor individuo gen49");
+		File dir1 = new File("E:\\TFM\\DatosGeneral\\Newdata\\data\\Drosophila embryo\\WT\\04-10-18\\Cells\\OutputLimeSeg");
+		ind.setTime(5);
+		ind.setDir(dir1);*/
+		
+		/*
 		Individuo ind2 = new Individuo();
 		File dirGen = new File("E:\\TFM\\Resultados\\resultado generacion50\\resultadoPrevio\\segundo mejor individuo gen49");
 		ind.setTime(5);
-		File dirGen2= new File("E:\\TFM\\Resultados\\resultado generacion50\\resultadoFinal\\segundo mejor individuo gen49");
-		
 		ind2.setDir(dirGen);
-		ind2.setFinalcellsdir(dirGen2);
 		*/
+		
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
 		/*SphereSegAdapted seg=new SphereSegAdapted();
-		seg.setLimeSeg();
-		ev.getPopulation().add(ind);
-		ev.getPopulation().add(ind2);
-		ev.FitnessCalculation();*/
+		seg.setLimeSeg();*/
+		//ev.getPopulation().add(ind);
+		//ev.getPopulation().add(ind2);
+		//ev.FitnessCalculation();
 		 
 		ev.main(100,50);
 		

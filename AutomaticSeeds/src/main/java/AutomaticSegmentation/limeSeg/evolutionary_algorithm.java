@@ -455,6 +455,9 @@ public class evolutionary_algorithm {
        		 if(res.getStdVertex()==0) {
        			//individuals.remove(i);
            		elementsToBeDeleted.add(res);
+       		 }else if(res.getAverageVolume()<0) {
+           		elementsToBeDeleted.add(res);
+           	
        		 }else{
        			/*
        			
@@ -578,8 +581,8 @@ public class evolutionary_algorithm {
 						
 						if( ( (endTime2-startTime2) /1000)>maximumTime) { //si el tiempo de ejecucion es mayor que 100 segundos
 							LimeSeg.stopOptimisation();
-							seg2.interrupt();
-
+							//LimeSeg.removeDot();
+						
 
 						}
 						
@@ -592,11 +595,13 @@ public class evolutionary_algorithm {
 					System.out.println("Ha salido del while");
 					
 					//Evolutionary Algorithm is going to wait for sphere seg adapted to finish
+					seg2.stop();
 					try{
 						seg2.join();
 						System.out.println("Espera");
 					}catch(Exception e) {
 						System.out.println("No funciona");
+						
 					}
 				
 					System.out.println("Ha salido del Join()");
