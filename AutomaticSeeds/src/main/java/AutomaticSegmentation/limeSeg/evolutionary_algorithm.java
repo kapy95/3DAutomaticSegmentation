@@ -47,7 +47,6 @@ import org.bridj.cpp.std.list;
 import org.python.modules.math;
 
 import com.google.common.base.Objects;
-
 import ch.systemsx.cisd.base.convert.NativeData.ByteOrder;
 import eu.kiaru.limeseg.LimeSeg;
 import eu.kiaru.limeseg.struct.Cell;
@@ -106,7 +105,7 @@ public class evolutionary_algorithm {
         
 		
 		this.InitialPopulationGenerator(numIndividuals,0);
-		System.gc();	
+	
 		this.FitnessCalculation();
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion0\\resultadoPob0.csv");
 		this.writeGlobalResultsCSV(writer1);
@@ -114,19 +113,19 @@ public class evolutionary_algorithm {
 		change.main(i,this.dir.toString());
 		ArrayList<Individuo> newPopulation=change.getNextPopulation();
 		//getObjectPendingFinalizationCount 
-		System.gc();	
+	
 		for(i=1;i<iters;i++){//i=200
 			
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
-			System.gc();	
+			//System.gc();	
 			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
-			System.gc();	
+			//System.gc();	
 			this.writeGlobalResultsCSV(writer1);
 			generationalChange iterativeChange=new generationalChange(this.poblacion,numIndividuals,i,this.dir.toString());
-			System.gc();	
+			//System.gc();	
 			iterativeChange.main(i,this.dir.toString());
-			System.gc();	
+			//System.gc();	
 
 			newPopulation=iterativeChange.getNextPopulation();
 			
@@ -182,8 +181,13 @@ public class evolutionary_algorithm {
             writer.append(',');
             writer.append(String.valueOf(bestIndividual.getAverageVolume()));
             writer.append(',');
+            writer.append("VolumeStd");
+            writer.append(',');
+            writer.append("FacesStd");
+            writer.append(',');
             writer.append(String.valueOf(bestIndividual.getScore()));
             writer.append(',');
+            
             String finalhour=String.valueOf(LocalDateTime.now().getHour())+"."+String.valueOf(LocalDateTime.now().getMinute());
             writer.append(String.valueOf(finalhour+"-"+initialhour));
             writer.append(',');
@@ -268,7 +272,7 @@ public class evolutionary_algorithm {
 					ind.getDir().mkdir();//it creates the directory for that individual
 
 					boolean corte=false;
-					while (seg.isAlive()) {
+					while (seg.isAlive() && ((endTime-startTime) /1000)<12) {
 						
 						endTime= System.currentTimeMillis();
 						System.out.println((endTime-startTime) /1000);
@@ -276,11 +280,13 @@ public class evolutionary_algorithm {
 			
 						if( ( (endTime-startTime) /1000) >10) { //si el tiempo de ejecucion es mayor que 100 segundos
 							LimeSeg.stopOptimisation();
-							seg.interrupt();
+							
+							
 							//corte=true;
 							}
 					}
-	
+					
+					seg.interrupt();
 					System.out.println("Ha salido del while");
 					
 					//Evolutionary Algorithm is going to wait for sphere seg adapted to finish
@@ -303,7 +309,7 @@ public class evolutionary_algorithm {
 		       	LimeSeg.clearAllCells();
 				seg	= null;
 		       	System.out.println("Ha terminado una iteración del for");
-		       	System.gc();
+
 		       	//seg.interrupt();
 		       	poblacion.add(ind);
 			}
@@ -314,9 +320,10 @@ public class evolutionary_algorithm {
 	public void FitnessCalculation() {
 	
 		ArrayList<Double> globalMeanStdObjects= new ArrayList<Double>();
-		//ArrayList<Double> globalMeanStdFaces= new ArrayList<Double>();
-		
+		ArrayList<Double> globalMeanStdFaces= new ArrayList<Double>();
 		ArrayList<Double>globalAverageVolumes=new ArrayList<Double>();
+
+		ArrayList<Double>globalAverageStdVolumes=new ArrayList<Double>();
 		
 		Double mean;
        	Integer j=0;
@@ -326,7 +333,8 @@ public class evolutionary_algorithm {
        		File[] listOfCells=res.getDir().listFiles();
        		
        		ArrayList<Integer> listOfElements = new ArrayList<Integer>();
-       	
+    		ArrayList<Integer>listOfFaces=new ArrayList<Integer>();
+    		
 	       	int i;
 	       	
 		       	//la máxima iteracion es length-1 porque el ultimo elemento es el limesegparams que no nos interesa
@@ -346,8 +354,8 @@ public class evolutionary_algorithm {
 						   //System.out.println(numberOfVertex);
 						}
 
-						/*si hacen falta las caras:
-						String previo="";
+						//si hacen falta las caras:
+						/*String previo="";
 						String siguiente="";
 						String vertex="vertex";
 						String face="face";
@@ -366,13 +374,14 @@ public class evolutionary_algorithm {
 						}
 						
 						listOfElements.add(Integer.parseInt(vertex));
-						listOfFaces.add(Integer.parseInt(face));*/
-						
+						listOfFaces.add(Integer.parseInt(face));
+						*/
 						
 						}else {
 							
 							 numberOfVertex="0";
 						}
+						
 						
 						in.close();
 						System.out.println(Integer.parseInt(numberOfVertex));
@@ -396,8 +405,9 @@ public class evolutionary_algorithm {
 				       	std=calculaSTD(listOfElements);
 		       	}
 		       	
-
+		       	Double stdVolume=calculaSTD2( getCellVolumes(res.getDir().toString()) );
 		       	res.setStdVertex(std);
+		       	res.setStdVolume(stdVolume);
 		       	
 		       	mean=(double) (listOfElements.stream().mapToInt(Integer::intValue).sum()/listOfElements.size());
 		       	Double averageVolume=null;
@@ -412,13 +422,13 @@ public class evolutionary_algorithm {
 		       	}
 
 		       	//globalMeanCellObjects.add(mean);
-		       	/*Double stdFaces=calculaSTD(listOfFaces);
+		       	Double stdFaces=calculaSTD(listOfFaces);
 		       	res.setStdFaces(stdFaces);
-		       	globalMeanStdFaces.add(stdFaces);*/
+		       	globalMeanStdFaces.add(stdFaces);
 		       	
 		       	res.setAverageVolume(averageVolume);
 		       	globalMeanStdObjects.add(std);
-		       	
+		       	globalAverageStdVolumes.add(stdVolume);
 		    	
        	}
        	
@@ -436,8 +446,9 @@ public class evolutionary_algorithm {
        	
        	//sum of all average volumes, this is done in order to normalize the values later
        	Double totalVolumeAverage=(double)globalAverageVolumes.stream().mapToDouble(Double::doubleValue).sum();
-       	
+       	Double totalStdVolume= globalAverageStdVolumes.stream().mapToDouble(Double::doubleValue).sum();
        	Double totalStdElementAverage=globalMeanStdObjects.stream().mapToDouble(Double::doubleValue).sum();
+       	Double totalStdFaces=globalMeanStdFaces.stream().mapToDouble(Double::doubleValue).sum();
        	
        	/*Collections.sort(globalMeanStdFaces);
        	Double minStdFaces=	globalMeanStdFaces.get(0);
@@ -451,7 +462,8 @@ public class evolutionary_algorithm {
        	int i=0;
        	for(i=0;i<individuals.size();i++) {
        		Individuo res=individuals.get(i);
-  
+       		Double score=0.0d;
+       		
        		 if(res.getStdVertex()==0) {
        			//individuals.remove(i);
            		elementsToBeDeleted.add(res);
@@ -472,7 +484,11 @@ public class evolutionary_algorithm {
        			*/
        			Double normalizedStdVertex=globalMeanStdObjects.get(i)/totalStdElementAverage;
        			Double normalizedVolume=globalAverageVolumes.get(i)/totalVolumeAverage;
-           		res.setScore((normalizedVolume/normalizedStdVertex)*10);
+       			Double normalizedStdVolume=res.getStdVolume()/totalStdVolume;
+       			
+       			//score=((1-normalizedStdVertex)*47)+(normalizedVolume*53);
+       			score= ( (1-(normalizedStdVolume)) *normalizedStdVertex*40)+(normalizedVolume*60);
+           		res.setScore(score);
            		
            		this.poblacion.set(i,res);
            		
@@ -496,7 +512,7 @@ public class evolutionary_algorithm {
 	public void NewPopulationGenerator(ArrayList<Individuo> newPopulation,int iter) {
 		
 			//the folder for the new individuals is created
-		
+
 			File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter));
 			//dirPob.mkdir();
 			float maximumTime=10.0f+(iter-1)*0.8f;
@@ -536,6 +552,11 @@ public class evolutionary_algorithm {
              
 				for(i=2;i<=newPopulation.size()-1;i++) {
 					
+
+			       	LimeSeg.clear3DDisplay();
+			       	LimeSeg.clearAllCells();
+			       
+			       	
 					Individuo ind= newPopulation.get(i);
 					
 					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter)));
@@ -573,29 +594,37 @@ public class evolutionary_algorithm {
 					
 					memoryRegisters.add((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024.0 * 1024.0 * 1024.0));
 					
-					while (seg2.isAlive()) {
+					while (seg2.isAlive() && ((endTime2-startTime2) /1000)<maximumTime+5 ) {
 						endTime2=System.currentTimeMillis();
 						memoryRegisters.add((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/(1024.0 * 1024.0 * 1024.0));
 						
 						System.out.println((endTime2-startTime2) /1000);
 						
 						if( ( (endTime2-startTime2) /1000)>maximumTime) { //si el tiempo de ejecucion es mayor que 100 segundos
+							LimeSeg.requestStopOptimisation=true;
 							LimeSeg.stopOptimisation();
-							//LimeSeg.removeDot();
+							/*LimeSeg.clearDotsFromCellT();
+							LimeSeg.clearOverlay();
+							LimeSeg.removeDot();
+							LimeSeg.showGUI();
+							LimeSeg.update3DDisplay();*/
 						
 
 						}
 						
 					}
 					
+
+					LimeSeg.stopOptimisation();
+
 					writer.append(String.valueOf(Collections.max(memoryRegisters)));	
 		            writer.append('\n');
 		            writer.flush();
-					
+
 					System.out.println("Ha salido del while");
 					
 					//Evolutionary Algorithm is going to wait for sphere seg adapted to finish
-					seg2.stop();
+
 					try{
 						seg2.join();
 						System.out.println("Espera");
@@ -612,8 +641,6 @@ public class evolutionary_algorithm {
 			       	LimeSeg.clear3DDisplay();
 			       	LimeSeg.clearAllCells();
 			       	
-			       	seg2=null;
-			       	System.gc();
 			       	
 			       	poblacion.add(ind);
 				}
@@ -656,6 +683,34 @@ public class evolutionary_algorithm {
 	}
 	
 	
+	public Double calculaSTD2 (ArrayList<Double> volumes /*elementosSegmentacion*/) {
+
+		//System.out.println(elementosSegmentacion.contains(null));
+		Double std=0d;
+		Double media=0d;
+		Double sum = volumes.stream().mapToDouble(a -> a).sum();
+		
+		for(Double elementosCelulaSegmentada:volumes) {
+			media+=elementosCelulaSegmentada;
+		}
+		
+		//System.out.println(media);
+		//System.out.println(sum);
+		
+		media=media/volumes.size();
+		
+		for(Double elementosCelulaSegmentada:volumes) {
+			//restamos, elevamos al cuadrado y sumamos
+			std+=Math.pow((elementosCelulaSegmentada-media),2);
+			
+		}
+		System.gc();
+		std=math.sqrt( (std/volumes.size()) );
+		return std;
+		
+	}
+	
+	
 	
 	public void setDir(File directorio) {
 		//establezco el directorio de trabajo con las imágenes y roi
@@ -690,6 +745,10 @@ public class evolutionary_algorithm {
              writer.append(',');
              writer.append("AverageVolume");
              writer.append(',');
+             writer.append("VolumeStd");
+             writer.append(',');
+             writer.append("FacesStd");
+             writer.append(',');
              writer.append("Score");
              writer.append(',');
              writer.append("SelectionMethod");
@@ -714,6 +773,10 @@ public class evolutionary_algorithm {
                   writer.append(String.valueOf(ind.getStdVertex()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getAverageVolume()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getStdVolume()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getStdFaces()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getScore()));
                   writer.append(',');
@@ -753,6 +816,10 @@ public class evolutionary_algorithm {
                   writer.append(String.valueOf(ind.getStdVertex()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getAverageVolume()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getStdVolume()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getStdFaces()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getScore()));
                   writer.append(',');
@@ -1002,6 +1069,35 @@ public class evolutionary_algorithm {
 		
 		return average;
 	}
+	
+	public ArrayList<Double> getCellVolumes(String directory){
+		
+
+		
+		LimeSeg.loadStateFromXmlPly(directory);
+		ArrayList<Cell> cells=LimeSeg.allCells;
+		ArrayList<Double> cellVolumes= new ArrayList<Double>();
+		
+		for (Cell c:cells) {
+			LimeSeg.currentCell=c;
+			CellT ct = c.getCellTAt(1);
+			System.out.println(ct.getVolume());
+			cellVolumes.add(ct.getVolume());
+			/*
+			for (DotN dn:ct.dots) {
+				float x=dn.pos.x;
+				float y=dn.pos.y;
+				float z=dn.pos.z;
+				//System.out.println("P=\t"+dn.pos.x+"\t"+dn.pos.y+"\t"+dn.pos.z+"\t N=\t"+dn.Norm.x+"\t"+dn.Norm.y+"\t"+dn.Norm.z+"\n");
+			}*/
+			
+		}
+
+		
+		return cellVolumes;
+	}
+	
+	
 	
 	public void ReadPly(String directory) {
    		DataInputStream input;

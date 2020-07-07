@@ -15,6 +15,7 @@ public class Individuo {
 	private String offspringMethod;
 	private String Identifier;
 	private Double stdFaces;
+	private Double stdVolume;
 	
 	/**
 	 * 
@@ -138,6 +139,14 @@ public class Individuo {
 
 	public void setAverageVolume(Double averageVolume) {
 		this.averageVolume = averageVolume;
+	}
+
+	public Double getStdVolume() {
+		return stdVolume;
+	}
+
+	public void setStdVolume(Double stdVolume) {
+		this.stdVolume = stdVolume;
 	}
 	
 	

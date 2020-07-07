@@ -75,6 +75,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 
 		// run the plugin
 		IJ.runPlugIn(clazz.getName(), "");
+	
 
 	}
 
