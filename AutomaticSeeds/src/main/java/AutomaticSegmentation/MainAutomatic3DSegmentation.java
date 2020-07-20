@@ -162,7 +162,14 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		ev.getPopulation().add(ind2);
 		ev.FitnessCalculation();
 		*/
-		
+		ArrayList<Double> prueba=new ArrayList<Double>();
+		prueba.add(3.3d);
+		prueba.add(5.1d);
+		prueba.add(7.9d);
+		prueba.add(1.6d);
+		prueba.add(2.3d);
+		prueba.add(0.5d);
+		Double value=ev.calcPercentiles(prueba,75);
 		ev.main(100,50);
 		
 		/*

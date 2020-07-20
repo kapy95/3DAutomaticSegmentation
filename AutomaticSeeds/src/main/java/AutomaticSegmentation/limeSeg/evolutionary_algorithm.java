@@ -1421,16 +1421,17 @@ public class evolutionary_algorithm {
     public Double calcPercentiles(ArrayList<Double> list,int percentile) {
         int size = list.size();
 
-        Double sum = 0.0d;
+        Double sum = (double) 0;
         for (int i = 0; i < size; i++) {
             sum += list.get(i);
         }
-        Double sumPercentile=sum*(percentile/100);
-        Double sumList=0.0d;
+        Double percentage=(double) percentile/100;
+        Double sumPercentile=percentage*sum;
+        Double sumList=(double) 0;
         
         int j=0;
 
-        while(sumPercentile<sumList) {
+        while(sumPercentile>sumList) {
         	
         	sumList=sumList+list.get(j);
         	j++;
