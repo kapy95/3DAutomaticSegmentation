@@ -110,6 +110,7 @@ public class SphereSegAdapted extends Thread implements Command {
         }
         */
         lms.initialize();
+        clearOptimizer=true;
 		LimeSeg.saveOptState();
         if (clearOptimizer) {LimeSeg.clearOptimizer();}
         if ((!clearOptimizer)) {
@@ -172,7 +173,7 @@ public class SphereSegAdapted extends Thread implements Command {
 				avgY+=y0;
 				avgZ+=z0;
 				NCells++;
-
+				LimeSeg.update3DDisplay();//cambio aqui
 		    	if (!sameCell) {
 		    		LimeSeg.newCell();
 		    	}

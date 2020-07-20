@@ -11,11 +11,13 @@ public class Individuo {
 	private Double averageVolume;
 	public Double score;
 	public long time;
+	public Integer notNullCells;
 	private String selectionMethod;
 	private String offspringMethod;
 	private String Identifier;
 	private Double stdFaces;
 	private Double stdVolume;
+	private Double distance;
 	
 	/**
 	 * 
@@ -129,9 +131,18 @@ public class Individuo {
 		return stdFaces;
 	}
 
+	public void setNotNullCells(Integer cells) {
+		this.notNullCells = cells;
+	}
+	
+	public Integer getNotNullCells() {
+		return notNullCells;
+	}
+
 	public void setStdFaces(Double stdFaces) {
 		this.stdFaces = stdFaces;
 	}
+
 
 	public Double getAverageVolume() {
 		return averageVolume;
@@ -147,6 +158,14 @@ public class Individuo {
 
 	public void setStdVolume(Double stdVolume) {
 		this.stdVolume = stdVolume;
+	}
+
+	public Double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(Double distance) {
+		this.distance = distance;
 	}
 	
 	

@@ -140,14 +140,14 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		Individuo i1=testing.rouletteWheelSelection(tests);
 		
 		*/
-		
-		/*Individuo ind = new Individuo();
+		/*
+		Individuo ind = new Individuo();
 		//File dir1 = new File("E:\\TFM\\Resultados\\resultado generacion50\\mejor individuo gen49");
 		File dir1 = new File("E:\\TFM\\DatosGeneral\\Newdata\\data\\Drosophila embryo\\WT\\04-10-18\\Cells\\OutputLimeSeg");
 		ind.setTime(5);
-		ind.setDir(dir1);*/
+		ind.setDir(dir1);
 		
-		/*
+		
 		Individuo ind2 = new Individuo();
 		File dirGen = new File("E:\\TFM\\Resultados\\resultado generacion50\\resultadoPrevio\\segundo mejor individuo gen49");
 		ind.setTime(5);
@@ -157,10 +157,12 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
 		/*SphereSegAdapted seg=new SphereSegAdapted();
 		seg.setLimeSeg();*/
-		//ev.getPopulation().add(ind);
-		//ev.getPopulation().add(ind2);
-		//ev.FitnessCalculation();
-		 
+		/*
+		ev.getPopulation().add(ind);
+		ev.getPopulation().add(ind2);
+		ev.FitnessCalculation();
+		*/
+		
 		ev.main(100,50);
 		
 		/*

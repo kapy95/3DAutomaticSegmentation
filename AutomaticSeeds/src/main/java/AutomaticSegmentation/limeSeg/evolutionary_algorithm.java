@@ -94,6 +94,10 @@ public class evolutionary_algorithm {
         writer1.append(',');
         writer1.append("AverageVolume");
         writer1.append(',');
+        writer1.append("StdVolume");
+        writer1.append(',');
+        writer1.append("StdFaces");
+        writer1.append(',');
         writer1.append("Score");
         writer1.append(',');
         writer1.append("SelectionMethod");
@@ -117,7 +121,7 @@ public class evolutionary_algorithm {
 		for(i=1;i<iters;i++){//i=200
 			
 			this.NewPopulationGenerator(newPopulation, i);
-			this.FitnessCalculation();
+			this.FitnessCalculation2();
 			//System.gc();	
 			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
 			//System.gc();	
@@ -268,7 +272,7 @@ public class evolutionary_algorithm {
 					long startTime = System.currentTimeMillis();
 					long endTime=0;
 					
-					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+"- gen"+String.valueOf(iter)));
+					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter)));
 					ind.getDir().mkdir();//it creates the directory for that individual
 
 					boolean corte=false;
@@ -301,7 +305,7 @@ public class evolutionary_algorithm {
 				ind.setTime((endTime-startTime) /1000);
 				//ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
 				//ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
-				ind.setIdentifier("resultado"+String.valueOf(i)+"- gen"+String.valueOf(iter));
+				ind.setIdentifier("resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter));
 
 		       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
 		       	
@@ -336,10 +340,10 @@ public class evolutionary_algorithm {
     		ArrayList<Integer>listOfFaces=new ArrayList<Integer>();
     		
 	       	int i;
-	       	
+   			Integer cells=0;
 		       	//la máxima iteracion es length-1 porque el ultimo elemento es el limesegparams que no nos interesa
 		       	for(i=0;i<(listOfCells.length-1);i++) {
-		       		
+
 			       		File ruta= new File(listOfCells[i].toString()+"\\T_1.ply");
 			       		System.out.println(ruta.toString());
 			     
@@ -349,33 +353,34 @@ public class evolutionary_algorithm {
 						if(ruta.length()!=0) {
 							
 						//el numero de elementos siempre va antes que la primera propiedad, por tanto si la siguiente linea es property no debe entrar ya que tenemos el numero
-						while(in.hasNext("property")==false) {
+						/*while(in.hasNext("property")==false) {
 						   numberOfVertex =in.next().toString();
 						   //System.out.println(numberOfVertex);
-						}
+						}*/
 
 						//si hacen falta las caras:
-						/*String previo="";
+						String previo="";
 						String siguiente="";
 						String vertex="vertex";
 						String face="face";
-						
-						while(in.hasNext("list")==false) {
-							
+						boolean termina=false;
+						while(termina==false) {
+							System.out.println(in.next());
 							if(in.hasNext("vertex")){
 								vertex=in.next().toString();
-								vertex=in.next().toString();
+								numberOfVertex=in.next().toString();
 								
 							}else if(in.next().contains("face")){
 								face=in.next().toString();
+								termina=true;
 							}
 							
 
 						}
 						
-						listOfElements.add(Integer.parseInt(vertex));
+
 						listOfFaces.add(Integer.parseInt(face));
-						*/
+						cells++;
 						
 						}else {
 							
@@ -395,7 +400,7 @@ public class evolutionary_algorithm {
 					}
 				
 		       	}
-		       	
+		    	
 		       	Double std=0.0;
 		       	if(listOfElements.isEmpty()==true) {
 			       		mean=0.0d;
@@ -429,7 +434,7 @@ public class evolutionary_algorithm {
 		       	res.setAverageVolume(averageVolume);
 		       	globalMeanStdObjects.add(std);
 		       	globalAverageStdVolumes.add(stdVolume);
-		    	
+		       	res.setNotNullCells(cells);
        	}
        	
        
@@ -445,10 +450,13 @@ public class evolutionary_algorithm {
     	*/
        	
        	//sum of all average volumes, this is done in order to normalize the values later
+       	
        	Double totalVolumeAverage=(double)globalAverageVolumes.stream().mapToDouble(Double::doubleValue).sum();
        	Double totalStdVolume= globalAverageStdVolumes.stream().mapToDouble(Double::doubleValue).sum();
        	Double totalStdElementAverage=globalMeanStdObjects.stream().mapToDouble(Double::doubleValue).sum();
        	Double totalStdFaces=globalMeanStdFaces.stream().mapToDouble(Double::doubleValue).sum();
+       	
+       	Double stdMedianVertexNormalized=getMedianStd(globalMeanStdObjects)/totalStdElementAverage;
        	
        	/*Collections.sort(globalMeanStdFaces);
        	Double minStdFaces=	globalMeanStdFaces.get(0);
@@ -485,11 +493,219 @@ public class evolutionary_algorithm {
        			Double normalizedStdVertex=globalMeanStdObjects.get(i)/totalStdElementAverage;
        			Double normalizedVolume=globalAverageVolumes.get(i)/totalVolumeAverage;
        			Double normalizedStdVolume=res.getStdVolume()/totalStdVolume;
-       			
-       			//score=((1-normalizedStdVertex)*47)+(normalizedVolume*53);
-       			score= ( (1-(normalizedStdVolume)) *normalizedStdVertex*40)+(normalizedVolume*60);
+       			Double normalizedStdFaces=res.getStdFaces()/totalStdFaces;
+       			Double distanceOfMedian = distanceOfMedian(normalizedStdVertex,stdMedianVertexNormalized);
+       			score=normalizedVolume*100;
+       			//score= 
+           		//res.setScore(score);
+       			 
+       			//score=( ((1-normalizedStdVertex)*50) +(normalizedVolume*100)+ ((1-normalizedStdFaces)*50) );
+       			res.setDistance(distanceOfMedian);
            		res.setScore(score);
+           		this.poblacion.set(i,res);
            		
+           		
+       		}
+       		
+       	
+       	}
+       	
+       	if(elementsToBeDeleted.isEmpty()==false) {
+       		
+	       	for(Individuo pos: elementsToBeDeleted) {
+	       		this.poblacion.remove(pos);
+	       	}
+       	}
+       
+	}
+	
+	
+	public void FitnessCalculation2() {
+		
+		ArrayList<Double> globalMeanStdObjects= new ArrayList<Double>();
+		ArrayList<Double> globalMeanStdFaces= new ArrayList<Double>();
+		ArrayList<Double>globalAverageVolumes=new ArrayList<Double>();
+
+		ArrayList<Double>globalAverageStdVolumes=new ArrayList<Double>();
+		
+		Double mean;
+       	Integer j=0;
+       	ArrayList<Individuo> individuals= this.getPopulation();
+       	for(Individuo res: individuals ) {
+       		
+       		File[] listOfCells=res.getDir().listFiles();
+       		
+       		ArrayList<Integer> listOfElements = new ArrayList<Integer>();
+    		ArrayList<Integer>listOfFaces=new ArrayList<Integer>();
+    		
+	       	int i;
+   			Integer cells=0;
+		       	//la máxima iteracion es length-1 porque el ultimo elemento es el limesegparams que no nos interesa
+		       	for(i=0;i<(listOfCells.length-1);i++) {
+
+			       		File ruta= new File(listOfCells[i].toString()+"\\T_1.ply");
+			       		System.out.println(ruta.toString());
+			     
+			       	   try {
+						Scanner in = new Scanner(new FileReader(ruta.toString()));
+						String numberOfVertex="";
+						if(ruta.length()!=0) {
+							
+						//el numero de elementos siempre va antes que la primera propiedad, por tanto si la siguiente linea es property no debe entrar ya que tenemos el numero
+						/*while(in.hasNext("property")==false) {
+						   numberOfVertex =in.next().toString();
+						   //System.out.println(numberOfVertex);
+						}*/
+
+						//si hacen falta las caras:
+						String previo="";
+						String siguiente="";
+						String vertex="vertex";
+						String face="face";
+						boolean termina=false;
+						while(termina==false) {
+							System.out.println(in.next());
+							if(in.hasNext("vertex")){
+								vertex=in.next().toString();
+								numberOfVertex=in.next().toString();
+								
+							}else if(in.next().contains("face")){
+								face=in.next().toString();
+								termina=true;
+							}
+							
+
+						}
+						
+
+						listOfFaces.add(Integer.parseInt(face));
+						cells++;
+						
+						}else {
+							
+							 numberOfVertex="0";
+						}
+						
+						
+						in.close();
+						System.out.println(Integer.parseInt(numberOfVertex));
+						listOfElements.add(Integer.parseInt(numberOfVertex));
+						
+						
+									
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				
+		       	}
+		    	
+		       	Double std=0.0;
+		       	if(listOfElements.isEmpty()==true) {
+			       		mean=0.0d;
+			       		std=0.0d;
+		       	}else {
+				       	mean=(double) (listOfElements.stream().mapToInt(Integer::intValue).sum())/listOfElements.size();
+				       	std=calculaSTD(listOfElements);
+		       	}
+		       	
+		       	Double stdVolume=calculaSTD2( getCellVolumes(res.getDir().toString()) );
+		       	res.setStdVertex(std);
+		       	res.setStdVolume(stdVolume);
+		       	
+		       	mean=(double) (listOfElements.stream().mapToInt(Integer::intValue).sum()/listOfElements.size());
+		       	Double averageVolume=null;
+		       	
+		       	if(mean>0) {
+		       		averageVolume=getCellAverageVolumes(res.getDir().toString());
+		       		globalAverageVolumes.add(averageVolume);
+		       	}else {
+		       		averageVolume=0.0;
+		       		globalAverageVolumes.add(0.0);
+		       		
+		       	}
+
+		       	//globalMeanCellObjects.add(mean);
+		       	Double stdFaces=calculaSTD(listOfFaces);
+		       	res.setStdFaces(stdFaces);
+		       	globalMeanStdFaces.add(stdFaces);
+		       	
+		       	res.setAverageVolume(averageVolume);
+		       	globalMeanStdObjects.add(std);
+		       	globalAverageStdVolumes.add(stdVolume);
+		       	res.setNotNullCells(cells);
+       	}
+       	
+       
+       	
+       	/*
+       	Collections.sort(globalMeanStdObjects);
+       	Double minStd=globalMeanStdObjects.get(0);
+       	Double maxStd=globalMeanStdObjects.get(globalMeanStdObjects.size()-1);
+       	
+       	Collections.sort(globalAverageVolumes);
+    	Double minAverageVolume=globalAverageVolumes.get(0);
+    	Double maxAverageVolume=globalAverageVolumes.get(globalAverageVolumes.size()-1);
+    	*/
+       	
+       	//sum of all average volumes, this is done in order to normalize the values later
+       	int percentile=90;
+       	Double percentileValue=calcPercentiles(globalMeanStdObjects,percentile);
+       	Double percentileValue75 =calcPercentiles(globalAverageStdVolumes,75);
+       	Double percentileValue50 =calcPercentiles(globalAverageStdVolumes,50);
+       	
+       	Double totalVolumeAverage=(double)globalAverageVolumes.stream().mapToDouble(Double::doubleValue).sum();
+       	Double totalStdVolume= globalAverageStdVolumes.stream().mapToDouble(Double::doubleValue).sum();
+       	Double totalStdElementAverage=globalMeanStdObjects.stream().mapToDouble(Double::doubleValue).sum();
+       	Double totalStdFaces=globalMeanStdFaces.stream().mapToDouble(Double::doubleValue).sum();
+       	
+       	Double stdMedianVertexNormalized=getMedianStd(globalMeanStdObjects)/totalStdElementAverage;
+       	
+       	/*Collections.sort(globalMeanStdFaces);
+       	Double minStdFaces=	globalMeanStdFaces.get(0);
+       	Double maxStdFaces=	globalMeanStdFaces.get(globalMeanStdObjects.size()-1);*/
+       	
+       	//Collections.sort(globalMeanCellObjects);
+       	//Double minMean=globalMeanCellObjects.get(0);
+       	//Double maxMean=globalMeanCellObjects.get(globalMeanCellObjects.size()-1);
+       	ArrayList<Individuo> elementsToBeDeleted= new ArrayList<Individuo>();
+       	
+       	int i=0;
+       	for(i=0;i<individuals.size();i++) {
+       		Individuo res=individuals.get(i);
+       		Double score=0.0d;
+       		
+       		 if(res.getStdVertex()==0 || percentileValue<res.getStdVertex()) {
+       			//individuals.remove(i);
+           		elementsToBeDeleted.add(res);
+       		 }else if(res.getAverageVolume()<0) {
+       			 
+           		elementsToBeDeleted.add(res);
+           	
+       		 }else{
+       			/*
+       			
+       			System.out.println((globalStd/res.getStdVertex())*(res.getMeanVertex()/globalMean));
+           		res.setScore( (globalStd/res.getStdVertex())*(res.getMeanVertex()/globalMean) );
+           		*/
+       		
+       			/*normalización a uno:
+       			Double normalizedStdVertex=1-(res.getStdVertex()-minStd)/(maxStd-minStd);
+       			//Double normalizedStdFaces=1-(res.getStdFaces()-minStdFaces)/(maxStdFaces-minStdFaces);
+       			Double normalizedVolume=(globalAverageVolumes.get(i)-minAverageVolume)/(maxAverageVolume-minAverageVolume);
+       			*/
+       			Double normalizedStdVertex=globalMeanStdObjects.get(i)/totalStdElementAverage;
+       			Double normalizedVolume=globalAverageVolumes.get(i)/totalVolumeAverage;
+       			Double normalizedStdVolume=res.getStdVolume()/totalStdVolume;
+       			Double normalizedStdFaces=res.getStdFaces()/totalStdFaces;
+       			Double distanceOfMedian = distanceOfMedian(normalizedStdVertex,stdMedianVertexNormalized);
+       			score=normalizedVolume*1000*res.getNotNullCells();
+       			//score= 
+           		//res.setScore(score);
+       			 
+       			//score=( ((1-normalizedStdVertex)*50) +(normalizedVolume*100)+ ((1-normalizedStdFaces)*50) );
+       			res.setDistance(distanceOfMedian);
+           		res.setScore(score);
            		this.poblacion.set(i,res);
            		
            		
@@ -567,8 +783,7 @@ public class evolutionary_algorithm {
 					seg2.setF_pressure(ind.getFp());
 					seg2.setZ_scale(ZS);
 					seg2.setRange_in_d0_units(ind.getRange_d0());
-					
-					 writer.append("resultado"+String.valueOf(i)+String.valueOf(iter));
+					 writer.append("resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter));
 		             writer.append(',');
 		             writer.append(String.valueOf(ind.getD0()));
 		             writer.append(',');
@@ -615,6 +830,7 @@ public class evolutionary_algorithm {
 					}
 					
 
+
 					LimeSeg.stopOptimisation();
 
 					writer.append(String.valueOf(Collections.max(memoryRegisters)));	
@@ -635,12 +851,23 @@ public class evolutionary_algorithm {
 				
 					System.out.println("Ha salido del Join()");
 					ind.setTime((endTime2-startTime2) /1000);
-					ind.setIdentifier("resultado"+String.valueOf(i)+String.valueOf(iter));
+					ind.setIdentifier("resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter));
 					ind.getDir().mkdir();//it creates the directory for that individual
+					/*if(poblacion.get(i-1).getTime()==0 && poblacion.get(i).getTime()==0  && poblacion.get(i+1).getTime()==0) {
+						deleteAllCellT();
+					}else {*/
 			       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
 			       	LimeSeg.clear3DDisplay();
 			       	LimeSeg.clearAllCells();
+			       	LimeSeg.clearOptimizer();
+			       	LimeSeg.clearOverlay();
+			       	//LimeSeg.opt.requestResetDotsConvergence=true;
+			       	//LimeSeg.opt.fillHoles();
+
+			       	LimeSeg.updateOverlay();
+			       	LimeSeg.update3DDisplay();
 			       	
+					
 			       	
 			       	poblacion.add(ind);
 				}
@@ -749,6 +976,10 @@ public class evolutionary_algorithm {
              writer.append(',');
              writer.append("FacesStd");
              writer.append(',');
+             writer.append("NotNullCells");
+             writer.append(',');
+             writer.append("MedianDistance");
+             writer.append(',');
              writer.append("Score");
              writer.append(',');
              writer.append("SelectionMethod");
@@ -778,6 +1009,10 @@ public class evolutionary_algorithm {
                   writer.append(',');
                   writer.append(String.valueOf(ind.getStdFaces()));
                   writer.append(',');
+                  writer.append(String.valueOf(ind.getNotNullCells()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getDistance()));
+                  writer.append(',');
                   writer.append(String.valueOf(ind.getScore()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getSelectionMethod()));
@@ -792,6 +1027,7 @@ public class evolutionary_algorithm {
 
              writer.flush();
              writer.close();
+             
         } catch(IOException e) {
               e.printStackTrace();
         } 
@@ -1097,6 +1333,20 @@ public class evolutionary_algorithm {
 		return cellVolumes;
 	}
 	
+	public void deleteAllCellT() {
+		ArrayList<Cell> cells=LimeSeg.allCells;
+		
+		for (Cell c:cells) {
+			LimeSeg.currentCell=c;
+			LimeSeg.clearCurrentCell();
+			LimeSeg.clearDotsFromCellT();
+			LimeSeg.clearOverlay();
+	       	LimeSeg.jcr.removeDisplayedCell(c);
+	       	//puedes probar a borrar los dots a ver
+		}
+		
+		LimeSeg.jcr.glWindow.destroy();
+	}
 	
 	
 	public void ReadPly(String directory) {
@@ -1146,5 +1396,49 @@ public class evolutionary_algorithm {
 		}
 		
 	}
+	
+	public Double getMedianStd(ArrayList<Double> stds) {
+		Double median=null;
+		Collections.sort(stds);
+		Integer posMedianValues=(int) Math.round(stds.size()/2);
+		median=(stds.get(posMedianValues)+stds.get(posMedianValues+1))/2;
+		
+		return median;
+		
+	}
+	
+    public Double distanceOfMedian(Double std, Double stdMedian) {
+    	Double distance=null;
+    	
+    	
+    	distance=Math.pow((stdMedian-std),2);
+    	Double normalizedDistance=math.sqrt(distance)/stdMedian;
+    	
+    	return normalizedDistance;
+    }
+    
+    
+    public Double calcPercentiles(ArrayList<Double> list,int percentile) {
+        int size = list.size();
+
+        Double sum = 0.0d;
+        for (int i = 0; i < size; i++) {
+            sum += list.get(i);
+        }
+        Double sumPercentile=sum*(percentile/100);
+        Double sumList=0.0d;
+        
+        int j=0;
+
+        while(sumPercentile<sumList) {
+        	
+        	sumList=sumList+list.get(j);
+        	j++;
+        
+        }
+        
+        return list.get(j);
+        
+    }
 	
 }
