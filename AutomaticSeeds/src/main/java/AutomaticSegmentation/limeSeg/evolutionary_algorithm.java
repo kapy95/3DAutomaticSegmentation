@@ -52,6 +52,7 @@ import eu.kiaru.limeseg.LimeSeg;
 import eu.kiaru.limeseg.struct.Cell;
 import eu.kiaru.limeseg.struct.CellT;
 import eu.kiaru.limeseg.struct.DotN;
+import eu.kiaru.limeseg.struct.Vector3D;
 import imageware.ByteBuffer;
 
 public class evolutionary_algorithm {
@@ -92,11 +93,15 @@ public class evolutionary_algorithm {
         writer1.append(',');
         writer1.append("StdVertex");
         writer1.append(',');
+        writer1.append("meanVertex");
+        writer1.append(',');
         writer1.append("AverageVolume");
         writer1.append(',');
         writer1.append("StdVolume");
         writer1.append(',');
         writer1.append("StdFaces");
+        writer1.append(',');
+        writer1.append("AverageCentroid");
         writer1.append(',');
         writer1.append("Score");
         writer1.append(',');
@@ -121,7 +126,7 @@ public class evolutionary_algorithm {
 		for(i=1;i<iters;i++){//i=200
 			
 			this.NewPopulationGenerator(newPopulation, i);
-			this.FitnessCalculation2();
+			this.FitnessCalculation();
 			//System.gc();	
 			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
 			//System.gc();	
@@ -326,8 +331,9 @@ public class evolutionary_algorithm {
 		ArrayList<Double> globalMeanStdObjects= new ArrayList<Double>();
 		ArrayList<Double> globalMeanStdFaces= new ArrayList<Double>();
 		ArrayList<Double>globalAverageVolumes=new ArrayList<Double>();
-
+		ArrayList<Double>globalMeanVertex=new ArrayList<Double>();
 		ArrayList<Double>globalAverageStdVolumes=new ArrayList<Double>();
+		ArrayList<Double>globalAverageCentroids=new ArrayList<Double>();
 		
 		Double mean;
        	Integer j=0;
@@ -411,30 +417,37 @@ public class evolutionary_algorithm {
 		       	}
 		       	
 		       	Double stdVolume=calculaSTD2( getCellVolumes(res.getDir().toString()) );
+		       	res.setMeanVertex(mean);
 		       	res.setStdVertex(std);
 		       	res.setStdVolume(stdVolume);
 		       	
 		       	mean=(double) (listOfElements.stream().mapToInt(Integer::intValue).sum()/listOfElements.size());
 		       	Double averageVolume=null;
+		       	Double averageCentroid=null;
 		       	
 		       	if(mean>0) {
 		       		averageVolume=getCellAverageVolumes(res.getDir().toString());
-		       		globalAverageVolumes.add(averageVolume);
+		       		averageCentroid=getCellAverageCentroids(res.getDir().toString());
+
 		       	}else {
 		       		averageVolume=0.0;
-		       		globalAverageVolumes.add(0.0);
-		       		
+		       		averageCentroid=0.0;
 		       	}
 
 		       	//globalMeanCellObjects.add(mean);
 		       	Double stdFaces=calculaSTD(listOfFaces);
 		       	res.setStdFaces(stdFaces);
-		       	globalMeanStdFaces.add(stdFaces);
-		       	
 		       	res.setAverageVolume(averageVolume);
+		       	res.setNotNullCells(cells);
+		       	res.setAverageCentroid(averageCentroid);
+		       	
+	       		globalAverageVolumes.add(averageVolume);
+		       	globalMeanStdFaces.add(stdFaces);
+		       	globalMeanVertex.add(mean);
 		       	globalMeanStdObjects.add(std);
 		       	globalAverageStdVolumes.add(stdVolume);
-		       	res.setNotNullCells(cells);
+		       	globalAverageCentroids.add(averageCentroid);
+
        	}
        	
        
@@ -455,9 +468,11 @@ public class evolutionary_algorithm {
        	Double totalStdVolume= globalAverageStdVolumes.stream().mapToDouble(Double::doubleValue).sum();
        	Double totalStdElementAverage=globalMeanStdObjects.stream().mapToDouble(Double::doubleValue).sum();
        	Double totalStdFaces=globalMeanStdFaces.stream().mapToDouble(Double::doubleValue).sum();
+       	Double totalMeanVertex=globalMeanVertex.stream().mapToDouble(Double::doubleValue).sum();
        	
        	Double stdMedianVertexNormalized=getMedianStd(globalMeanStdObjects)/totalStdElementAverage;
-       	
+    	int percentile=90;
+       	Double percentileValue=calcPercentiles(globalAverageStdVolumes,percentile);
        	/*Collections.sort(globalMeanStdFaces);
        	Double minStdFaces=	globalMeanStdFaces.get(0);
        	Double maxStdFaces=	globalMeanStdFaces.get(globalMeanStdObjects.size()-1);*/
@@ -475,7 +490,7 @@ public class evolutionary_algorithm {
        		 if(res.getStdVertex()==0) {
        			//individuals.remove(i);
            		elementsToBeDeleted.add(res);
-       		 }else if(res.getAverageVolume()<0) {
+       		 }else if(res.getAverageVolume()<0 || percentileValue<res.getStdVolume()) {
            		elementsToBeDeleted.add(res);
            	
        		 }else{
@@ -495,6 +510,7 @@ public class evolutionary_algorithm {
        			Double normalizedStdVolume=res.getStdVolume()/totalStdVolume;
        			Double normalizedStdFaces=res.getStdFaces()/totalStdFaces;
        			Double distanceOfMedian = distanceOfMedian(normalizedStdVertex,stdMedianVertexNormalized);
+       			Double normalizedMeanVertex=res.getMeanVertex()/totalMeanVertex;
        			score=normalizedVolume*100;
        			//score= 
            		//res.setScore(score);
@@ -970,6 +986,8 @@ public class evolutionary_algorithm {
              writer.append(',');
              writer.append("StdVertex");
              writer.append(',');
+             writer.append("meanVertex");
+             writer.append(',');
              writer.append("AverageVolume");
              writer.append(',');
              writer.append("VolumeStd");
@@ -979,6 +997,8 @@ public class evolutionary_algorithm {
              writer.append("NotNullCells");
              writer.append(',');
              writer.append("MedianDistance");
+             writer.append(',');
+             writer.append("AverageCentroid");
              writer.append(',');
              writer.append("Score");
              writer.append(',');
@@ -1003,6 +1023,8 @@ public class evolutionary_algorithm {
                   writer.append(',');
                   writer.append(String.valueOf(ind.getStdVertex()));
                   writer.append(',');
+                  writer.append(String.valueOf(ind.getMeanVertex()));
+                  writer.append(',');
                   writer.append(String.valueOf(ind.getAverageVolume()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getStdVolume()));
@@ -1012,6 +1034,8 @@ public class evolutionary_algorithm {
                   writer.append(String.valueOf(ind.getNotNullCells()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getDistance()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getAverageCentroid()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getScore()));
                   writer.append(',');
@@ -1051,11 +1075,15 @@ public class evolutionary_algorithm {
                   writer.append(',');
                   writer.append(String.valueOf(ind.getStdVertex()));
                   writer.append(',');
+                  writer.append(String.valueOf(ind.getMeanVertex()));
+                  writer.append(',');
                   writer.append(String.valueOf(ind.getAverageVolume()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getStdVolume()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getStdFaces()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.getAverageCentroid()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getScore()));
                   writer.append(',');
@@ -1306,6 +1334,34 @@ public class evolutionary_algorithm {
 		return average;
 	}
 	
+	
+	public Double getCellAverageCentroids(String directory){
+		
+		LimeSeg.loadStateFromXmlPly(directory);
+		ArrayList<Cell> cells=LimeSeg.allCells;
+		ArrayList<Double> cellCentroids= new ArrayList<Double>();
+		
+		for (Cell c:cells) {
+			LimeSeg.currentCell=c;
+			CellT ct = c.getCellTAt(1);
+			Vector3D centroid=ct.center;
+			double averageCenter=Math.sqrt(Math.pow(centroid.x,2)+Math.pow(centroid.y,2)+Math.pow(centroid.z,2));
+			ArrayList<Double> distancesCentroid=new ArrayList<Double>();
+			
+			for(DotN point: ct.dots) {
+				double averageCenterCell=Math.sqrt(Math.pow(point.pos.x,2)+Math.pow(point.pos.y,2)+Math.pow(point.pos.z,2));
+				distancesCentroid.add(Math.sqrt(Math.pow((averageCenter-averageCenterCell),2)));
+			}
+			
+			double AveragePointsDistanceOfCentroid=distancesCentroid.stream().mapToDouble(Double::doubleValue).sum()/distancesCentroid.size();
+			cellCentroids.add(AveragePointsDistanceOfCentroid);
+		}
+
+		Double average=cellCentroids.stream().mapToDouble(Double::doubleValue).sum()/cellCentroids.size();
+		
+		return average;
+	}
+	
 	public ArrayList<Double> getCellVolumes(String directory){
 		
 
@@ -1419,9 +1475,10 @@ public class evolutionary_algorithm {
     
     
     public Double calcPercentiles(ArrayList<Double> list,int percentile) {
-        int size = list.size();
-
-        Double sum = (double) 0;
+        
+    	int size = list.size();
+		Collections.sort(list);
+        /*Double sum = (double) 0;
         for (int i = 0; i < size; i++) {
             sum += list.get(i);
         }
@@ -1438,8 +1495,17 @@ public class evolutionary_algorithm {
         
         }
         
-        return list.get(j);
+        return list.get(j);*/
+    	
+        Double percentage=(double) percentile/100;
+        Double pos= percentage*(size-1);
+        int posUp=(int) Math.ceil(pos);
+       
+        int posDown=(int) Math.floor(pos);
         
+        Double percentileValue=(list.get(posDown)+list.get(posUp))/2;
+        
+        return percentileValue;
     }
 	
 }

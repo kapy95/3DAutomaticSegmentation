@@ -7,8 +7,10 @@ public class Individuo {
 	private float d0;//d_0: 1 and >20 pixels.
 	private float range_d0;//from 0.5 to >10
 	private File dir;
+	private Double meanVertex;
 	private Double stdVertex; //standard deviation of the objects of the cells 
 	private Double averageVolume;
+	private Double averageCentroid;
 	public Double score;
 	public long time;
 	public Integer notNullCells;
@@ -166,6 +168,22 @@ public class Individuo {
 
 	public void setDistance(Double distance) {
 		this.distance = distance;
+	}
+
+	public Double getMeanVertex() {
+		return meanVertex;
+	}
+
+	public void setMeanVertex(Double meanVertex) {
+		this.meanVertex = meanVertex;
+	}
+
+	public Double getAverageCentroid() {
+		return averageCentroid;
+	}
+
+	public void setAverageCentroid(Double averageCentroid) {
+		this.averageCentroid = averageCentroid;
 	}
 	
 	

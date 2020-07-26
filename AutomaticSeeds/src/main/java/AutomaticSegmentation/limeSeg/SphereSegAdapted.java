@@ -110,7 +110,6 @@ public class SphereSegAdapted extends Thread implements Command {
         }
         */
         lms.initialize();
-        clearOptimizer=true;
 		LimeSeg.saveOptState();
         if (clearOptimizer) {LimeSeg.clearOptimizer();}
         if ((!clearOptimizer)) {
@@ -173,7 +172,7 @@ public class SphereSegAdapted extends Thread implements Command {
 				avgY+=y0;
 				avgZ+=z0;
 				NCells++;
-				LimeSeg.update3DDisplay();//cambio aqui
+				//LimeSeg.update3DDisplay();//cambio aqui
 		    	if (!sameCell) {
 		    		LimeSeg.newCell();
 		    	}
@@ -217,7 +216,7 @@ public class SphereSegAdapted extends Thread implements Command {
         LimeSeg.opt.setOptParam("normalForce",0);        
        	//LimeSeg.opt.setCUDAContext();
        	try{
-       		LimeSeg.runOptimisation(200);// el comando runOptimisation determina los pasos que se dan hasta que se pare la segmentacion, antes lo pusiste a 100 y salian cosas raras
+       		LimeSeg.runOptimisation(500);// el comando runOptimisation determina los pasos que se dan hasta que se pare la segmentacion, antes lo pusiste a 100 y salian cosas raras
        	}catch(NullPointerException n) {
        		LimeSeg.requestStopOptimisation=true;
        		LimeSeg.stopOptimisation();

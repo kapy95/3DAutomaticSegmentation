@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
@@ -163,13 +164,14 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		ev.FitnessCalculation();
 		*/
 		ArrayList<Double> prueba=new ArrayList<Double>();
-		prueba.add(3.3d);
-		prueba.add(5.1d);
-		prueba.add(7.9d);
-		prueba.add(1.6d);
-		prueba.add(2.3d);
-		prueba.add(0.5d);
-		Double value=ev.calcPercentiles(prueba,75);
+		prueba.add(5.0);
+		prueba.add(7.0);
+		prueba.add(8.0);
+		prueba.add(4.0);
+		prueba.add(9.0);
+		prueba.add(5.0);
+		Collections.sort(prueba);
+		Double value=ev.calcPercentiles(prueba,50);
 		ev.main(100,50);
 		
 		/*
