@@ -490,7 +490,7 @@ public class evolutionary_algorithm {
        		 if(res.getStdVertex()==0) {
        			//individuals.remove(i);
            		elementsToBeDeleted.add(res);
-       		 }else if(res.getAverageVolume()<0 || percentileValue<res.getStdVolume()) {
+       		 }else if(res.getAverageVolume()<0 || percentileValue<res.getStdVertex()) {
            		elementsToBeDeleted.add(res);
            	
        		 }else{
