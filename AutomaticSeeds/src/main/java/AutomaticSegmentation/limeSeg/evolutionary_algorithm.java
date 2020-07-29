@@ -472,7 +472,7 @@ public class evolutionary_algorithm {
        	
        	Double stdMedianVertexNormalized=getMedianStd(globalMeanStdObjects)/totalStdElementAverage;
     	int percentile=90;
-       	Double percentileValue=calcPercentiles(globalAverageStdVolumes,percentile);
+       	Double percentileValue=calcPercentiles(globalMeanStdObjects,percentile);
        	/*Collections.sort(globalMeanStdFaces);
        	Double minStdFaces=	globalMeanStdFaces.get(0);
        	Double maxStdFaces=	globalMeanStdFaces.get(globalMeanStdObjects.size()-1);*/
