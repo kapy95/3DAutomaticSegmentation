@@ -101,7 +101,7 @@ public class evolutionary_algorithm {
         writer1.append(',');
         writer1.append("StdFaces");
         writer1.append(',');
-        writer1.append("AverageCentroid");
+        writer1.append("NotNullCells");
         writer1.append(',');
         writer1.append("Score");
         writer1.append(',');
@@ -281,7 +281,7 @@ public class evolutionary_algorithm {
 					ind.getDir().mkdir();//it creates the directory for that individual
 
 					boolean corte=false;
-					while (seg.isAlive() && ((endTime-startTime) /1000)<12) {
+					while (seg.isAlive() && ((endTime-startTime) /1000)<12) {//12
 						
 						endTime= System.currentTimeMillis();
 						System.out.println((endTime-startTime) /1000);
@@ -295,7 +295,7 @@ public class evolutionary_algorithm {
 							}
 					}
 					
-					seg.interrupt();
+					//seg.interrupt();
 					System.out.println("Ha salido del while");
 					
 					//Evolutionary Algorithm is going to wait for sphere seg adapted to finish
@@ -747,7 +747,7 @@ public class evolutionary_algorithm {
 
 			File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter));
 			//dirPob.mkdir();
-			float maximumTime=10.0f+(iter-1)*0.8f;
+			float maximumTime=12.0f+(iter-1)*0.8f;//10.0f
 			this.deletePopulation();
 			this.poblacion=new ArrayList<Individuo>();
 			this.poblacion.add(newPopulation.get(0));
@@ -998,7 +998,7 @@ public class evolutionary_algorithm {
              writer.append(',');
              writer.append("MedianDistance");
              writer.append(',');
-             writer.append("AverageCentroid");
+             writer.append("NotNullCells");
              writer.append(',');
              writer.append("Score");
              writer.append(',');
@@ -1035,7 +1035,7 @@ public class evolutionary_algorithm {
                   writer.append(',');
                   writer.append(String.valueOf(ind.getDistance()));
                   writer.append(',');
-                  writer.append(String.valueOf(ind.getAverageCentroid()));
+                  writer.append(String.valueOf(ind.getNotNullCells()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getScore()));
                   writer.append(',');
@@ -1083,7 +1083,7 @@ public class evolutionary_algorithm {
                   writer.append(',');
                   writer.append(String.valueOf(ind.getStdFaces()));
                   writer.append(',');
-                  writer.append(String.valueOf(ind.getAverageCentroid()));
+                  writer.append(String.valueOf(ind.getNotNullCells()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getScore()));
                   writer.append(',');
