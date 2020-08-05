@@ -172,7 +172,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		prueba.add(5.0);
 		Collections.sort(prueba);
 		Double value=ev.calcPercentiles(prueba,50);
-		ev.main(100,50);
+		ev.main(100,100);
 		
 		/*
 		File dirStart = new File("E:\\TFM\\Resultados\\resultado generacion8\\RecambioGeneracional8.csv");

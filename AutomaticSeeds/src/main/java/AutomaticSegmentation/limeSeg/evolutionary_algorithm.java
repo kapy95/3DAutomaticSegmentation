@@ -113,7 +113,7 @@ public class evolutionary_algorithm {
         writer1.append('\n');
         
 		
-		this.InitialPopulationGenerator(numIndividuals,0);
+		this.InitialPopulationGenerator(200,0);
 	
 		this.FitnessCalculation();
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion0\\resultadoPob0.csv");
@@ -471,8 +471,8 @@ public class evolutionary_algorithm {
        	Double totalMeanVertex=globalMeanVertex.stream().mapToDouble(Double::doubleValue).sum();
        	
        	Double stdMedianVertexNormalized=getMedianStd(globalMeanStdObjects)/totalStdElementAverage;
-    	int percentile=90;
-       	Double percentileValue=calcPercentiles(globalMeanStdObjects,percentile);
+    	int percentile=95;
+       	Double percentileValue=calcPercentiles(globalAverageStdVolumes,percentile);
        	/*Collections.sort(globalMeanStdFaces);
        	Double minStdFaces=	globalMeanStdFaces.get(0);
        	Double maxStdFaces=	globalMeanStdFaces.get(globalMeanStdObjects.size()-1);*/
