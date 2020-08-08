@@ -245,14 +245,22 @@ public class SphereSegAdapted extends Thread implements Command {
       
        
        	if (constructMesh) {
+       		try {
+       			
        	   	for (CellT ct : currentlyOptimizedCellTs) {
        	   		ct.constructMesh();
        	   	}
+       	   	
        	   	for (CellT ct : currentlyOptimizedCellTs) {
        	   		LimeSeg.setCell3DDisplayMode(1);
             	LimeSeg.currentCell=ct.c;
             	
    	    	}
+       	   	
+       		}catch(NullPointerException n) {
+            	LimeSeg.requestStopOptimisation=true;
+           		LimeSeg.stopOptimisation();
+       		}
        	}
        	LimeSeg.notifyCellExplorerCellsModif=true;
        	if (showOverlayOuput) {

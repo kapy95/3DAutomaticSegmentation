@@ -62,6 +62,7 @@ public class evolutionary_algorithm {
 	//private limeseg 
 	private String bestDir; 
 	private String secondbestDir; 
+	private int gen;
 	/**
 	 * 
 	 */
@@ -113,7 +114,7 @@ public class evolutionary_algorithm {
         writer1.append('\n');
         
 		
-		this.InitialPopulationGenerator(200,0);
+		this.InitialPopulationGenerator(numIndividuals,0);
 	
 		this.FitnessCalculation();
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion0\\resultadoPob0.csv");
@@ -124,7 +125,7 @@ public class evolutionary_algorithm {
 		//getObjectPendingFinalizationCount 
 	
 		for(i=1;i<iters;i++){//i=200
-			
+			this.setGen(i);
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
 			//System.gc();	
@@ -386,7 +387,10 @@ public class evolutionary_algorithm {
 						
 
 						listOfFaces.add(Integer.parseInt(face));
-						cells++;
+						
+						if(Integer.parseInt(face)==0) {
+							cells++;
+						}
 						
 						}else {
 							
@@ -470,9 +474,17 @@ public class evolutionary_algorithm {
        	Double totalStdFaces=globalMeanStdFaces.stream().mapToDouble(Double::doubleValue).sum();
        	Double totalMeanVertex=globalMeanVertex.stream().mapToDouble(Double::doubleValue).sum();
        	
-       	Double stdMedianVertexNormalized=getMedianStd(globalMeanStdObjects)/totalStdElementAverage;
-    	int percentile=95;
+       	//Double stdMedianVertexNormalized=getMedianStd(globalMeanStdObjects)/totalStdElementAverage;
+       	Double stdMedianStdVolume=getMedianStd(globalAverageStdVolumes)/totalStdVolume;
+       	/*		
+    	int percentile=75;
        	Double percentileValue=calcPercentiles(globalAverageStdVolumes,percentile);
+       	
+       	Double percentileValue2=calcPercentiles(globalAverageStdVolumes,25);
+       	
+       	Double percentileDif=percentileValue-percentileValue2;
+       	*/
+       	
        	/*Collections.sort(globalMeanStdFaces);
        	Double minStdFaces=	globalMeanStdFaces.get(0);
        	Double maxStdFaces=	globalMeanStdFaces.get(globalMeanStdObjects.size()-1);*/
@@ -482,6 +494,9 @@ public class evolutionary_algorithm {
        	//Double maxMean=globalMeanCellObjects.get(globalMeanCellObjects.size()-1);
        	ArrayList<Individuo> elementsToBeDeleted= new ArrayList<Individuo>();
        	
+       	Double globalAverageStdVolume=totalStdVolume/globalAverageStdVolumes.size();
+       	
+       	
        	int i=0;
        	for(i=0;i<individuals.size();i++) {
        		Individuo res=individuals.get(i);
@@ -490,10 +505,18 @@ public class evolutionary_algorithm {
        		 if(res.getStdVertex()==0) {
        			//individuals.remove(i);
            		elementsToBeDeleted.add(res);
-       		 }else if(res.getAverageVolume()<0 || percentileValue<res.getStdVertex()) {
+           		
+       		 }else if(res.getAverageVolume()<0) {
            		elementsToBeDeleted.add(res);
            	
-       		 }else{
+       		 /*}else if(res.getStdVolume()>globalAverageStdVolume){
+       				
+       			 elementsToBeDeleted.add(res);
+       			 res.setStdCondition(true);
+       			 Double normalizedVolume=globalAverageVolumes.get(i)/totalVolumeAverage;
+       			 res.setScore(normalizedVolume);
+       			 
+       		 */}else{
        			/*
        			
        			System.out.println((globalStd/res.getStdVertex())*(res.getMeanVertex()/globalMean));
@@ -505,19 +528,21 @@ public class evolutionary_algorithm {
        			//Double normalizedStdFaces=1-(res.getStdFaces()-minStdFaces)/(maxStdFaces-minStdFaces);
        			Double normalizedVolume=(globalAverageVolumes.get(i)-minAverageVolume)/(maxAverageVolume-minAverageVolume);
        			*/
-       			Double normalizedStdVertex=globalMeanStdObjects.get(i)/totalStdElementAverage;
+       			/*Double normalizedStdVertex=globalMeanStdObjects.get(i)/totalStdElementAverage;
+       			*/
        			Double normalizedVolume=globalAverageVolumes.get(i)/totalVolumeAverage;
        			Double normalizedStdVolume=res.getStdVolume()/totalStdVolume;
-       			Double normalizedStdFaces=res.getStdFaces()/totalStdFaces;
-       			Double distanceOfMedian = distanceOfMedian(normalizedStdVertex,stdMedianVertexNormalized);
+       			//Double normalizedStdFaces=res.getStdFaces()/totalStdFaces;*/
+       			Double distanceOfMedian = distanceOfMedian(normalizedStdVolume,stdMedianStdVolume);
        			Double normalizedMeanVertex=res.getMeanVertex()/totalMeanVertex;
-       			score=normalizedVolume*100;
+       			score=normalizedVolume*100+(res.getNotNullCells()/83)*100;
        			//score= 
            		//res.setScore(score);
        			 
        			//score=( ((1-normalizedStdVertex)*50) +(normalizedVolume*100)+ ((1-normalizedStdFaces)*50) );
        			res.setDistance(distanceOfMedian);
            		res.setScore(score);
+           		res.setStdCondition(false);
            		this.poblacion.set(i,res);
            		
            		
@@ -526,7 +551,10 @@ public class evolutionary_algorithm {
        	
        	}
        	
-       	if(elementsToBeDeleted.isEmpty()==false) {
+       	this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(this.gen)+"\\resultadoFitnessPob"+String.valueOf(this.gen)+".csv");
+       	
+       	
+       	if(elementsToBeDeleted.isEmpty()==false) {//if it is not empty, then the elements to be deleted are erased.
        		
 	       	for(Individuo pos: elementsToBeDeleted) {
 	       		this.poblacion.remove(pos);
@@ -595,11 +623,12 @@ public class evolutionary_algorithm {
 						
 
 						listOfFaces.add(Integer.parseInt(face));
-						cells++;
+						
 						
 						}else {
 							
 							 numberOfVertex="0";
+							 cells++;
 						}
 						
 						
@@ -1000,6 +1029,8 @@ public class evolutionary_algorithm {
              writer.append(',');
              writer.append("NotNullCells");
              writer.append(',');
+             writer.append("StdCondition");
+             writer.append(',');
              writer.append("Score");
              writer.append(',');
              writer.append("SelectionMethod");
@@ -1036,6 +1067,8 @@ public class evolutionary_algorithm {
                   writer.append(String.valueOf(ind.getDistance()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getNotNullCells()));
+                  writer.append(',');
+                  writer.append(String.valueOf(ind.isStdCondition()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getScore()));
                   writer.append(',');
@@ -1507,5 +1540,15 @@ public class evolutionary_algorithm {
         
         return percentileValue;
     }
+
+
+	public int getGen() {
+		return gen;
+	}
+
+
+	public void setGen(int gen) {
+		this.gen = gen;
+	}
 	
 }

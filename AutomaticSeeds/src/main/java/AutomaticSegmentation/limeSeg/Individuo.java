@@ -20,6 +20,7 @@ public class Individuo {
 	private Double stdFaces;
 	private Double stdVolume;
 	private Double distance;
+	private boolean stdCondition;
 	
 	/**
 	 * 
@@ -184,6 +185,14 @@ public class Individuo {
 
 	public void setAverageCentroid(Double averageCentroid) {
 		this.averageCentroid = averageCentroid;
+	}
+
+	public boolean isStdCondition() {
+		return stdCondition;
+	}
+
+	public void setStdCondition(boolean stdCondition) {
+		this.stdCondition = stdCondition;
 	}
 	
 	
