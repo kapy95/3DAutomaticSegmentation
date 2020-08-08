@@ -386,7 +386,11 @@ public class evolutionary_algorithm {
 						
 
 						listOfFaces.add(Integer.parseInt(face));
-						cells++;
+						
+						if(Integer.parseInt(face)!=0) {
+							cells++;
+						}
+						
 						
 						}else {
 							
