@@ -92,6 +92,8 @@ public class SphereSegAdapted extends Thread implements Command {
 	
 	private LimeSeg lms;
 	
+	private int numberOfCells;
+	
 	
 	@Override
 	public void run() {
@@ -151,6 +153,7 @@ public class SphereSegAdapted extends Thread implements Command {
 		File[] listOfFiles = dir.listFiles();
         
 		int nRois=listOfFiles.length;
+		this.setNumberOfCells(nRois);
 		
 		for(File file:listOfFiles) {
 			
@@ -553,6 +556,14 @@ public class SphereSegAdapted extends Thread implements Command {
 	}
 	public void deleteLimeSeg() {
 		this.lms=null;
+	}
+
+	public int getNumberOfCells() {
+		return numberOfCells;
+	}
+
+	public void setNumberOfCells(int numberOfCells) {
+		this.numberOfCells = numberOfCells;
 	}
 
 	

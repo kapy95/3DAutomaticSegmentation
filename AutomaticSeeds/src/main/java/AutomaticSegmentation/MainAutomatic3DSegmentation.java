@@ -99,6 +99,8 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		*/
 		//establezco el directorio de trabajo con las imágenes y roi
 		//File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
+		//String userDirectory = System.getProperty("user.dir");
+		//File dir = new File(userDirectory);
 		File dir = new File("E:\\TFM");
 		/*
 		int selectedMethod=1 + (int)(Math.random() * ((3 - 1) + 1));
@@ -172,7 +174,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		prueba.add(5.0);
 		Collections.sort(prueba);
 		Double value=ev.calcPercentiles(prueba,50);
-		ev.main(100,100);
+		ev.main(100,50);
 		
 		/*
 		File dirStart = new File("E:\\TFM\\Resultados\\resultado generacion8\\RecambioGeneracional8.csv");

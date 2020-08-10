@@ -63,6 +63,7 @@ public class evolutionary_algorithm {
 	private String bestDir; 
 	private String secondbestDir; 
 	private int gen;
+	private int numberOfCells;
 	/**
 	 * 
 	 */
@@ -113,8 +114,11 @@ public class evolutionary_algorithm {
         writer1.append("Time");
         writer1.append('\n');
         
+		File dir = new File(this.dir.toString()+"\\datos\\RoiSet");
+		File[] listOfFiles = dir.listFiles();
+		this.setNumberOfCells(listOfFiles.length);
 		
-		this.InitialPopulationGenerator(numIndividuals,0);
+		this.InitialPopulationGenerator(200,0);
 	
 		this.FitnessCalculation();
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion0\\resultadoPob0.csv");
@@ -229,7 +233,7 @@ public class evolutionary_algorithm {
 		//para generar valores aleatorias sería así: int randomInt = (int)(10.0 * Math.random());
 		//con math.random generamos valores del 0.0 al 1.0 y eso habría que multiplicarlo por el máximo de los valores de limeseg
 			//valores mínimos:
-			float ZS=4.06f;// variable con el valor del z_scale
+			float ZS=3.51f;//float ZS=4.06f;// variable con el valor del z_scale
 			float min_fp=-0.03f; // variable con el valor de la presion [-0.03..0.03].
 			float min_d0=1;//d_0: 1 and >20 pixels.
 			float min_range_d0=0.5f;// from 0.5 to >10
@@ -273,6 +277,7 @@ public class evolutionary_algorithm {
 					seg.setZ_scale(ZS);
 					seg.setRange_in_d0_units(ind.getRange_d0());
 					seg.start();
+					
 					
 
 					long startTime = System.currentTimeMillis();
@@ -335,6 +340,7 @@ public class evolutionary_algorithm {
 		ArrayList<Double>globalMeanVertex=new ArrayList<Double>();
 		ArrayList<Double>globalAverageStdVolumes=new ArrayList<Double>();
 		ArrayList<Double>globalAverageCentroids=new ArrayList<Double>();
+		ArrayList<Integer> globalNumberOfCellsNotNull=new ArrayList<Integer>();
 		
 		Double mean;
        	Integer j=0;
@@ -388,7 +394,7 @@ public class evolutionary_algorithm {
 
 						listOfFaces.add(Integer.parseInt(face));
 						
-						if(Integer.parseInt(face)==0) {
+						if(Integer.parseInt(numberOfVertex)!=0) {
 							cells++;
 						}
 						
@@ -443,6 +449,7 @@ public class evolutionary_algorithm {
 		       	res.setStdFaces(stdFaces);
 		       	res.setAverageVolume(averageVolume);
 		       	res.setNotNullCells(cells);
+		       	globalNumberOfCellsNotNull.add(cells);
 		       	res.setAverageCentroid(averageCentroid);
 		       	
 	       		globalAverageVolumes.add(averageVolume);
@@ -474,6 +481,7 @@ public class evolutionary_algorithm {
        	Double totalStdFaces=globalMeanStdFaces.stream().mapToDouble(Double::doubleValue).sum();
        	Double totalMeanVertex=globalMeanVertex.stream().mapToDouble(Double::doubleValue).sum();
        	
+       	int minimumOfCells=(int) Math.round((globalNumberOfCellsNotNull.stream().mapToInt(Integer::intValue).sum()/globalNumberOfCellsNotNull.size())/2);
        	//Double stdMedianVertexNormalized=getMedianStd(globalMeanStdObjects)/totalStdElementAverage;
        	Double stdMedianStdVolume=getMedianStd(globalAverageStdVolumes)/totalStdVolume;
        	/*		
@@ -509,14 +517,14 @@ public class evolutionary_algorithm {
        		 }else if(res.getAverageVolume()<0) {
            		elementsToBeDeleted.add(res);
            	
-       		 /*}else if(res.getStdVolume()>globalAverageStdVolume){
+       		 }else if(res.getNotNullCells()<minimumOfCells){
        				
        			 elementsToBeDeleted.add(res);
        			 res.setStdCondition(true);
        			 Double normalizedVolume=globalAverageVolumes.get(i)/totalVolumeAverage;
        			 res.setScore(normalizedVolume);
        			 
-       		 */}else{
+       		 }else{
        			/*
        			
        			System.out.println((globalStd/res.getStdVertex())*(res.getMeanVertex()/globalMean));
@@ -535,7 +543,7 @@ public class evolutionary_algorithm {
        			//Double normalizedStdFaces=res.getStdFaces()/totalStdFaces;*/
        			Double distanceOfMedian = distanceOfMedian(normalizedStdVolume,stdMedianStdVolume);
        			Double normalizedMeanVertex=res.getMeanVertex()/totalMeanVertex;
-       			score=normalizedVolume*100+(res.getNotNullCells()/83)*100;
+       			score=normalizedVolume*100;//+(res.getNotNullCells()/83);
        			//score= 
            		//res.setScore(score);
        			 
@@ -783,7 +791,7 @@ public class evolutionary_algorithm {
 			this.poblacion.add(newPopulation.get(1));
 			
 			//only Zscale has the same value for the new generations:
-			float ZS=4.06f;// variable con el valor del z_scale
+			float ZS=3.51f; //float ZS=4.06f;// variable con el valor del z_scale
 			int i=0;
 			
 			Date date = new Date();   // given date
@@ -1549,6 +1557,16 @@ public class evolutionary_algorithm {
 
 	public void setGen(int gen) {
 		this.gen = gen;
+	}
+
+
+	public int getNumberOfCells() {
+		return numberOfCells;
+	}
+
+
+	public void setNumberOfCells(int numberOfCells) {
+		this.numberOfCells = numberOfCells;
 	}
 	
 }
