@@ -251,84 +251,121 @@ public class evolutionary_algorithm {
 			dirPob.mkdir();
 			Random rand=new Random();
 			
-			for(i=0;i<=(nPoblacion-1);i++) {
+				try {
+					FileWriter writer = new FileWriter(dirPob.toString()+"\\Experimentos.csv");
 				
-				SphereSegAdapted seg=new SphereSegAdapted();
-				seg.set_path(dir.toString());
-					
-					//System.out.println(resultado"+String.valueOf(i)+String.valueOf(iter));
-					
-					Individuo ind=new Individuo();
-					/*
-					ind.setF_pressure((float)(min_fp+(factor_fp*i)) );
-					ind.setD0((float)(min_d0+(factor_d0*i)));
-					ind.setRange_d0( (float)(min_range_d0+(factor_rangeD0*i)));
-					*/
-					float randomF_pressure=-0.025f + rand.nextFloat() * (0.025f+0.025f);
-					float randomD0=1.0f + rand.nextFloat() * (18.0f-1.0f);
-					float randomRange_D0=1.0f + rand.nextFloat() * (8.5f-0.5f) ;
-			
-					ind.setF_pressure(randomF_pressure);
-					ind.setD0(randomD0);
-					ind.setRange_d0(randomRange_D0);
-					
-					//llamo a la clase que va a llamar limeseg:
-					seg.setD_0(ind.getD0());
-					seg.setF_pressure(ind.getFp());
-					seg.setZ_scale(ZS);
-					seg.setRange_in_d0_units(ind.getRange_d0());
-					seg.start();
-					
-					
-
-					long startTime = System.currentTimeMillis();
-					long endTime=0;
-					
-					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter)));
-					ind.getDir().mkdir();//it creates the directory for that individual
-
-					boolean corte=false;
-					while (seg.isAlive() && ((endTime-startTime) /1000)<12) {//12
+	             writer.append("Directory");
+	             writer.append(',');
+	             writer.append("D_0");
+	             writer.append(',');
+	             writer.append("Range_D0");
+	             writer.append(',');
+	             writer.append("f_pressure");
+	             writer.append(',');
+	             writer.append("CurrentTime");
+	             writer.append('\n');
+	             
+					for(i=0;i<=(nPoblacion-1);i++) {
 						
-						endTime= System.currentTimeMillis();
-						System.out.println((endTime-startTime) /1000);
-						
-			
-						if( ( (endTime-startTime) /1000) >10) { //si el tiempo de ejecucion es mayor que 100 segundos
-							LimeSeg.stopOptimisation();
+						SphereSegAdapted seg=new SphereSegAdapted();
+						seg.set_path(dir.toString());
 							
+							//System.out.println(resultado"+String.valueOf(i)+String.valueOf(iter));
 							
-							//corte=true;
+							Individuo ind=new Individuo();
+							/*
+							ind.setF_pressure((float)(min_fp+(factor_fp*i)) );
+							ind.setD0((float)(min_d0+(factor_d0*i)));
+							ind.setRange_d0( (float)(min_range_d0+(factor_rangeD0*i)));
+							*/
+							float randomF_pressure=-0.025f + rand.nextFloat() * (0.025f+0.025f);
+							float randomD0=1.0f + rand.nextFloat() * (18.0f-1.0f);
+							float randomRange_D0=1.0f + rand.nextFloat() * (8.5f-0.5f) ;
+					
+							ind.setF_pressure(randomF_pressure);
+							ind.setD0(randomD0);
+							ind.setRange_d0(randomRange_D0);
+							
+							//llamo a la clase que va a llamar limeseg:
+							seg.setD_0(ind.getD0());
+							seg.setF_pressure(ind.getFp());
+							seg.setZ_scale(ZS);
+							seg.setRange_in_d0_units(ind.getRange_d0());
+							
+							writer.append("resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter));
+				            writer.append(',');
+				            writer.append(String.valueOf(ind.getD0()));
+				            writer.append(',');
+				            writer.append(String.valueOf(ind.getRange_d0()));
+				            writer.append(',');
+				            writer.append(String.valueOf(ind.getFp()));
+				            writer.append(',');
+				            writer.append(String.valueOf(LocalDateTime.now().getHour())+":"+String.valueOf(LocalDateTime.now().getMinute()));
+				            writer.append('\n');
+				            
+				            writer.flush();
+				            
+							seg.start();
+							
+							long startTime = System.currentTimeMillis();
+							long endTime=0;
+							
+							ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter)));
+							ind.getDir().mkdir();//it creates the directory for that individual
+		
+							boolean corte=false;
+							while (seg.isAlive()) {//12
+								
+								endTime= System.currentTimeMillis();
+								System.out.println((endTime-startTime) /1000);
+								
+					
+								if( ( (endTime-startTime) /1000) >10) { //si el tiempo de ejecucion es mayor que 100 segundos
+									LimeSeg.requestStopOptimisation=true;
+									LimeSeg.stopOptimisation();
+									seg.interrupt();
+									
+									//corte=true;
+									}else if((endTime-startTime) /1000 >20){
+										seg.stop();
+									}
 							}
+							
+							seg.interrupt();
+							System.out.println("Ha salido del while");
+							
+							//Evolutionary Algorithm is going to wait for sphere seg adapted to finish
+							try{
+								seg.join();
+								System.out.println("Espera");
+							}catch(Exception e) {
+								System.out.println("No funciona");
+							}
+							
+		
+						ind.setTime((endTime-startTime) /1000);
+						//ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
+						//ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
+						ind.setIdentifier("resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter));
+		
+				       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
+				       	
+				       	LimeSeg.clear3DDisplay();
+				       	LimeSeg.clearAllCells();
+						seg	= null;
+				       	System.out.println("Ha terminado una iteración del for");
+		
+				       	//seg.interrupt();
+				       	poblacion.add(ind);
+				       	
 					}
-					
-					//seg.interrupt();
-					System.out.println("Ha salido del while");
-					
-					//Evolutionary Algorithm is going to wait for sphere seg adapted to finish
-					try{
-						seg.join();
-						System.out.println("Espera");
-					}catch(Exception e) {
-						System.out.println("No funciona");
-					}
-					
-
-				ind.setTime((endTime-startTime) /1000);
-				//ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
-				//ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
-				ind.setIdentifier("resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter));
-
-		       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
-		       	
-		       	LimeSeg.clear3DDisplay();
-		       	LimeSeg.clearAllCells();
-				seg	= null;
-		       	System.out.println("Ha terminado una iteración del for");
-
-		       	//seg.interrupt();
-		       	poblacion.add(ind);
-			}
+				
+				writer.close();
+				
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 	}
 	
@@ -482,7 +519,7 @@ public class evolutionary_algorithm {
        	Double totalStdFaces=globalMeanStdFaces.stream().mapToDouble(Double::doubleValue).sum();
        	Double totalMeanVertex=globalMeanVertex.stream().mapToDouble(Double::doubleValue).sum();
        	
-       	int minimumOfCells=(int) Math.round((globalNumberOfCellsNotNull.stream().mapToInt(Integer::intValue).sum()/globalNumberOfCellsNotNull.size())/2);
+       	int minimumOfCells=(int) Math.round(globalNumberOfCellsNotNull.stream().mapToInt(Integer::intValue).sum()/globalNumberOfCellsNotNull.size());
        	//Double stdMedianVertexNormalized=getMedianStd(globalMeanStdObjects)/totalStdElementAverage;
        	Double stdMedianStdVolume=getMedianStd(globalAverageStdVolumes)/totalStdVolume;
        	/*		
@@ -518,7 +555,7 @@ public class evolutionary_algorithm {
        		 }else if(res.getAverageVolume()<0) {
            		elementsToBeDeleted.add(res);
            	
-       		 }else if(res.getNotNullCells()<minimumOfCells){
+       		 }else if(res.getNotNullCells()<minimumOfCells) {// || res.getStdVolume()>globalAverageStdVolume){
        				
        			 elementsToBeDeleted.add(res);
        			 res.setStdCondition(true);
@@ -544,7 +581,7 @@ public class evolutionary_algorithm {
        			//Double normalizedStdFaces=res.getStdFaces()/totalStdFaces;*/
        			Double distanceOfMedian = distanceOfMedian(normalizedStdVolume,stdMedianStdVolume);
        			Double normalizedMeanVertex=res.getMeanVertex()/totalMeanVertex;
-       			score=normalizedVolume*100;//+(res.getNotNullCells()/83);
+       			score=normalizedVolume*100*res.getNotNullCells();//+(res.getNotNullCells()/83);
        			//score= 
            		//res.setScore(score);
        			 
