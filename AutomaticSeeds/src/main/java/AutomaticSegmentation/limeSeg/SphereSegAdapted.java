@@ -98,7 +98,7 @@ public class SphereSegAdapted extends Thread implements Command {
 	@Override
 	public void run() {
 		
-
+		//this.setShow3D(false);
 		this.setImp2();
 		this.setLimeSeg();
 		//RoiManager roiManager = RoiManager.getRoiManager();
