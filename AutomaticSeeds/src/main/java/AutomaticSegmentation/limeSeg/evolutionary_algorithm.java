@@ -421,7 +421,8 @@ public class evolutionary_algorithm {
 								vertex=in.next().toString();
 								numberOfVertex=in.next().toString();
 								
-							}else if(in.next().contains("face")){
+							}else if(in.hasNext("face")){
+								String previous=in.next().toString();
 								face=in.next().toString();
 								termina=true;
 							}
@@ -644,7 +645,7 @@ public class evolutionary_algorithm {
 			     
 			       	   try {
 						Scanner in = new Scanner(new FileReader(ruta.toString()));
-						String numberOfVertex="";
+						String numberOfVertex="0";
 						if(ruta.length()!=0) {
 							
 						//el numero de elementos siempre va antes que la primera propiedad, por tanto si la siguiente linea es property no debe entrar ya que tenemos el numero
@@ -657,9 +658,9 @@ public class evolutionary_algorithm {
 						String previo="";
 						String siguiente="";
 						String vertex="vertex";
-						String face="face";
+						String face="0";
 						boolean termina=false;
-						while(termina==false) {
+						while(in.hasNext()!=false && termina==false) {
 							System.out.println(in.next());
 							if(in.hasNext("vertex")){
 								vertex=in.next().toString();
