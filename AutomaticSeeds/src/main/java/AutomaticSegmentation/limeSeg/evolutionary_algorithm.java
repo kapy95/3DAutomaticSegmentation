@@ -64,6 +64,7 @@ public class evolutionary_algorithm {
 	private String secondbestDir; 
 	private int gen;
 	private int numberOfCells;
+	private float zScale;
 	/**
 	 * 
 	 */
@@ -76,8 +77,9 @@ public class evolutionary_algorithm {
 	}
 	
 	
-	public void main(int numIndividuals,int iters) {
+	public void main(int numIndividuals,int iters,float zScale) {
 		
+		this.setzScale(zScale);
 		String initialhour=String.valueOf(LocalDateTime.now().getHour())+"."+String.valueOf(LocalDateTime.now().getMinute());
 		int i=0;
 		
@@ -237,7 +239,7 @@ public class evolutionary_algorithm {
 		//para generar valores aleatorias sería así: int randomInt = (int)(10.0 * Math.random());
 		//con math.random generamos valores del 0.0 al 1.0 y eso habría que multiplicarlo por el máximo de los valores de limeseg
 			//valores mínimos:
-			float ZS=4.06f;//float ZS=4.06f;// variable con el valor del z_scale 3.51f, 5.59-> embryo
+			float ZS=this.getzScale();//float ZS=4.06f;// variable con el valor del z_scale 3.51f, 5.59-> embryo
 			float min_fp=-0.03f; // variable con el valor de la presion [-0.03..0.03].
 			float min_d0=1;//d_0: 1 and >20 pixels.
 			float min_range_d0=0.5f;// from 0.5 to >10
@@ -323,7 +325,7 @@ public class evolutionary_algorithm {
 								System.out.println((endTime-startTime) /1000);
 								
 					
-								if( ( (endTime-startTime) /1000) >12) { //si el tiempo de ejecucion es mayor que 100 segundos
+								if( ( (endTime-startTime) /1000) >15) { //si el tiempo de ejecucion es mayor que 100 segundos
 									LimeSeg.requestStopOptimisation=true;
 									LimeSeg.stopOptimisation();
 									seg.interrupt();
@@ -839,7 +841,7 @@ public class evolutionary_algorithm {
 			this.poblacion.add(newPopulation.get(1));
 			
 			//only Zscale has the same value for the new generations:
-			float ZS=4.06f;// variable con el valor del z_scale
+			float ZS=this.getzScale();// variable con el valor del z_scale
 			int i=0;
 			
 			Date date = new Date();   // given date
@@ -1617,6 +1619,16 @@ public class evolutionary_algorithm {
 
 	public void setNumberOfCells(int numberOfCells) {
 		this.numberOfCells = numberOfCells;
+	}
+
+
+	public float getzScale() {
+		return zScale;
+	}
+
+
+	public void setzScale(float zScale) {
+		this.zScale = zScale;
 	}
 	
 }

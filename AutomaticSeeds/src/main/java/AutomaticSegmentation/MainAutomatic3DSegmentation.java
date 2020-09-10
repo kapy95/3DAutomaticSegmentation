@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,9 +100,48 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		*/
 		//establezco el directorio de trabajo con las imágenes y roi
 		
-		String userDirectory = System.getProperty("user.dir");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("Introduzca el número generaciones: ");
+        
+        int gens=0;
+        
+        try {
+        	gens = Integer.parseInt(br.readLine());
+        	 
+        } catch (IOException e) {
+			// TODO Auto-generated catch block
+        	System.err.println("Formato no válido vuelva a intentarlo");
+		}
+        
+        System.out.print("Introduzca el número de individuos por generación: ");
+        int inds=0;;
+        try {
+            inds = Integer.parseInt(br.readLine());
+        } catch(NumberFormatException | IOException nfe) {
+            System.err.println("Formato no válido vuelva a intentarlo");
+        }
+        
+	    //System.out.println("You entered float "+b)
+        System.out.print("Introduzca el directorio con los datos y la carpeta de resultados: ");
+        String userDirectory ="";
+        try {
+        	userDirectory = br.readLine();
+        } catch(IOException nfe) {
+            System.err.println("Formato no válido vuelva a intentarlo");
+        }
+        
+		//String userDirectory = System.getProperty("user.dir");
 		File dir = new File(userDirectory);
-		//File dir = new File("E:\\TFM");
+		
+		
+        System.out.print("Introduzca el Zscale de las imágenes: ");
+        float zScale=0.0f;
+        try {
+            zScale = Float.parseFloat(br.readLine());
+            
+        } catch(NumberFormatException | IOException nfe) {
+            System.err.println("Formato no válido vuelva a intentarlo");
+        }
 		/*
 		int selectedMethod=1 + (int)(Math.random() * ((3 - 1) + 1));
 		System.out.println(selectedMethod);
@@ -165,16 +205,8 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		ev.getPopulation().add(ind2);
 		ev.FitnessCalculation();
 		*/
-		ArrayList<Double> prueba=new ArrayList<Double>();
-		prueba.add(5.0);
-		prueba.add(7.0);
-		prueba.add(8.0);
-		prueba.add(4.0);
-		prueba.add(9.0);
-		prueba.add(5.0);
-		Collections.sort(prueba);
-		Double value=ev.calcPercentiles(prueba,50);
-		ev.main(100,100);
+
+		ev.main(inds,gens,zScale);
 		
 		/*
 		File dirStart = new File("E:\\TFM\\Resultados\\resultado generacion8\\RecambioGeneracional8.csv");
