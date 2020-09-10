@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
@@ -75,7 +76,8 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 
 		// run the plugin
 		IJ.runPlugIn(clazz.getName(), "");
-		
+	
+
 	}
 
 	/*
@@ -95,10 +97,11 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 			
 		});
 		*/
-		
 		//establezco el directorio de trabajo con las imágenes y roi
-		//File dir = new File("C:\\Users\\Carlo\\Documents\\Máster ISCDG\\TFM");
-		File dir = new File("E:\\TFM");
+		
+		String userDirectory = System.getProperty("user.dir");
+		File dir = new File(userDirectory);
+		//File dir = new File("E:\\TFM");
 		/*
 		int selectedMethod=1 + (int)(Math.random() * ((3 - 1) + 1));
 		System.out.println(selectedMethod);
@@ -142,12 +145,41 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		*/
 		/*
 		Individuo ind = new Individuo();
-		File dir2 = new File("E:\\3a\\Cells\\OutputLimeSeg");
-		ind.setDir(dir2);
+		//File dir1 = new File("E:\\TFM\\Resultados\\resultado generacion50\\mejor individuo gen49");
+		File dir1 = new File("E:\\TFM\\DatosGeneral\\Newdata\\data\\Drosophila embryo\\WT\\04-10-18\\Cells\\OutputLimeSeg");
+		ind.setTime(5);
+		ind.setDir(dir1);
+		
+		
+		Individuo ind2 = new Individuo();
+		File dirGen = new File("E:\\TFM\\Resultados\\resultado generacion50\\resultadoPrevio\\segundo mejor individuo gen49");
+		ind.setTime(5);
+		ind2.setDir(dirGen);
 		*/
 		
 		evolutionary_algorithm ev=new evolutionary_algorithm(dir);
-		ev.main(100,25);
+		/*SphereSegAdapted seg=new SphereSegAdapted();
+		seg.setLimeSeg();*/
+		/*
+		ev.getPopulation().add(ind);
+		ev.getPopulation().add(ind2);
+		ev.FitnessCalculation();
+		*/
+		ArrayList<Double> prueba=new ArrayList<Double>();
+		prueba.add(5.0);
+		prueba.add(7.0);
+		prueba.add(8.0);
+		prueba.add(4.0);
+		prueba.add(9.0);
+		prueba.add(5.0);
+		Collections.sort(prueba);
+		Double value=ev.calcPercentiles(prueba,50);
+		ev.main(100,100);
+		
+		/*
+		File dirStart = new File("E:\\TFM\\Resultados\\resultado generacion8\\RecambioGeneracional8.csv");
+		ev.mainStartAgain(dirStart.toString(),100,9,50);
+		*/
 		
 		/*ev.addIndividual(ind);
 		ev.FitnessCalculation();
@@ -158,8 +190,6 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 
 		//ev.main();
 		
-		
-		System.out.println("Prueba");
 		/*
 		//llamo a la clase que va a llamar limeseg:
 		

@@ -132,7 +132,8 @@
 	</issueManagement>
 
 	<dependencies>
-
+		
+		
 		<!-- ImageJ dependencies -->
 		<dependency>
 			<groupId>net.imagej</groupId>

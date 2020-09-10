@@ -92,11 +92,14 @@ public class SphereSegAdapted extends Thread implements Command {
 	
 	private LimeSeg lms;
 	
+	private int numberOfCells;
+	
 	
 	@Override
 	public void run() {
 		
-
+		//this.setShow3D(false);
+		//this.setShow3D(true);
 		this.setImp2();
 		this.setLimeSeg();
 		//RoiManager roiManager = RoiManager.getRoiManager();
@@ -151,6 +154,7 @@ public class SphereSegAdapted extends Thread implements Command {
 		File[] listOfFiles = dir.listFiles();
         
 		int nRois=listOfFiles.length;
+		this.setNumberOfCells(nRois);
 		
 		for(File file:listOfFiles) {
 			
@@ -172,7 +176,7 @@ public class SphereSegAdapted extends Thread implements Command {
 				avgY+=y0;
 				avgZ+=z0;
 				NCells++;
-
+				//LimeSeg.update3DDisplay();//cambio aqui
 		    	if (!sameCell) {
 		    		LimeSeg.newCell();
 		    	}
@@ -216,7 +220,7 @@ public class SphereSegAdapted extends Thread implements Command {
         LimeSeg.opt.setOptParam("normalForce",0);        
        	//LimeSeg.opt.setCUDAContext();
        	try{
-       		LimeSeg.runOptimisation(200);// el comando runOptimisation determina los pasos que se dan hasta que se pare la segmentacion, antes lo pusiste a 100 y salian cosas raras
+       		LimeSeg.runOptimisation(500);// el comando runOptimisation determina los pasos que se dan hasta que se pare la segmentacion, antes lo pusiste a 100 y salian cosas raras
        	}catch(NullPointerException n) {
        		LimeSeg.requestStopOptimisation=true;
        		LimeSeg.stopOptimisation();
@@ -245,14 +249,22 @@ public class SphereSegAdapted extends Thread implements Command {
       
        
        	if (constructMesh) {
+       		try {
+       			
        	   	for (CellT ct : currentlyOptimizedCellTs) {
        	   		ct.constructMesh();
        	   	}
+       	   	
        	   	for (CellT ct : currentlyOptimizedCellTs) {
        	   		LimeSeg.setCell3DDisplayMode(1);
             	LimeSeg.currentCell=ct.c;
             	
    	    	}
+       	   	
+       		}catch(NullPointerException n) {
+            	LimeSeg.requestStopOptimisation=true;
+           		LimeSeg.stopOptimisation();
+       		}
        	}
        	LimeSeg.notifyCellExplorerCellsModif=true;
        	if (showOverlayOuput) {
@@ -272,8 +284,7 @@ public class SphereSegAdapted extends Thread implements Command {
        	File dir = new File("nameoffolder");
        	dir.mkdir();
        	*/
-       	lms=null;
-       	System.gc();
+
        	System.out.println("SphereSegAdapted ha terminado");
        	//LimeSeg.saveStateToXmlPly((path.toString()+"\\resultados"));
 	}
@@ -546,6 +557,14 @@ public class SphereSegAdapted extends Thread implements Command {
 	}
 	public void deleteLimeSeg() {
 		this.lms=null;
+	}
+
+	public int getNumberOfCells() {
+		return numberOfCells;
+	}
+
+	public void setNumberOfCells(int numberOfCells) {
+		this.numberOfCells = numberOfCells;
 	}
 
 	

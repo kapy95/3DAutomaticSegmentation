@@ -7,20 +7,28 @@ public class Individuo {
 	private float d0;//d_0: 1 and >20 pixels.
 	private float range_d0;//from 0.5 to >10
 	private File dir;
-	private File finalcellsdir;
+	private Double meanVertex;
 	private Double stdVertex; //standard deviation of the objects of the cells 
-	private Double meanVertex; //mean of the objects of the cells
+	private Double averageVolume;
+	private Double averageCentroid;
 	public Double score;
 	public long time;
+	public Integer notNullCells;
 	private String selectionMethod;
 	private String offspringMethod;
 	private String Identifier;
+	private Double stdFaces;
+	private Double stdVolume;
+	private Double distance;
+	private boolean stdCondition;
+	private int Gen;
 	
 	/**
 	 * 
 	 */
 	public Individuo() {
 		super();
+		setStdFaces(0.0);
 		setOffspringMethod("");
 		setSelectionMethod("");
 		// TODO Auto-generated constructor stub
@@ -83,14 +91,6 @@ public class Individuo {
 		this.stdVertex = stdVertex;
 	}
 
-	public Double getMeanVertex() {
-		return meanVertex;
-	}
-
-	public void setMeanVertex(Double meanVertex) {
-		this.meanVertex = meanVertex;
-	}
-
 	public Double getScore() {
 		return score;
 	}
@@ -131,12 +131,77 @@ public class Individuo {
 	}
 	//It copies an individual to another working directory, which will be the new directory of the new generation
 
-	public File getFinalcellsdir() {
-		return finalcellsdir;
+	public Double getStdFaces() {
+		return stdFaces;
 	}
 
-	public void setFinalcellsdir(File finalcellsdir) {
-		this.finalcellsdir = finalcellsdir;
+	public void setNotNullCells(Integer cells) {
+		this.notNullCells = cells;
+	}
+	
+	public Integer getNotNullCells() {
+		return notNullCells;
+	}
+
+	public void setStdFaces(Double stdFaces) {
+		this.stdFaces = stdFaces;
+	}
+
+
+	public Double getAverageVolume() {
+		return averageVolume;
+	}
+
+	public void setAverageVolume(Double averageVolume) {
+		this.averageVolume = averageVolume;
+	}
+
+	public Double getStdVolume() {
+		return stdVolume;
+	}
+
+	public void setStdVolume(Double stdVolume) {
+		this.stdVolume = stdVolume;
+	}
+
+	public Double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(Double distance) {
+		this.distance = distance;
+	}
+
+	public Double getMeanVertex() {
+		return meanVertex;
+	}
+
+	public void setMeanVertex(Double meanVertex) {
+		this.meanVertex = meanVertex;
+	}
+
+	public Double getAverageCentroid() {
+		return averageCentroid;
+	}
+
+	public void setAverageCentroid(Double averageCentroid) {
+		this.averageCentroid = averageCentroid;
+	}
+
+	public boolean isStdCondition() {
+		return stdCondition;
+	}
+
+	public void setStdCondition(boolean stdCondition) {
+		this.stdCondition = stdCondition;
+	}
+
+	public int getGen() {
+		return Gen;
+	}
+
+	public void setGen(int gen) {
+		Gen = gen;
 	}
 	
 	
