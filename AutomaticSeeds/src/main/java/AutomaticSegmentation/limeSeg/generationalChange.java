@@ -41,7 +41,7 @@ public class generationalChange {
    		 e.printStackTrace();
 		}
 		
-		
+		bestIndividual.setIdentifier("mejor individuo gen"+ String.valueOf(iter));
 		this.nextGeneration.add(bestIndividual);
 		population.remove(bestIndividual);//the best individual is removed temporarily in order to find the second maximum value
 
@@ -53,6 +53,7 @@ public class generationalChange {
 		
 		//bestIndividual2.setDir(new File(destDir.toString()+"\\resultado"+String.valueOf(res+1)+String.valueOf(iter+1)));
 		//bestIndividual2.setDir(destDirInd2);
+		bestIndividual2.setIdentifier("segundo mejor individuo gen"+ String.valueOf(iter));
 		this.nextGeneration.add(bestIndividual2);
 		
 		try {

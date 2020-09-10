@@ -99,6 +99,7 @@ public class SphereSegAdapted extends Thread implements Command {
 	public void run() {
 		
 		//this.setShow3D(false);
+		//this.setShow3D(true);
 		this.setImp2();
 		this.setLimeSeg();
 		//RoiManager roiManager = RoiManager.getRoiManager();

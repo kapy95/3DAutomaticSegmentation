@@ -88,6 +88,8 @@ public class evolutionary_algorithm {
         
         writer1.append("Identifier");
         writer1.append(',');
+        writer1.append("Gen");
+        writer1.append(",");
         writer1.append("D_0");
         writer1.append(',');
         writer1.append("Range_D0");
@@ -115,9 +117,9 @@ public class evolutionary_algorithm {
         writer1.append("Time");
         writer1.append('\n');
         
-		File dir = new File(this.dir.toString()+"\\datos\\RoiSet");
-		File[] listOfFiles = dir.listFiles();
-		this.setNumberOfCells(listOfFiles.length);
+		//File dir = new File(this.dir.toString()+"\\datos\\RoiSet");
+		//File[] listOfFiles = dir.listFiles();
+		//this.setNumberOfCells(listOfFiles.length);
 		this.setGen(0);
 		this.InitialPopulationGenerator(200,0);
 	
@@ -149,6 +151,7 @@ public class evolutionary_algorithm {
 		this.NewPopulationGenerator(newPopulation, i);
 		this.FitnessCalculation();
 		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
+		this.writeGlobalResultsCSV(writer1);
 		
 		writer1.close();
 		}catch(IOException e) {
@@ -234,7 +237,7 @@ public class evolutionary_algorithm {
 		//para generar valores aleatorias sería así: int randomInt = (int)(10.0 * Math.random());
 		//con math.random generamos valores del 0.0 al 1.0 y eso habría que multiplicarlo por el máximo de los valores de limeseg
 			//valores mínimos:
-			float ZS=3.51f;//float ZS=4.06f;// variable con el valor del z_scale 3.51f
+			float ZS=4.06f;//float ZS=4.06f;// variable con el valor del z_scale 3.51f, 5.59-> embryo
 			float min_fp=-0.03f; // variable con el valor de la presion [-0.03..0.03].
 			float min_d0=1;//d_0: 1 and >20 pixels.
 			float min_range_d0=0.5f;// from 0.5 to >10
@@ -285,7 +288,7 @@ public class evolutionary_algorithm {
 							ind.setF_pressure(randomF_pressure);
 							ind.setD0(randomD0);
 							ind.setRange_d0(randomRange_D0);
-							
+							ind.setGen(iter);
 							//llamo a la clase que va a llamar limeseg:
 							seg.setD_0(ind.getD0());
 							seg.setF_pressure(ind.getFp());
@@ -836,7 +839,7 @@ public class evolutionary_algorithm {
 			this.poblacion.add(newPopulation.get(1));
 			
 			//only Zscale has the same value for the new generations:
-			float ZS=3.51f;// variable con el valor del z_scale
+			float ZS=4.06f;// variable con el valor del z_scale
 			int i=0;
 			
 			Date date = new Date();   // given date
@@ -872,7 +875,7 @@ public class evolutionary_algorithm {
 			       
 			       	
 					Individuo ind= newPopulation.get(i);
-					
+					ind.setGen(iter);
 					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter)));
 					//llamo a la clase que va a llamar limeseg:
 					SphereSegAdapted seg2=new SphereSegAdapted();
@@ -1153,6 +1156,8 @@ public class evolutionary_algorithm {
             	  
                   writer.append(ind.getIdentifier());
                   writer.append(',');
+                  writer.append(String.valueOf(ind.getGen()));
+                  writer.append(",");
                   writer.append(String.valueOf(ind.getD0()));
                   writer.append(',');
                   writer.append(String.valueOf(ind.getRange_d0()));

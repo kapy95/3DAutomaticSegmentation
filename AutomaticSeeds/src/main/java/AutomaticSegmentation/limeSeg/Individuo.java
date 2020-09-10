@@ -21,6 +21,7 @@ public class Individuo {
 	private Double stdVolume;
 	private Double distance;
 	private boolean stdCondition;
+	private int Gen;
 	
 	/**
 	 * 
@@ -193,6 +194,14 @@ public class Individuo {
 
 	public void setStdCondition(boolean stdCondition) {
 		this.stdCondition = stdCondition;
+	}
+
+	public int getGen() {
+		return Gen;
+	}
+
+	public void setGen(int gen) {
+		Gen = gen;
 	}
 	
 	
