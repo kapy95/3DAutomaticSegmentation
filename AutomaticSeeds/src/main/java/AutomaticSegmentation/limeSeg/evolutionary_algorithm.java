@@ -85,7 +85,7 @@ public class evolutionary_algorithm {
 		
 		try{
 			
-		File file1 = new File(this.dir.toString()+"\\resultados\\resultadosGlobales.csv");
+		File file1 = new File(this.dir.toString()+"\\results\\globalResults.csv");
         FileWriter writer1 = new FileWriter(file1);
         
         writer1.append("Identifier");
@@ -126,7 +126,7 @@ public class evolutionary_algorithm {
 		this.InitialPopulationGenerator(200,0);
 	
 		this.FitnessCalculation();
-		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion0\\resultadoPob0.csv");
+		this.writeResultsCSV(this.dir.toString()+"\\results\\result generation0\\resultPob0.csv");
 		this.writeGlobalResultsCSV(writer1);
 		generationalChange change=new generationalChange(this.poblacion,numIndividuals,0,this.dir.toString());
 		change.main(i,this.dir.toString());
@@ -138,7 +138,7 @@ public class evolutionary_algorithm {
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
 			//System.gc();	
-			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
+			this.writeResultsCSV(this.dir.toString()+"\\results\\result generation"+String.valueOf(i)+"\\resultPob"+String.valueOf(i)+".csv");
 			//System.gc();	
 			this.writeGlobalResultsCSV(writer1);
 			generationalChange iterativeChange=new generationalChange(this.poblacion,numIndividuals,i,this.dir.toString());
@@ -152,7 +152,7 @@ public class evolutionary_algorithm {
 		
 		this.NewPopulationGenerator(newPopulation, i);
 		this.FitnessCalculation();
-		this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
+		this.writeResultsCSV(this.dir.toString()+"\\results\\result generation"+String.valueOf(i)+"\\resultPob"+String.valueOf(i)+".csv");
 		this.writeGlobalResultsCSV(writer1);
 		
 		writer1.close();
@@ -165,7 +165,7 @@ public class evolutionary_algorithm {
 		
 		try
         {
-			File file = new File(this.dir.toString()+"\\resultados"+"\\mejorResultado"+".csv");
+			File file = new File(this.dir.toString()+"\\results"+"\\bestResult"+".csv");
             FileWriter writer = new FileWriter(file);
 
             writer.append("Directory");
@@ -233,8 +233,8 @@ public class evolutionary_algorithm {
 	
 	
 	public void InitialPopulationGenerator(Integer nPoblacion,int iter) {
-		 //la variable iter se utiliza para generar nombres distintos a los resultados, y saber en que generacion estamos
-		//si la generacion es la inicial se inicia con un rango determinado por la poblacion deseada:
+		 //la variable iter se utiliza para generar nombres distintos a los results, y saber en que generation estamos
+		//si la generation es la inicial se inicia con un rango determinado por la poblacion deseada:
 		
 		//para generar valores aleatorias sería así: int randomInt = (int)(10.0 * Math.random());
 		//con math.random generamos valores del 0.0 al 1.0 y eso habría que multiplicarlo por el máximo de los valores de limeseg
@@ -252,7 +252,7 @@ public class evolutionary_algorithm {
 			
 			
 			int i;
-			File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion0");
+			File dirPob=new File(dir.toString()+"\\results\\result generation0");
 			dirPob.mkdir();
 			Random rand=new Random();
 			
@@ -275,7 +275,7 @@ public class evolutionary_algorithm {
 						SphereSegAdapted seg=new SphereSegAdapted();
 						seg.set_path(dir.toString());
 							
-							//System.out.println(resultado"+String.valueOf(i)+String.valueOf(iter));
+							//System.out.println(result"+String.valueOf(i)+String.valueOf(iter));
 							
 							Individuo ind=new Individuo();
 							/*
@@ -297,7 +297,7 @@ public class evolutionary_algorithm {
 							seg.setZ_scale(ZS);
 							seg.setRange_in_d0_units(ind.getRange_d0());
 							
-							writer.append("resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter));
+							writer.append("result"+String.valueOf(i)+"-gen"+String.valueOf(iter));
 				            writer.append(',');
 				            writer.append(String.valueOf(ind.getD0()));
 				            writer.append(',');
@@ -315,7 +315,7 @@ public class evolutionary_algorithm {
 							long startTime = System.currentTimeMillis();
 							long endTime=0;
 							
-							ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter)));
+							ind.setDir(new File(dirPob.toString()+"\\result"+String.valueOf(i)+"-gen"+String.valueOf(iter)));
 							ind.getDir().mkdir();//it creates the directory for that individual
 		
 							boolean corte=false;
@@ -349,9 +349,9 @@ public class evolutionary_algorithm {
 							
 		
 						ind.setTime((endTime-startTime) /1000);
-						//ind.setDir(new File(dir.toString()+"\\resultados\\resultado"+String.valueOf(i)+String.valueOf(iter)));
-						//ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+String.valueOf(iter)));
-						ind.setIdentifier("resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter));
+						//ind.setDir(new File(dir.toString()+"\\results\\result"+String.valueOf(i)+String.valueOf(iter)));
+						//ind.setDir(new File(dirPob.toString()+"\\result"+String.valueOf(i)+String.valueOf(iter)));
+						ind.setIdentifier("result"+String.valueOf(i)+"-gen"+String.valueOf(iter));
 		
 				       	LimeSeg.saveStateToXmlPly(ind.getDir().toString());//it saves the solution of the individual
 				       	
@@ -609,7 +609,7 @@ public class evolutionary_algorithm {
        	
        	}
        	
-       	this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(this.gen)+"\\resultadoFitnessPob"+String.valueOf(this.gen)+".csv");
+       	this.writeResultsCSV(this.dir.toString()+"\\results\\result generation"+String.valueOf(this.gen)+"\\resultFitnessPob"+String.valueOf(this.gen)+".csv");
        	
        	
        	if(elementsToBeDeleted.isEmpty()==false) {//if it is not empty, then the elements to be deleted are erased.
@@ -832,7 +832,7 @@ public class evolutionary_algorithm {
 		
 			//the folder for the new individuals is created
 
-			File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter));
+			File dirPob=new File(dir.toString()+"\\results\\result generation"+String.valueOf(iter));
 			//dirPob.mkdir();
 			float maximumTime=12.0f+(iter-1)*0.8f;//10.0f
 			this.deletePopulation();
@@ -852,7 +852,7 @@ public class evolutionary_algorithm {
 			calendar.get(Calendar.MONTH);       // gets month number, NOTE this is zero based!
 			
 			try {
-				FileWriter writer = new FileWriter(dirPob.toString()+"\\Experimentos.csv");
+				FileWriter writer = new FileWriter(dirPob.toString()+"\\Experiments.csv");
 			
              writer.append("Directory");
              writer.append(',');
@@ -878,7 +878,7 @@ public class evolutionary_algorithm {
 			       	
 					Individuo ind= newPopulation.get(i);
 					ind.setGen(iter);
-					ind.setDir(new File(dirPob.toString()+"\\resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter)));
+					ind.setDir(new File(dirPob.toString()+"\\result"+String.valueOf(i)+"-gen"+String.valueOf(iter)));
 					//llamo a la clase que va a llamar limeseg:
 					SphereSegAdapted seg2=new SphereSegAdapted();
 					seg2.set_path(dir.toString());
@@ -886,7 +886,7 @@ public class evolutionary_algorithm {
 					seg2.setF_pressure(ind.getFp());
 					seg2.setZ_scale(ZS);
 					seg2.setRange_in_d0_units(ind.getRange_d0());
-					 writer.append("resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter));
+					 writer.append("result"+String.valueOf(i)+"-gen"+String.valueOf(iter));
 		             writer.append(',');
 		             writer.append(String.valueOf(ind.getD0()));
 		             writer.append(',');
@@ -954,7 +954,7 @@ public class evolutionary_algorithm {
 				
 					System.out.println("Ha salido del Join()");
 					ind.setTime((endTime2-startTime2) /1000);
-					ind.setIdentifier("resultado"+String.valueOf(i)+"-gen"+String.valueOf(iter));
+					ind.setIdentifier("result"+String.valueOf(i)+"-gen"+String.valueOf(iter));
 					ind.getDir().mkdir();//it creates the directory for that individual
 					/*if(poblacion.get(i-1).getTime()==0 && poblacion.get(i).getTime()==0  && poblacion.get(i+1).getTime()==0) {
 						deleteAllCellT();
@@ -1235,7 +1235,7 @@ public class evolutionary_algorithm {
 		
 	   try{
 			
-		   File file1 = new File(this.dir.toString()+"\\resultados\\resultadosGlobales2.csv");
+		   File file1 = new File(this.dir.toString()+"\\results\\resultsGlobales2.csv");
 	       FileWriter writer1 = new FileWriter(file1);
 	       
 	       writer1.append("Identifier");
@@ -1260,12 +1260,12 @@ public class evolutionary_algorithm {
 	       writer1.append('\n');
 	       
 	       ArrayList<Individuo> newPopulation=startAgain(populationResults);
-	       File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(lastIter));
+	       File dirPob=new File(dir.toString()+"\\results\\result generation"+String.valueOf(lastIter));
 	       dirPob.mkdir();
 	       this.NewPopulationGenerator(newPopulation, lastIter);
 	       this.FitnessCalculation();
 	       System.gc();	
-	       this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(lastIter)+"\\resultadoPob"+String.valueOf(lastIter)+".csv");
+	       this.writeResultsCSV(this.dir.toString()+"\\results\\result generation"+String.valueOf(lastIter)+"\\resultPob"+String.valueOf(lastIter)+".csv");
 	       System.gc();	
 	       this.writeGlobalResultsCSV(writer1);
 	       generationalChange iterativeChange=new generationalChange(this.poblacion,numIndividuals,lastIter,this.dir.toString());
@@ -1279,7 +1279,7 @@ public class evolutionary_algorithm {
 				this.NewPopulationGenerator(newPopulation, i);
 				this.FitnessCalculation();
 				System.gc();	
-				this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
+				this.writeResultsCSV(this.dir.toString()+"\\results\\result generation"+String.valueOf(i)+"\\resultPob"+String.valueOf(i)+".csv");
 				System.gc();	
 				this.writeGlobalResultsCSV(writer1);
 				iterativeChange=new generationalChange(this.poblacion,numIndividuals,i,this.dir.toString());
@@ -1293,7 +1293,7 @@ public class evolutionary_algorithm {
 			
 			this.NewPopulationGenerator(newPopulation, i);
 			this.FitnessCalculation();
-			this.writeResultsCSV(this.dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(i)+"\\resultadoPob"+String.valueOf(i)+".csv");
+			this.writeResultsCSV(this.dir.toString()+"\\results\\result generation"+String.valueOf(i)+"\\resultPob"+String.valueOf(i)+".csv");
 			
 			writer1.close();
 			}catch(IOException e) {
@@ -1304,7 +1304,7 @@ public class evolutionary_algorithm {
 			Individuo bestIndividual = Collections.max(this.poblacion, Comparator.comparingDouble(Individuo::getScore));
 			
 			try{
-				   File file = new File(this.dir.toString()+"\\resultados"+"\\mejorResultado"+".csv");
+				   File file = new File(this.dir.toString()+"\\results"+"\\bestResult"+".csv");
 		           FileWriter writer = new FileWriter(file);
 		
 		           writer.append("Directory");

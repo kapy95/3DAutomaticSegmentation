@@ -150,7 +150,7 @@ public class SphereSegAdapted extends Thread implements Command {
         }
      
         
-		File dir = new File(path.toString()+"\\datos\\RoiSet");
+		File dir = new File(path.toString()+"\\data\\RoiSet");
 		File[] listOfFiles = dir.listFiles();
         
 		int nRois=listOfFiles.length;
@@ -461,7 +461,7 @@ public class SphereSegAdapted extends Thread implements Command {
 	
 	public void setImp2() {
 		
-		this.imp=FolderOpener.open(path.toString()+"\\Datos\\ImageSequence");
+		this.imp=FolderOpener.open(path.toString()+"\\data\\ImageSequence");
 	}
 
 	/**

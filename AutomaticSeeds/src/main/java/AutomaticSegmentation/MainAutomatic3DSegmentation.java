@@ -101,7 +101,7 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
 		//establezco el directorio de trabajo con las imágenes y roi
 		
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.print("Introduzca el número generaciones: ");
+        System.out.print("Please introduce the number of generations: ");
         
         int gens=0;
         
@@ -110,37 +110,37 @@ public class MainAutomatic3DSegmentation extends Thread implements PlugIn {
         	 
         } catch (IOException e) {
 			// TODO Auto-generated catch block
-        	System.err.println("Formato no válido vuelva a intentarlo");
+        	System.err.println("Invalid format");
 		}
         
-        System.out.print("Introduzca el número de individuos por generación: ");
+        System.out.print("Please introduce the number of individuals pre generations: ");
         int inds=0;;
         try {
             inds = Integer.parseInt(br.readLine());
         } catch(NumberFormatException | IOException nfe) {
-            System.err.println("Formato no válido vuelva a intentarlo");
+            System.err.println("Invalid format");
         }
         
 	    //System.out.println("You entered float "+b)
-        System.out.print("Introduzca el directorio con los datos y la carpeta de resultados: ");
+        System.out.print("Please introduce the directory with the data and the folder of results: ");
         String userDirectory ="";
         try {
         	userDirectory = br.readLine();
         } catch(IOException nfe) {
-            System.err.println("Formato no válido vuelva a intentarlo");
+            System.err.println("Invalid format");
         }
         
 		//String userDirectory = System.getProperty("user.dir");
 		File dir = new File(userDirectory);
 		
 		
-        System.out.print("Introduzca el Zscale de las imágenes: ");
+        System.out.print("Please set the Zscale value of the images: ");
         float zScale=0.0f;
         try {
             zScale = Float.parseFloat(br.readLine());
             
         } catch(NumberFormatException | IOException nfe) {
-            System.err.println("Formato no válido vuelva a intentarlo");
+            System.err.println("Invalid format");
         }
 		
 		

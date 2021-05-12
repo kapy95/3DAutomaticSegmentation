@@ -29,10 +29,10 @@ public class generationalChange {
 
 		File srcDir =  bestIndividual.getDir();
 		
-		File destDir=new File(dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter+1));
+		File destDir=new File(dir.toString()+"\\results\\result generation"+String.valueOf(iter+1));
 		destDir.mkdir();
 		
-		File destDirInd1=new File(destDir.toString()+"\\mejor individuo gen"+ String.valueOf(iter)); //incluir mejor resultado aqui en el titulo para identificarlo y no volver a calcularlo
+		File destDirInd1=new File(destDir.toString()+"\\best individual gen"+ String.valueOf(iter)); //incluir mejor result aqui en el titulo para identificarlo y no volver a calcularlo
 		//bestIndividual.setDir(destDirInd1);
 		
 		try {
@@ -41,19 +41,19 @@ public class generationalChange {
    		 e.printStackTrace();
 		}
 		
-		bestIndividual.setIdentifier("mejor individuo gen"+ String.valueOf(iter));
+		bestIndividual.setIdentifier("best individual gen"+ String.valueOf(iter));
 		this.nextGeneration.add(bestIndividual);
 		population.remove(bestIndividual);//the best individual is removed temporarily in order to find the second maximum value
 
 		//we do the same for the second best individual:
 		Individuo bestIndividual2 = Collections.max(population, Comparator.comparingDouble(Individuo::getScore));
 		
-		File destDirInd2=new File(destDir.toString()+"\\segundo mejor individuo gen"+ String.valueOf(iter));
+		File destDirInd2=new File(destDir.toString()+"\\second best individual gen"+ String.valueOf(iter));
 		File srcInd2Dir1 =  bestIndividual2.getDir();
 		
-		//bestIndividual2.setDir(new File(destDir.toString()+"\\resultado"+String.valueOf(res+1)+String.valueOf(iter+1)));
+		//bestIndividual2.setDir(new File(destDir.toString()+"\\result"+String.valueOf(res+1)+String.valueOf(iter+1)));
 		//bestIndividual2.setDir(destDirInd2);
-		bestIndividual2.setIdentifier("segundo mejor individuo gen"+ String.valueOf(iter));
+		bestIndividual2.setIdentifier("second best individual gen"+ String.valueOf(iter));
 		this.nextGeneration.add(bestIndividual2);
 		
 		try {
@@ -75,35 +75,35 @@ public class generationalChange {
 	    ArrayList<ArrayList<Integer>> probabilities=likelyhoodsCalculation(population);
 		int counterMutated=0;
 		int counterCrossover=0;
-		File dirPob=new File(dir.toString()+"\\resultados\\resultado generacion"+String.valueOf(iter));
+		File dirPob=new File(dir.toString()+"\\results\\result generation"+String.valueOf(iter));
 		int maxCrossover=(int) Math.round(0.75f*(this.previousGeneration.size()-2));//minus 3 because two individuals have been already selected and java starts in 0 so -3
 		int maxMutated=(this.previousGeneration.size()-2)-maxCrossover;
 		Random rand= new Random();
 		int contador=2;
 		try {
-			FileWriter writer = new FileWriter(dirPob+"\\RecambioGeneracional"+String.valueOf(iter)+".csv");
+			FileWriter writer = new FileWriter(dirPob+"\\GenerationChange"+String.valueOf(iter)+".csv");
 			
-	        writer.append("MetodoSeleccionado");
+	        writer.append("selectedMethod");
             writer.append(',');
-            writer.append("Individuo1 D_0");
+            writer.append("Individual1 D_0");
             writer.append(',');
-            writer.append("Individuo1 Range_D0");
+            writer.append("Individual1 Range_D0");
             writer.append(',');
-            writer.append("Individuo1 f_pressure");
+            writer.append("Individual1 f_pressure");
             writer.append(',');
-            writer.append("Individuo2 D_0");
+            writer.append("Individual2 D_0");
             writer.append(',');
-            writer.append("Individuo2 Range_D0");
+            writer.append("Individual2 Range_D0");
             writer.append(',');
-            writer.append("Individuo2 f_pressure");
+            writer.append("Individual2 f_pressure");
             writer.append(',');
-			writer.append("IndividuoGenerado");
+			writer.append("IndividualGenerated");
             writer.append(',');
-            writer.append("IndividuoGenerado D_0");
+            writer.append("IndividuoGenerated D_0");
             writer.append(',');
-            writer.append("IndividuoGenerado Range_D0");
+            writer.append("IndividuoGenerated Range_D0");
             writer.append(',');
-            writer.append("IndividuoGenerado f_pressure");
+            writer.append("IndividuoGenerated f_pressure");
             writer.append('\n');
             
             writer.flush();
